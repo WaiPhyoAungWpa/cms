@@ -1,5 +1,7 @@
 using System.Text;
 using Cms.Api.Data.Context;
+using Cms.Api.Interfaces;
+using Cms.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +17,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddDbContext<CmsDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<IImageStorageService, LocalImageStorageService>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 

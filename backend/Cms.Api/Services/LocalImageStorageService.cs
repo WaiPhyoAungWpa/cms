@@ -1,0 +1,17 @@
+using Microsoft.AspNetCore.Http;
+using Cms.Api.Interfaces;
+
+namespace Cms.Api.Services;
+
+public class LocalImageStorageService : IImageStorageService
+{
+    public Task<string> SaveAsync(IFormFile file)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(string filePath)
+    {
+        throw new NotImplementedException();
+    }
+}

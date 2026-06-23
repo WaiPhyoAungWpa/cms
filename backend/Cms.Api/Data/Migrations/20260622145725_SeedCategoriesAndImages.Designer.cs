@@ -3,6 +3,7 @@ using System;
 using Cms.Api.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cms.Api.Data.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260622145725_SeedCategoriesAndImages")]
+    partial class SeedCategoriesAndImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,63 +190,63 @@ namespace Cms.Api.Data.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            FilePath = "/images/defaults/experience-1.png",
+                            FilePath = "/images/defaults/experience-1.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 1,
-                            FilePath = "/images/defaults/experience-2.png",
+                            FilePath = "/images/defaults/experience-2.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 3,
                             CategoryId = 1,
-                            FilePath = "/images/defaults/experience-3.png",
+                            FilePath = "/images/defaults/experience-3.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 4,
                             CategoryId = 2,
-                            FilePath = "/images/defaults/learning-1.png",
+                            FilePath = "/images/defaults/learning-1.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 5,
                             CategoryId = 2,
-                            FilePath = "/images/defaults/learning-2.png",
+                            FilePath = "/images/defaults/learning-2.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 6,
                             CategoryId = 2,
-                            FilePath = "/images/defaults/learning-3.png",
+                            FilePath = "/images/defaults/learning-3.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 7,
                             CategoryId = 3,
-                            FilePath = "/images/defaults/lifestyle-1.png",
+                            FilePath = "/images/defaults/lifestyle-1.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 8,
                             CategoryId = 3,
-                            FilePath = "/images/defaults/lifestyle-2.png",
+                            FilePath = "/images/defaults/lifestyle-2.jpg",
                             Type = "Default"
                         },
                         new
                         {
                             Id = 9,
                             CategoryId = 3,
-                            FilePath = "/images/defaults/lifestyle-3.png",
+                            FilePath = "/images/defaults/lifestyle-3.jpg",
                             Type = "Default"
                         });
                 });
