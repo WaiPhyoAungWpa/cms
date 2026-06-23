@@ -27,6 +27,10 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+        services.AddScoped<IContentRepository, ContentRepository>();
+
+        services.AddScoped<IContentService, ContentService>();
+
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
