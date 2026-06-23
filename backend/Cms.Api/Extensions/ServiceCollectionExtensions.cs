@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Cms.Api.Repositories;
 
 namespace Cms.Api.Extensions;
 
@@ -19,6 +20,12 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IImageStorageService, LocalImageStorageService>();
+
+        services.AddScoped<IAdminRepository, AdminRepository>();
+
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 
