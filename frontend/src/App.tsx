@@ -7,6 +7,7 @@ import {
 import LoginPage from "./pages/LoginPage";
 import AdminHomePage from "./pages/AdminHomePage";
 import CreateContentPage from "./pages/CreateContentPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
     return (
@@ -19,12 +20,18 @@ export default function App() {
 
                 <Route
                     path="/admin"
-                    element={<AdminHomePage />}
+                    element={
+                    <ProtectedRoute>
+                      <AdminHomePage />
+                    </ProtectedRoute>}
                 />
 
                 <Route 
                     path="/content/create" 
-                    element={<CreateContentPage />} 
+                    element={
+                    <ProtectedRoute>
+                      <CreateContentPage />
+                    </ProtectedRoute>}
                 />
             </Routes>
         </BrowserRouter>
