@@ -1,6 +1,6 @@
 using Cms.Api.Entities;
 
-namespace Cms.Api.Repositories;
+namespace Cms.Api.Repositories.Interfaces;
 
 public interface IContentRepository
 {

@@ -1,6 +1,6 @@
 using Cms.Api.DTOs.Content;
 
-namespace Cms.Api.Services;
+namespace Cms.Api.Services.Interfaces;
 
 public interface IContentService
 {

@@ -1,5 +1,6 @@
 using Cms.Api.Data.Context;
 using Cms.Api.Entities;
+using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cms.Api.Repositories;

@@ -1,5 +1,5 @@
 using Cms.Api.DTOs.Auth;
-using Cms.Api.Interfaces;
+using Cms.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 

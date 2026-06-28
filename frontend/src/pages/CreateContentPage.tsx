@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { saveDraft, publishContent } from "../services/contentService";
 import { CreateSectionRequest } from "../types/content";
+import { getDefaultImages } from "../services/imageService";
+import { DefaultImage } from "../types/image";
 
 export default function CreateContentPage() {
   const [categoryId, setCategoryId] = useState(1);
@@ -9,6 +11,29 @@ export default function CreateContentPage() {
   const [coverImageId, setCoverImageId] = useState(1);
   const [sections, setSections] = useState<CreateSectionRequest[]>([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [images, setImages] = useState<DefaultImage[]>([]);
+
+  useEffect(() => {
+      loadImages(categoryId);
+    }, [categoryId]);
+
+    const loadImages = async (categoryId: number) => {
+      try {
+        const result = await getDefaultImages(categoryId);
+
+        setImages(result);
+
+        if (result.length > 0) {
+          setCoverImageId(result[0].id);
+        }
+      } catch {
+        alert("Unable to load images");
+      }
+    };
+
+    const selectedCoverImage = images.find(
+      image => image.id === coverImageId
+      );
 
   const handlePublish = async () => {
     try {
@@ -71,7 +96,7 @@ export default function CreateContentPage() {
         {
         title: "",
         description: "",
-        sectionImageId: coverImagesByCategory[categoryId][0],
+        sectionImageId: images.length > 0 ? images[0].id : 0,
         },
     ]);
     };
@@ -103,12 +128,6 @@ export default function CreateContentPage() {
         setSections(updated);
       };
 
-    const coverImagesByCategory: Record<number, number[]> = {
-      1: [1, 2, 3], // Experience
-      2: [4, 5, 6], // Learning
-      3: [7, 8, 9], // Lifestyle
-    };
-
   return (
     <div style={{ padding: "2rem" }}>
       <h1>Create Content</h1>
@@ -123,9 +142,6 @@ export default function CreateContentPage() {
 
             setCategoryId(selectedCategory);
 
-            setCoverImageId(
-              coverImagesByCategory[selectedCategory][0]
-            );
           }}
         >
           <option value={1}>Experience</option>
@@ -162,33 +178,71 @@ export default function CreateContentPage() {
       <br />
 
       <div>
-        <label>Cover Image</label>
-        <br />
+        <label>Cover Photo</label>
 
-        <select
-          value={coverImageId}
-          onChange={(e) =>
-            setCoverImageId(Number(e.target.value))
-          }
+        <div
+          style={{
+            border: "1px solid #ccc",
+            padding: "1rem",
+            marginTop: "10px",
+          }}
         >
-          {coverImagesByCategory[categoryId].map(
-            (imageId) => (
-              <option
-                key={imageId}
-                value={imageId}
+          <p>Select Default Image</p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            {images.map((image) => (
+              <div
+                key={image.id}
+                onClick={() => setCoverImageId(image.id)}
+                style={{
+                  border:
+                    coverImageId === image.id
+                      ? "3px solid green"
+                      : "1px solid #aaa",
+                  padding: "4px",
+                  cursor: "pointer",
+                }}
               >
-                Default Image {imageId}
-              </option>
-            )
+                <img
+                  src={`http://localhost:5160${image.filePath}`}
+                  alt="Default"
+                  width={120}
+                  height={120}
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <hr />
+
+          <p>Selected Image</p>
+
+          {selectedCoverImage && (
+            <img
+              src={`http://localhost:5160${selectedCoverImage.filePath}`}
+              width={250}
+              alt="Selected Cover"
+            />
           )}
-        </select>
+        </div>
       </div>
 
       <br />
 
       <h2>Sections</h2>
 
-        {sections.map((section, index) => (
+        {sections.map((section, index) => {
+          const selectedSectionImage = images.find(
+            image => image.id === section.sectionImageId
+          );
+        return(
         <div
             key={index}
             style={{
@@ -232,29 +286,52 @@ export default function CreateContentPage() {
               <label>Section Image</label>
               <br />
 
-              <select
-                value={section.sectionImageId}
-                onChange={(e) =>
-                  updateSectionImage(
-                    index,
-                    Number(e.target.value)
-                  )
-                }
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  flexWrap: "wrap",
+                  marginTop: "10px",
+                }}
               >
-                {coverImagesByCategory[categoryId].map(
-                  (imageId) => (
-                    <option
-                      key={imageId}
-                      value={imageId}
-                    >
-                      Default Image {imageId}
-                    </option>
-                  )
-                )}
-              </select>
+                {images.map((image) => (
+                  <div
+                    key={image.id}
+                    onClick={() =>
+                      updateSectionImage(index, image.id)
+                    }
+                    style={{
+                      border:
+                        section.sectionImageId === image.id
+                          ? "3px solid green"
+                          : "1px solid #aaa",
+                      padding: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <img
+                      src={`http://localhost:5160${image.filePath}`}
+                      width={100}
+                      height={100}
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <p>Selected Image</p>
+
+                {selectedSectionImage && (
+                    <img
+                      src={`http://localhost:5160${selectedSectionImage.filePath}`}
+                      width={200}
+                      alt="Selected Section"
+                    />
+                  )}
             </div>
         </div>
-        ))}
+        );
+    })}
 
         <button onClick={handleAddSection}>
           Add Section

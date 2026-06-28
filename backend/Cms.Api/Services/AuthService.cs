@@ -1,6 +1,6 @@
 using Cms.Api.DTOs.Auth;
-using Cms.Api.Repositories;
-using Cms.Api.Interfaces;
+using Cms.Api.Repositories.Interfaces;
+using Cms.Api.Services.Interfaces;
 
 namespace Cms.Api.Services;
 

@@ -1,12 +1,13 @@
 using System.Text;
 using Cms.Api.Data.Context;
-using Cms.Api.Interfaces;
+using Cms.Api.Services.Interfaces;
 using Cms.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Cms.Api.Repositories;
+using Cms.Api.Repositories.Interfaces;
 
 namespace Cms.Api.Extensions;
 
@@ -30,6 +31,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentRepository, ContentRepository>();
 
         services.AddScoped<IContentService, ContentService>();
+
+        services.AddScoped<IImageRepository, ImageRepository>();
+        services.AddScoped<IImageService, ImageService>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 

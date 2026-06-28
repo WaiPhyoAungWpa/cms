@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Cms.Api.Entities;
-using Cms.Api.Interfaces;
+using Cms.Api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Cms.Api.Services;

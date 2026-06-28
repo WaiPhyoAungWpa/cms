@@ -1,7 +1,8 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
-using Cms.Api.Repositories;
+using Cms.Api.Repositories.Interfaces;
+using Cms.Api.Services.Interfaces;
 
 namespace Cms.Api.Services;
 

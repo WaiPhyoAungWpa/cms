@@ -1,6 +1,6 @@
 using Cms.Api.Entities;
 
-namespace Cms.Api.Interfaces;
+namespace Cms.Api.Services.Interfaces;
 
 public interface IJwtTokenGenerator
 {
