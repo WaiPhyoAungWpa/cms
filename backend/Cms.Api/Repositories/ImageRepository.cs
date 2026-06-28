@@ -24,4 +24,14 @@ public class ImageRepository : IImageRepository
             .OrderBy(image => image.Id)
             .ToListAsync();
     }
+
+    public async Task AddAsync(Image image)
+    {
+        await _context.Images.AddAsync(image);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

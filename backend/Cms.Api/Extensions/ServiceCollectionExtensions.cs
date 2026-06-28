@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Cms.Api.Repositories;
 using Cms.Api.Repositories.Interfaces;
+using Cms.Api.Configurations;
 
 namespace Cms.Api.Extensions;
 
@@ -20,7 +21,10 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<CmsDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IImageStorageService, LocalImageStorageService>();
+        services.Configure<CloudinarySettings>(
+            configuration.GetSection(CloudinarySettings.SectionName));
+
+        services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
 
         services.AddScoped<IAdminRepository, AdminRepository>();
 

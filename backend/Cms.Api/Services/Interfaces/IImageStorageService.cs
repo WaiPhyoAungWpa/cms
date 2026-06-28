@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Http;
-
-namespace Cms.Api.Services.Interfaces;
-
 public interface IImageStorageService
 {
-    Task<string> SaveAsync(IFormFile file);
+    Task<string> SaveAsync(
+        IFormFile file,
+        string folder);
 
     Task DeleteAsync(string filePath);
 }
