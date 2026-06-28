@@ -1,6 +1,11 @@
 using Cms.Api.Extensions;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load(Path.Combine(builder.Environment.ContentRootPath, ".env"));
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
