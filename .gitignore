@@ -10,3 +10,4 @@ dist/
 .vscode/
 *.db
 *.sqlite
+!.env.example

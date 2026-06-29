@@ -2,6 +2,8 @@ export interface CreateSectionRequest {
   title: string;
   description: string;
   sectionImageId: number;
+  useCustomImage?: boolean;
+  customImageUrl?: string;
 }
 
 export interface CreateContentRequest {

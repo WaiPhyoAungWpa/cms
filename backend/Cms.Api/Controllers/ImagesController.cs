@@ -7,7 +7,6 @@ namespace Cms.Api.Controllers;
 
 [ApiController]
 [Route("api/images")]
-[Authorize]
 public class ImagesController : ControllerBase
 {
     private readonly IImageService _imageService;
@@ -25,6 +24,7 @@ public class ImagesController : ControllerBase
         return Ok(images);
     }
 
+    [Authorize]
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(
         IFormFile file,

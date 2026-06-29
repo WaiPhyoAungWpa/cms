@@ -42,6 +42,18 @@ public class ImageService : IImageService
         {
             throw new ArgumentException("Image file is empty.");
         }
+        
+        if (file.Length > 5 * 1024 * 1024)
+            throw new ArgumentException("Image size cannot exceed 5 MB.");
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension))
+        {
+            throw new ArgumentException("Only JPG, JPEG, PNG and WEBP images are allowed.");
+        }
 
         var folder = ImageFolderHelper.GetFolder(categoryId);
 

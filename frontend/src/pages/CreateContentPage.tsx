@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { saveDraft, publishContent } from "../services/contentService";
 import { CreateSectionRequest } from "../types/content";
-import { getDefaultImages } from "../services/imageService";
+import { getDefaultImages, uploadImage } from "../services/imageService";
 import { DefaultImage } from "../types/image";
 
 export default function CreateContentPage() {
@@ -12,6 +12,8 @@ export default function CreateContentPage() {
   const [sections, setSections] = useState<CreateSectionRequest[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [images, setImages] = useState<DefaultImage[]>([]);
+  const [customCoverImageUrl, setCustomCoverImageUrl] = useState("");
+  const [useCustomCover, setUseCustomCover] = useState(false);
 
   useEffect(() => {
       loadImages(categoryId);
@@ -25,6 +27,13 @@ export default function CreateContentPage() {
 
         if (result.length > 0) {
           setCoverImageId(result[0].id);
+
+          setSections(prev =>
+              prev.map(section => ({
+                  ...section,
+                  sectionImageId: result[0].id
+              }))
+          );
         }
       } catch {
         alert("Unable to load images");
@@ -97,6 +106,8 @@ export default function CreateContentPage() {
         title: "",
         description: "",
         sectionImageId: images.length > 0 ? images[0].id : 0,
+        useCustomImage: false,
+        customImageUrl: "",
         },
     ]);
     };
@@ -128,6 +139,80 @@ export default function CreateContentPage() {
         setSections(updated);
       };
 
+    const handleCoverUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          alert("Please login first");
+          return;
+        }
+
+        try {
+          const result = await uploadImage(
+            file,
+            categoryId,
+            token
+          );
+
+          setCoverImageId(result.id);
+          setCustomCoverImageUrl(result.filePath);
+          setUseCustomCover(true);
+        } catch {
+          alert("Failed to upload image");
+        }
+      };
+
+    const handleSectionUpload = async (
+      index: number,
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const file = e.target.files?.[0];
+
+      if (!file) return;
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      try {
+        const result = await uploadImage(
+          file,
+          categoryId,
+          token
+        );
+
+        const updated = [...sections];
+
+        updated[index].sectionImageId = result.id;
+        updated[index].customImageUrl = result.filePath;
+        updated[index].useCustomImage = true;
+
+        setSections(updated);
+      } catch {
+        alert("Failed to upload image");
+      }
+    };
+
+    const toggleSectionImageType = (
+      index: number,
+      useCustom: boolean
+    ) => {
+      const updated = [...sections];
+
+      updated[index].useCustomImage = useCustom;
+
+      setSections(updated);
+    };
+
   return (
     <div style={{ padding: "2rem" }}>
       <h1>Create Content</h1>
@@ -140,8 +225,36 @@ export default function CreateContentPage() {
           onChange={(e) => {
             const selectedCategory = Number(e.target.value);
 
+            // Optional warning if custom images already exist
+            if (
+              useCustomCover ||
+              sections.some(section => section.useCustomImage)
+            ) {
+              const confirmed = window.confirm(
+                "Changing category will remove all uploaded custom images. Continue?"
+              );
+
+              if (!confirmed) {
+                return;
+              }
+            }
+
             setCategoryId(selectedCategory);
 
+            // Reset cover image
+            setUseCustomCover(false);
+            setCustomCoverImageUrl("");
+            setCoverImageId(0);
+
+            // Reset all section images
+            setSections(prev =>
+              prev.map(section => ({
+                ...section,
+                sectionImageId: 0,
+                useCustomImage: false,
+                customImageUrl: "",
+              }))
+            );
           }}
         >
           <option value={1}>Experience</option>
@@ -187,8 +300,29 @@ export default function CreateContentPage() {
             marginTop: "10px",
           }}
         >
-          <p>Select Default Image</p>
+          <div style={{ marginBottom: "1rem" }}>
+            <label>
+              <input
+                type="radio"
+                checked={!useCustomCover}
+                onChange={() => setUseCustomCover(false)}
+              />
+              Default Image
+            </label>
 
+            <br />
+
+            <label>
+              <input
+                type="radio"
+                checked={useCustomCover}
+                onChange={() => setUseCustomCover(true)}
+              />
+              Upload Custom Image
+            </label>
+          </div>
+          {!useCustomCover && (
+            <>
           <div
             style={{
               display: "flex",
@@ -230,6 +364,28 @@ export default function CreateContentPage() {
               width={250}
               alt="Selected Cover"
             />
+          )}
+          </>)}
+          
+          {useCustomCover && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+              />
+
+              <br />
+              <br />
+
+              {customCoverImageUrl && (
+                <img
+                  src={customCoverImageUrl}
+                  width={250}
+                  alt="Custom Cover"
+                />
+              )}
+            </>
           )}
         </div>
       </div>
@@ -286,6 +442,33 @@ export default function CreateContentPage() {
               <label>Section Image</label>
               <br />
 
+            <div style={{ marginBottom: "1rem" }}>
+                  <label>
+                    <input
+                      type="radio"
+                      checked={!section.useCustomImage}
+                      onChange={() =>
+                        toggleSectionImageType(index, false)
+                      }
+                    />
+                    Default Image
+                  </label>
+
+                  <br />
+
+                  <label>
+                    <input
+                      type="radio"
+                      checked={!!section.useCustomImage}
+                      onChange={() =>
+                        toggleSectionImageType(index, true)
+                      }
+                    />
+                    Upload Custom Image
+                  </label>
+                </div>
+                {!section.useCustomImage && (
+                  <>
               <div
                 style={{
                   display: "flex",
@@ -328,6 +511,29 @@ export default function CreateContentPage() {
                       alt="Selected Section"
                     />
                   )}
+              </>)}
+              {section.useCustomImage && (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleSectionUpload(index, e)
+                    }
+                  />
+
+                  <br />
+                  <br />
+
+                  {section.customImageUrl && (
+                    <img
+                      src={section.customImageUrl}
+                      width={200}
+                      alt="Custom Section"
+                    />
+                  )}
+                </>
+              )}
             </div>
         </div>
         );
