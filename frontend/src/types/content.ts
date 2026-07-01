@@ -13,3 +13,11 @@ export interface CreateContentRequest {
   coverImageId: number;
   sections: CreateSectionRequest[];
 }
+
+export interface ContentListItem {
+  id: number;
+  title: string;
+  category: string;
+  status: string;
+  visibilityStatus: string;
+}

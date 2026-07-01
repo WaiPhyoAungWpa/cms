@@ -1,6 +1,17 @@
-import { CreateContentRequest } from "../types/content";
+import { API_BASE_URL } from "../config/api";
+import { PagedResponse } from "../types/pagination";
+import { CreateContentRequest, ContentListItem  } from "../types/content";
 
-const API_URL = "http://localhost:5160/api/content";
+export interface GetContentsParams {
+  search?: string;
+  categoryId?: number;
+  status?: string;
+  visibilityStatus?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+const API_URL = `${API_BASE_URL}/content`;
 
 export async function publishContent(
   request: CreateContentRequest,
@@ -37,6 +48,53 @@ export async function saveDraft(
 
   if (!response.ok) {
     throw new Error("Failed to save draft");
+  }
+
+  return response.json();
+}
+
+export async function getContents(
+  params: GetContentsParams,
+  token: string
+): Promise<PagedResponse<ContentListItem>> {
+  const query = new URLSearchParams();
+
+  if (params.search) {
+    query.append("search", params.search);
+  }
+
+  if (params.categoryId) {
+    query.append("categoryId", params.categoryId.toString());
+  }
+
+  if (params.status) {
+    query.append("status", params.status);
+  }
+
+  if (params.visibilityStatus) {
+    query.append("visibilityStatus", params.visibilityStatus);
+  }
+
+  if (params.page) {
+  query.append("page", params.page.toString());
+  }
+
+  if (params.pageSize) {
+    query.append("pageSize", params.pageSize.toString());
+  }
+
+  const url = query.toString()
+    ? `${API_URL}?${query.toString()}`
+    : API_URL;
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to retrieve contents.");
   }
 
   return response.json();

@@ -1,5 +1,6 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.Services.Interfaces;
+using Cms.Api.DTOs.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,5 +32,14 @@ public class ContentController : ControllerBase
         var result = await _contentService.SaveDraftAsync(request);
 
         return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<PagedResponseDto<ContentListResponseDto>>> GetAll(
+        [FromQuery] ContentQueryRequestDto request)
+    {
+        var contents = await _contentService.GetAllAsync(request);
+
+        return Ok(contents);
     }
 }

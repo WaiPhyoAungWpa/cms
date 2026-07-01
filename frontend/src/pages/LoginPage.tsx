@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +15,7 @@ export default function LoginPage() {
 
         try {
             const response = await fetch(
-                "http://localhost:5160/api/Auth/login",
+                `${API_BASE_URL}/Auth/login`,
                 {
                     method: "POST",
                     headers: {

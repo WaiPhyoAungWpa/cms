@@ -7,6 +7,7 @@ import {
 import LoginPage from "./pages/LoginPage";
 import AdminHomePage from "./pages/AdminHomePage";
 import CreateContentPage from "./pages/CreateContentPage";
+import ManageContentPage from "./pages/ManageContentPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -32,6 +33,15 @@ export default function App() {
                     <ProtectedRoute>
                       <CreateContentPage />
                     </ProtectedRoute>}
+                />
+
+                <Route
+                    path="/content"
+                    element={
+                        <ProtectedRoute>
+                        <ManageContentPage />
+                        </ProtectedRoute>
+                    }
                 />
             </Routes>
         </BrowserRouter>

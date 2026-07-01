@@ -1,11 +1,14 @@
+import { API_BASE_URL } from "../config/api";
 import { DefaultImage } from "../types/image";
 import { UploadImageResponse } from "../types/image";
+
+const API_URL = `${API_BASE_URL}/images`;
 
 export async function getDefaultImages(
   categoryId: number
 ): Promise<DefaultImage[]> {
   const response = await fetch(
-    `http://localhost:5160/api/images/defaults/${categoryId}`
+    `${API_URL}/defaults/${categoryId}`
   );
 
   if (!response.ok) {
@@ -26,7 +29,7 @@ export async function uploadImage(
   formData.append("categoryId", categoryId.toString());
 
   const response = await fetch(
-    "http://localhost:5160/api/images/upload",
+    `${API_URL}/upload`,
     {
       method: "POST",
       headers: {

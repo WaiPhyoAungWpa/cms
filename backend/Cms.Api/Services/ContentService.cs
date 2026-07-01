@@ -1,4 +1,5 @@
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.Common;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;
@@ -113,5 +114,30 @@ public class ContentService : IContentService
         await _contentRepository.SaveChangesAsync();
 
         return MapToResponse(content);
+    }
+
+    public async Task<PagedResponseDto<ContentListResponseDto>>
+        GetAllAsync(ContentQueryRequestDto request)
+    {
+        var result = await _contentRepository.GetAllAsync(request);
+
+        var items = result.Items.Select(content => new ContentListResponseDto
+        {
+            Id = content.Id,
+            Title = content.Title,
+            Category = content.Category.Name,
+            Status = content.Status,
+            VisibilityStatus = content.VisibilityStatus
+        }).ToList();
+
+        return new PagedResponseDto<ContentListResponseDto>
+        {
+            Items = items,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalCount = result.TotalCount,
+            TotalPages = (int)Math.Ceiling(
+                result.TotalCount / (double)request.PageSize)
+        };
     }
 }

@@ -1,5 +1,6 @@
 using Cms.Api.Data.Context;
 using Cms.Api.Entities;
+using Cms.Api.DTOs.Content;
 using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,4 +24,48 @@ public class ContentRepository : IContentRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<(List<Content> Items, int TotalCount)> GetAllAsync(
+        ContentQueryRequestDto request)
+    {
+        var query = _context.Contents
+            .Include(c => c.Category)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(c =>
+                EF.Functions.ILike(c.Title, $"%{request.Search}%") ||
+                EF.Functions.ILike(c.Description, $"%{request.Search}%"));
+        }
+
+        if (request.CategoryId.HasValue)
+        {
+            query = query.Where(c =>
+                c.CategoryId == request.CategoryId.Value);
+        }
+
+        if (request.Status.HasValue)
+        {
+            query = query.Where(c =>
+                c.Status == request.Status.Value);
+        }
+
+        if (request.VisibilityStatus.HasValue)
+        {
+            query = query.Where(c =>
+                c.VisibilityStatus == request.VisibilityStatus.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
 }
