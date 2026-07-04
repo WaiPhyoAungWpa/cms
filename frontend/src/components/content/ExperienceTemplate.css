@@ -1,0 +1,97 @@
+.experience-template {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.experience-category {
+  margin-bottom: 24px;
+  font-size: 2rem;
+}
+
+.experience-cover {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.experience-title {
+  margin-bottom: 16px;
+  font-size: 2rem;
+}
+
+.experience-description {
+  margin-bottom: 48px;
+  line-height: 1.8;
+}
+
+.experience-section {
+  margin-bottom: 48px;
+}
+
+.experience-section-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.experience-section-title {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+
+.experience-section-description {
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .experience-template {
+    padding: 24px 16px;
+  }
+
+  .experience-header {
+    margin-bottom: 24px;
+  }
+
+  .experience-category {
+    font-size: 1.75rem;
+  }
+
+  .experience-cover {
+    height: 280px;
+  }
+
+  .experience-title {
+    font-size: 1.75rem;
+  }
+
+  .experience-section-image {
+    height: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .experience-template {
+    padding: 16px 12px;
+  }
+
+  .experience-cover {
+    height: 220px;
+  }
+
+  .experience-section-image {
+    height: 220px;
+  }
+
+  .experience-title {
+    font-size: 1.5rem;
+  }
+
+  .experience-section-title {
+    font-size: 1.25rem;
+  }
+}

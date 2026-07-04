@@ -12,4 +12,6 @@ public interface IContentService
     Task<PagedResponseDto<ContentListResponseDto>>
         GetAllAsync(ContentQueryRequestDto request);
 
+    Task<ContentDetailResponseDto> GetByIdAsync(int id);
+
 }

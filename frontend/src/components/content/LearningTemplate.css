@@ -1,0 +1,146 @@
+.learning-template {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.learning-category {
+  margin-bottom: 24px;
+  font-size: 2rem;
+}
+
+.learning-cover-wrapper {
+  position: relative;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.learning-cover {
+  display: block;
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.learning-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  margin: 0;
+  padding: 16px 48px;
+
+  background: rgba(255, 255, 255, 0.65);
+
+  font-size: 2rem;
+  text-align: center;
+
+  z-index: 1;
+}
+
+.learning-description {
+  margin: 0 0 48px;
+  padding: 32px;
+  line-height: 1.8;
+}
+
+.learning-section {
+  margin-bottom: 48px;
+}
+
+.learning-section-title {
+  margin: 0 0 16px;
+  padding: 24px 32px;
+  font-size: 1.5rem;
+}
+
+.learning-section-image {
+  display: block;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.learning-section-description {
+  margin: 0;
+  padding: 32px;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .learning-template {
+    padding: 24px 16px;
+  }
+
+  .learning-header {
+    margin-bottom: 24px;
+  }
+
+  .learning-category {
+    font-size: 1.75rem;
+  }
+
+  .learning-cover {
+    height: 320px;
+  }
+
+  .learning-title {
+    padding: 12px 36px;
+    font-size: 1.75rem;
+  }
+
+  .learning-description {
+    padding: 24px;
+  }
+
+  .learning-section-title {
+    padding: 20px 24px;
+  }
+
+  .learning-section-image {
+    height: 260px;
+  }
+
+  .learning-section-description {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .learning-template {
+    padding: 16px 12px;
+  }
+
+  .learning-cover {
+    height: 280px;
+  }
+
+  .learning-title {
+    padding: 10px 24px;
+    font-size: 1.5rem;
+  }
+
+  .learning-description {
+    padding: 20px 16px;
+    line-height: 1.6;
+  }
+
+  .learning-section-title {
+    padding: 16px;
+    font-size: 1.25rem;
+  }
+
+  .learning-section-image {
+    height: 220px;
+  }
+
+  .learning-section-description {
+    padding: 20px 16px;
+    line-height: 1.6;
+  }
+}

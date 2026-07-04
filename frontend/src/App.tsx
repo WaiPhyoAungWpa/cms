@@ -9,6 +9,7 @@ import AdminHomePage from "./pages/AdminHomePage";
 import CreateContentPage from "./pages/CreateContentPage";
 import ManageContentPage from "./pages/ManageContentPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ContentDetailPage from "./pages/ContentDetailPage";
 
 export default function App() {
     return (
@@ -40,6 +41,15 @@ export default function App() {
                     element={
                         <ProtectedRoute>
                         <ManageContentPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/content/:id"
+                    element={
+                        <ProtectedRoute>
+                            <ContentDetailPage />
                         </ProtectedRoute>
                     }
                 />

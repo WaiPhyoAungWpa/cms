@@ -12,4 +12,5 @@ public interface IContentRepository
     Task<(List<Content> Items, int TotalCount)> GetAllAsync(
         ContentQueryRequestDto request);
 
+    Task<Content?> GetByIdAsync(int id);
 }

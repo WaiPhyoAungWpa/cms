@@ -21,3 +21,21 @@ export interface ContentListItem {
   status: string;
   visibilityStatus: string;
 }
+
+export interface SectionDetail {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
+export interface ContentDetail {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  status: string;
+  visibilityStatus: string;
+  coverImageUrl: string;
+  sections: SectionDetail[];
+}

@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config/api";
 import { PagedResponse } from "../types/pagination";
-import { CreateContentRequest, ContentListItem  } from "../types/content";
+import { CreateContentRequest, ContentListItem, ContentDetail  } from "../types/content";
 
 export interface GetContentsParams {
   search?: string;
@@ -95,6 +95,23 @@ export async function getContents(
 
   if (!response.ok) {
     throw new Error("Failed to retrieve contents.");
+  }
+
+  return response.json();
+}
+
+export async function getContent(
+  id: number,
+  token: string
+): Promise<ContentDetail> {
+  const response = await fetch(`${API_URL}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to retrieve content.");
   }
 
   return response.json();

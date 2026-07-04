@@ -68,4 +68,15 @@ public class ContentRepository : IContentRepository
         return (items, totalCount);
     }
 
+    public async Task<Content?> GetByIdAsync(int id)
+    {
+        return await _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category)
+            .Include(c => c.CoverImage)
+            .Include(c => c.Sections.OrderBy(s => s.Id))
+                .ThenInclude(s => s.SectionImage)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
 }

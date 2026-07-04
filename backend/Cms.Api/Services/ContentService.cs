@@ -140,4 +140,40 @@ public class ContentService : IContentService
                 result.TotalCount / (double)request.PageSize)
         };
     }
+
+    public async Task<ContentDetailResponseDto> GetByIdAsync(int id)
+    {
+        var content = await _contentRepository.GetByIdAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        return MapToDetailResponse(content);
+    }
+
+    private static ContentDetailResponseDto MapToDetailResponse(Content content)
+    {
+        return new ContentDetailResponseDto
+        {
+            Id = content.Id,
+            Category = content.Category.Name,
+            Title = content.Title,
+            Description = content.Description,
+            Status = content.Status,
+            VisibilityStatus = content.VisibilityStatus,
+            CoverImageUrl = content.CoverImage.FilePath,
+            Sections = content.Sections
+                .Select(section => new SectionDetailResponseDto
+                {
+                    Id = section.Id,
+                    Title = section.Title,
+                    Description = section.Description,
+                    ImageUrl = section.SectionImage.FilePath
+                })
+                .ToList()
+        };
+    }
+
 }

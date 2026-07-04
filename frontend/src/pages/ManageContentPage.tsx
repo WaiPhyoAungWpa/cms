@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getContents } from "../services/contentService";
 import { ContentListItem } from "../types/content";
 
 export default function ManageContentPage() {
+const navigate = useNavigate();
 const [contents, setContents] =
     useState<ContentListItem[]>([]);
 const [page, setPage] = useState(1);
@@ -156,7 +158,9 @@ return (
                       gap: "8px",
                   }}
               >
-                <button>View Detail</button>
+                <button onClick={() => navigate(`/content/${content.id}`)}>
+                    View Detail
+                </button>
 
                 <button>Edit</button>
 
