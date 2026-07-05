@@ -207,3 +207,26 @@ export async function updatePublished(
 
   return response.json();
 }
+
+export async function softDeleteContent(
+  id: number,
+  token: string
+): Promise<ContentListItem> {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Unable to delete content. Please try again later."
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}

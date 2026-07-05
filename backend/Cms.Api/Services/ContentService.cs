@@ -348,4 +348,30 @@ public class ContentService : IContentService
         return MapToResponse(content);
     }
 
+    public async Task<ContentResponseDto> SoftDeleteAsync(int id)
+    {
+        var content = await _contentRepository.GetByIdForDeleteAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        if (content.Status != ContentStatus.Draft &&
+            content.Status != ContentStatus.Published)
+        {
+            throw new InvalidOperationException(
+                "Only draft or published content can be deleted.");
+        }
+
+        content.PreviousStatus = content.Status;
+        content.Status = ContentStatus.SoftDeleted;
+        content.UpdatedAt = DateTime.UtcNow;
+        content.UpdatedByAdminId = 1;
+
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
 }

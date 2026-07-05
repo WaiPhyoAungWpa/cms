@@ -26,4 +26,6 @@ public interface IContentService
         int id,
         UpdateContentRequestDto request);
 
+    Task<ContentResponseDto> SoftDeleteAsync(int id);
+
 }

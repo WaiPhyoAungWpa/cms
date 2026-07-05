@@ -141,4 +141,22 @@ public class ContentController : ControllerBase
         }
     }
 
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<ContentResponseDto>> SoftDelete(int id)
+    {
+        try
+        {
+            var result = await _contentService.SoftDeleteAsync(id);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
 }
