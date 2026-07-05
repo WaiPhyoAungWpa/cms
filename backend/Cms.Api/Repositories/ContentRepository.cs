@@ -79,4 +79,11 @@ public class ContentRepository : IContentRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Content?> GetByIdForUpdateAsync(int id)
+    {
+        return await _context.Contents
+            .Include(c => c.Sections)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
 }

@@ -14,4 +14,16 @@ public interface IContentService
 
     Task<ContentDetailResponseDto> GetByIdAsync(int id);
 
+    Task<ContentResponseDto> UpdateDraftAsync(
+        int id,
+        UpdateContentRequestDto request);
+
+    Task<ContentResponseDto> PublishDraftAsync(
+        int id,
+        UpdateContentRequestDto request);
+
+    Task<ContentResponseDto> UpdatePublishedAsync(
+        int id,
+        UpdateContentRequestDto request);
+
 }

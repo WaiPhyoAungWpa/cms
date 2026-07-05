@@ -10,6 +10,7 @@ import CreateContentPage from "./pages/CreateContentPage";
 import ManageContentPage from "./pages/ManageContentPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ContentDetailPage from "./pages/ContentDetailPage";
+import EditContentPage from "./pages/EditContentPage";
 
 export default function App() {
     return (
@@ -50,6 +51,15 @@ export default function App() {
                     element={
                         <ProtectedRoute>
                             <ContentDetailPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/content/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <EditContentPage />
                         </ProtectedRoute>
                     }
                 />

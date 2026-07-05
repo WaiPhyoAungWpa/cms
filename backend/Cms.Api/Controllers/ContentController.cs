@@ -60,4 +60,85 @@ public class ContentController : ControllerBase
         }
     }
 
+    [HttpPut("{id:int}/draft")]
+    public async Task<ActionResult<ContentResponseDto>> UpdateDraft(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        try
+        {
+            var result = await _contentService.UpdateDraftAsync(id, request);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPut("{id:int}/publish")]
+    public async Task<ActionResult<ContentResponseDto>> PublishDraft(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        try
+        {
+            var result = await _contentService.PublishDraftAsync(id, request);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ContentResponseDto>> UpdatePublished(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        try
+        {
+            var result = await _contentService.UpdatePublishedAsync(id, request);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
 }

@@ -1,6 +1,19 @@
 import { API_BASE_URL } from "../config/api";
 import { PagedResponse } from "../types/pagination";
-import { CreateContentRequest, ContentListItem, ContentDetail  } from "../types/content";
+import { CreateContentRequest, ContentListItem, ContentDetail, UpdateContentRequest } from "../types/content";
+
+async function getErrorMessage(
+  response: Response,
+  fallbackMessage: string
+): Promise<string> {
+  try {
+    const data = await response.json();
+
+    return data.message || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+}
 
 export interface GetContentsParams {
   search?: string;
@@ -112,6 +125,84 @@ export async function getContent(
 
   if (!response.ok) {
     throw new Error("Failed to retrieve content.");
+  }
+
+  return response.json();
+}
+
+export async function updateDraft(
+  id: number,
+  request: UpdateContentRequest,
+  token: string
+): Promise<ContentListItem> {
+  const response = await fetch(`${API_URL}/${id}/draft`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Failed to update draft."
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export async function publishDraft(
+  id: number,
+  request: UpdateContentRequest,
+  token: string
+): Promise<ContentListItem> {
+  const response = await fetch(`${API_URL}/${id}/publish`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Failed to publish content."
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export async function updatePublished(
+  id: number,
+  request: UpdateContentRequest,
+  token: string
+): Promise<ContentListItem> {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Failed to update published content."
+    );
+
+    throw new Error(message);
   }
 
   return response.json();

@@ -13,4 +13,6 @@ public interface IContentRepository
         ContentQueryRequestDto request);
 
     Task<Content?> GetByIdAsync(int id);
+
+    Task<Content?> GetByIdForUpdateAsync(int id);
 }

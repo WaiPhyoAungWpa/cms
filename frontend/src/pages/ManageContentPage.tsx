@@ -162,7 +162,9 @@ return (
                     View Detail
                 </button>
 
-                <button>Edit</button>
+                <button onClick={() => navigate(`/content/${content.id}/edit`)}>
+                  Edit
+                </button>
 
                 {(content.status === "Published" ||
                     content.status === "Draft") && (

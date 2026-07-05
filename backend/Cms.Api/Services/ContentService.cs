@@ -158,11 +158,13 @@ public class ContentService : IContentService
         return new ContentDetailResponseDto
         {
             Id = content.Id,
+            CategoryId = content.CategoryId,
             Category = content.Category.Name,
             Title = content.Title,
             Description = content.Description,
             Status = content.Status,
             VisibilityStatus = content.VisibilityStatus,
+            CoverImageId = content.CoverImageId,
             CoverImageUrl = content.CoverImage.FilePath,
             Sections = content.Sections
                 .Select(section => new SectionDetailResponseDto
@@ -170,10 +172,180 @@ public class ContentService : IContentService
                     Id = section.Id,
                     Title = section.Title,
                     Description = section.Description,
+                    SectionImageId = section.SectionImageId,
                     ImageUrl = section.SectionImage.FilePath
                 })
                 .ToList()
         };
+    }
+
+    private static void ValidateRequest(UpdateContentRequestDto request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (request.CategoryId <= 0)
+            throw new ArgumentException("Category is required.");
+
+        if (string.IsNullOrWhiteSpace(request.Title))
+            throw new ArgumentException("Title is required.");
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+            throw new ArgumentException("Description is required.");
+
+        if (request.CoverImageId <= 0)
+            throw new ArgumentException("Cover image is required.");
+
+        foreach (var section in request.Sections)
+        {
+            if (string.IsNullOrWhiteSpace(section.Title))
+                throw new ArgumentException("Section title is required.");
+
+            if (string.IsNullOrWhiteSpace(section.Description))
+                throw new ArgumentException("Section description is required.");
+
+            if (section.SectionImageId <= 0)
+                throw new ArgumentException("Section image is required.");
+        }
+    }
+
+    private static void ApplyUpdates(
+        Content content,
+        UpdateContentRequestDto request)
+    {
+        content.CategoryId = request.CategoryId;
+        content.VisibilityStatus = request.VisibilityStatus;
+        content.Title = request.Title;
+        content.Description = request.Description;
+        content.CoverImageId = request.CoverImageId;
+        content.UpdatedAt = DateTime.UtcNow;
+        content.UpdatedByAdminId = 1;
+
+        var requestedExistingSectionIds = request.Sections
+            .Where(section => section.Id.HasValue)
+            .Select(section => section.Id!.Value)
+            .ToHashSet();
+
+        var sectionsToRemove = content.Sections
+            .Where(section => !requestedExistingSectionIds.Contains(section.Id))
+            .ToList();
+
+        foreach (var section in sectionsToRemove)
+        {
+            content.Sections.Remove(section);
+        }
+
+        foreach (var sectionRequest in request.Sections)
+        {
+            if (sectionRequest.Id.HasValue)
+            {
+                var existingSection = content.Sections
+                    .FirstOrDefault(section =>
+                        section.Id == sectionRequest.Id.Value);
+
+                if (existingSection is null)
+                {
+                    throw new ArgumentException(
+                        $"Section {sectionRequest.Id.Value} does not belong to this content.");
+                }
+
+                existingSection.Title = sectionRequest.Title;
+                existingSection.Description = sectionRequest.Description;
+                existingSection.SectionImageId = sectionRequest.SectionImageId;
+            }
+            else
+            {
+                content.Sections.Add(new Section
+                {
+                    Title = sectionRequest.Title,
+                    Description = sectionRequest.Description,
+                    SectionImageId = sectionRequest.SectionImageId
+                });
+            }
+        }
+    }
+
+    public async Task<ContentResponseDto> UpdateDraftAsync(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        ValidateRequest(request);
+
+        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        if (content.Status != ContentStatus.Draft)
+        {
+            throw new InvalidOperationException(
+                "Only draft content can be saved as draft.");
+        }
+
+        ApplyUpdates(content, request);
+
+        content.Status = ContentStatus.Draft;
+
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
+    public async Task<ContentResponseDto> PublishDraftAsync(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        ValidateRequest(request);
+
+        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        if (content.Status != ContentStatus.Draft)
+        {
+            throw new InvalidOperationException(
+                "Only draft content can be published.");
+        }
+
+        ApplyUpdates(content, request);
+
+        content.Status = ContentStatus.Published;
+
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
+    public async Task<ContentResponseDto> UpdatePublishedAsync(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        ValidateRequest(request);
+
+        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        if (content.Status != ContentStatus.Published)
+        {
+            throw new InvalidOperationException(
+                "Only published content can be updated.");
+        }
+
+        ApplyUpdates(content, request);
+
+        content.Status = ContentStatus.Published;
+
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
     }
 
 }

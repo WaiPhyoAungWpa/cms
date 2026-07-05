@@ -3,6 +3,7 @@ import { saveDraft, publishContent } from "../services/contentService";
 import { CreateSectionRequest } from "../types/content";
 import { getDefaultImages, uploadImage } from "../services/imageService";
 import { DefaultImage } from "../types/image";
+import { getImageUrl } from "../utils/image";
 
 export default function CreateContentPage() {
   const [categoryId, setCategoryId] = useState(1);
@@ -344,7 +345,7 @@ export default function CreateContentPage() {
                 }}
               >
                 <img
-                  src={`http://localhost:5160${image.filePath}`}
+                  src={getImageUrl(image.filePath)}
                   alt="Default"
                   width={120}
                   height={120}
@@ -360,7 +361,7 @@ export default function CreateContentPage() {
 
           {selectedCoverImage && (
             <img
-              src={`http://localhost:5160${selectedCoverImage.filePath}`}
+              src={getImageUrl(selectedCoverImage.filePath)}
               width={250}
               alt="Selected Cover"
             />
@@ -380,7 +381,7 @@ export default function CreateContentPage() {
 
               {customCoverImageUrl && (
                 <img
-                  src={customCoverImageUrl}
+                  src={getImageUrl(customCoverImageUrl)}
                   width={250}
                   alt="Custom Cover"
                 />
@@ -493,7 +494,7 @@ export default function CreateContentPage() {
                     }}
                   >
                     <img
-                      src={`http://localhost:5160${image.filePath}`}
+                      src={getImageUrl(image.filePath)}
                       width={100}
                       height={100}
                       style={{ objectFit: "cover" }}
@@ -506,7 +507,7 @@ export default function CreateContentPage() {
 
                 {selectedSectionImage && (
                     <img
-                      src={`http://localhost:5160${selectedSectionImage.filePath}`}
+                      src={getImageUrl(selectedSectionImage.filePath)}
                       width={200}
                       alt="Selected Section"
                     />
@@ -527,7 +528,7 @@ export default function CreateContentPage() {
 
                   {section.customImageUrl && (
                     <img
-                      src={section.customImageUrl}
+                      src={getImageUrl(section.customImageUrl)}
                       width={200}
                       alt="Custom Section"
                     />
