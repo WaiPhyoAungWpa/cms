@@ -92,4 +92,10 @@ public class ContentRepository : IContentRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Content?> GetByIdForRestoreAsync(int id)
+    {
+        return await _context.Contents
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
 }

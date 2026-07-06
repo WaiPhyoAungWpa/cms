@@ -127,7 +127,8 @@ public class ContentService : IContentService
             Title = content.Title,
             Category = content.Category.Name,
             Status = content.Status,
-            VisibilityStatus = content.VisibilityStatus
+            VisibilityStatus = content.VisibilityStatus,
+            PreviousStatus = content.PreviousStatus
         }).ToList();
 
         return new PagedResponseDto<ContentListResponseDto>
@@ -366,6 +367,40 @@ public class ContentService : IContentService
 
         content.PreviousStatus = content.Status;
         content.Status = ContentStatus.SoftDeleted;
+        content.UpdatedAt = DateTime.UtcNow;
+        content.UpdatedByAdminId = 1;
+
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
+    public async Task<ContentResponseDto> RestoreAsync(
+        int id,
+        RestoreContentRequestDto request)
+    {
+        var content = await _contentRepository.GetByIdForRestoreAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        if (content.Status != ContentStatus.SoftDeleted)
+        {
+            throw new InvalidOperationException(
+                "Only soft-deleted content can be restored.");
+        }
+
+        if (content.PreviousStatus is null)
+        {
+            throw new InvalidOperationException(
+                "Previous content status is missing.");
+        }
+
+        content.Status = content.PreviousStatus.Value;
+        content.VisibilityStatus = request.VisibilityStatus;
+        content.PreviousStatus = null;
         content.UpdatedAt = DateTime.UtcNow;
         content.UpdatedByAdminId = 1;
 

@@ -28,4 +28,8 @@ public interface IContentService
 
     Task<ContentResponseDto> SoftDeleteAsync(int id);
 
+    Task<ContentResponseDto> RestoreAsync(
+    int id,
+    RestoreContentRequestDto request);
+
 }

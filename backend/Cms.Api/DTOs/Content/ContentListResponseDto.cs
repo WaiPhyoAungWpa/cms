@@ -13,4 +13,6 @@ public class ContentListResponseDto
     public ContentStatus Status { get; set; }
 
     public VisibilityStatus VisibilityStatus { get; set; }
+
+    public ContentStatus? PreviousStatus { get; set; }
 }

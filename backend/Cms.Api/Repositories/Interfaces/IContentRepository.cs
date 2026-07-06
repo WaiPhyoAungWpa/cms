@@ -17,4 +17,6 @@ public interface IContentRepository
     Task<Content?> GetByIdForUpdateAsync(int id);
 
     Task<Content?> GetByIdForDeleteAsync(int id);
+
+    Task<Content?> GetByIdForRestoreAsync(int id);
 }

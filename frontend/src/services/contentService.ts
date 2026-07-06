@@ -230,3 +230,31 @@ export async function softDeleteContent(
 
   return response.json();
 }
+
+export async function restoreContent(
+  id: number,
+  visibilityStatus: string,
+  token: string
+): Promise<ContentListItem> {
+  const response = await fetch(`${API_URL}/${id}/restore`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      visibilityStatus,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await getErrorMessage(
+      response,
+      "Unable to restore content. Please try again later."
+    );
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}

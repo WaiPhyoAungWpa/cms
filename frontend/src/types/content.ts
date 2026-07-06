@@ -19,6 +19,7 @@ export interface ContentListItem {
   title: string;
   category: string;
   status: string;
+  previousStatus: string | null;
   visibilityStatus: string;
 }
 

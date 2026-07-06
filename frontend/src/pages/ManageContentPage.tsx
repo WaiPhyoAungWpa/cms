@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getContents, softDeleteContent } from "../services/contentService";
+import { getContents, softDeleteContent, restoreContent } from "../services/contentService";
 import { ContentListItem } from "../types/content";
+
+import "./ManageContentPage.css";
 
 export default function ManageContentPage() {
   const navigate = useNavigate();
@@ -19,6 +21,12 @@ export default function ManageContentPage() {
   const [status, setStatus] = useState("");
   const [visibilityStatus, setVisibilityStatus] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [restoringContent, setRestoringContent] = useState<ContentListItem | null>(null);
+
+  const [restoreVisibilityStatus, setRestoreVisibilityStatus] =
+    useState("Private");
+
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const fetchContents = async () => {
       try {
@@ -84,6 +92,47 @@ export default function ManageContentPage() {
         }
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleOpenRestore = (content: ContentListItem) => {
+    setRestoringContent(content);
+    setRestoreVisibilityStatus(content.visibilityStatus);
+  };
+
+  const handleRestore = async () => {
+    if (!restoringContent) {
+      return;
+    }
+
+    try {
+      setIsRestoring(true);
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Not authenticated.");
+      }
+
+      await restoreContent(
+        restoringContent.id,
+        restoreVisibilityStatus,
+        token
+      );
+
+      alert("Content restored successfully.");
+
+      setRestoringContent(null);
+
+      await fetchContents();
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message);
+      } else {
+        alert("Unable to restore content. Please try again later.");
+      }
+    } finally {
+      setIsRestoring(false);
     }
   };
 
@@ -212,7 +261,9 @@ export default function ManageContentPage() {
                   )}
 
                   {content.status === "SoftDeleted" && (
-                      <button>Restore</button>
+                    <button onClick={() => handleOpenRestore(content)}>
+                      Restore
+                    </button>
                   )}
                 </div>
               </td>
@@ -220,6 +271,54 @@ export default function ManageContentPage() {
           ))}
         </tbody>
       </table>
+
+      {restoringContent && (
+        <div className="restore-modal-overlay">
+          <div className="restore-modal">
+            <h2>Restore Content</h2>
+
+            <div className="restore-modal-field">
+              <label>Original Content Status</label>
+              <input
+                type="text"
+                value={restoringContent.previousStatus ?? ""}
+                readOnly
+              />
+            </div>
+
+            <div className="restore-modal-field">
+              <label>Visibility Status</label>
+              <select
+                value={restoreVisibilityStatus}
+                onChange={(event) =>
+                  setRestoreVisibilityStatus(event.target.value)
+                }
+                disabled={isRestoring}
+              >
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+            </div>
+
+            <div className="restore-modal-actions">
+              <button
+                onClick={() => setRestoringContent(null)}
+                disabled={isRestoring}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleRestore}
+                disabled={isRestoring}
+              >
+                {isRestoring ? "Restoring..." : "Restore"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p>
           Showing page {page} of {totalPages}
       </p>

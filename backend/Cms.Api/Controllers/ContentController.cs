@@ -159,4 +159,24 @@ public class ContentController : ControllerBase
         }
     }
 
+    [HttpPut("{id:int}/restore")]
+    public async Task<ActionResult<ContentResponseDto>> Restore(
+        int id,
+        RestoreContentRequestDto request)
+    {
+        try
+        {
+            var result = await _contentService.RestoreAsync(id, request);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
 }
