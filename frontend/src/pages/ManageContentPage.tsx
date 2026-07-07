@@ -213,6 +213,10 @@ export default function ManageContentPage() {
             <option value="Public">Public</option>
             <option value="Private">Private</option>
         </select>
+
+        <button onClick={() => navigate(`/content/create`)}>
+            Create Content
+        </button>        
     </div>
 
       <table border={1} cellPadding={10}>

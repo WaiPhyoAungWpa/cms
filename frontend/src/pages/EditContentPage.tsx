@@ -4,10 +4,10 @@ import { getContent, publishDraft, updateDraft, updatePublished, } from "../serv
 import { getDefaultImages } from "../services/imageService";
 import { ContentDetail, UpdateContentRequest } from "../types/content";
 import { DefaultImage } from "../types/image";
-import EditContentSection from "../components/content/forms/EditContentSection";
-import EditCoverImageField from "../components/content/forms/EditCoverImageField";
-import EditContentBasicFields from "../components/content/forms/EditContentBasicFields";
-import EditContentActions from "../components/content/forms/EditContentActions";
+import EditContentSection from "../components/content/edit-content/EditContentSection";
+import EditCoverImageField from "../components/content/edit-content/EditCoverImageField";
+import EditContentBasicFields from "../components/content/edit-content/EditContentBasicFields";
+import EditContentActions from "../components/content/edit-content/EditContentActions";
 import { validateContentForm } from "../utils/contentValidation";
 import { useEditContentSections } from "../hooks/content/useEditContentSections";
 import { useEditCoverImage } from "../hooks/content/useEditCoverImage";

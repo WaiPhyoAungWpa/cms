@@ -1,11 +1,15 @@
-import { UpdateSectionRequest } from "../types/content";
+interface ContentValidationSection {
+  title: string;
+  description: string;
+  sectionImageId: number;
+}
 
 interface ContentValidationData {
   categoryId: number;
   title: string;
   description: string;
   coverImageId: number;
-  sections: UpdateSectionRequest[];
+  sections: ContentValidationSection[];
 }
 
 export function validateContentForm({
