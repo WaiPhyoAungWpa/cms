@@ -13,5 +13,7 @@ export function mapToEditSections(
     customImageUrl: section.imageUrl,
     originalImageId: section.sectionImageId,
     originalImageUrl: section.imageUrl,
+    isUploading: false,
+    uploadProgress: 0,
   }));
 }

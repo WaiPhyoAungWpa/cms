@@ -2,6 +2,8 @@ import { ChangeEvent } from "react";
 import { DefaultImage } from "../../../types/image";
 import { getImageUrl } from "../../../utils/image";
 
+import "../../../styles/components/content/edit-content/EditCoverImageField.css";
+
 interface EditCoverImageFieldProps {
   images: DefaultImage[];
   coverImageId: number;
@@ -9,6 +11,8 @@ interface EditCoverImageFieldProps {
   originalCoverImageUrl: string;
   customCoverImageUrl: string;
   hasCoverImageChanged: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
 
   onImageSelect: (imageId: number) => void;
   onModeChange: (mode: "default" | "custom") => void;
@@ -23,6 +27,8 @@ export default function EditCoverImageField({
   originalCoverImageUrl,
   customCoverImageUrl,
   hasCoverImageChanged,
+  isUploading,
+  uploadProgress,
   onImageSelect,
   onModeChange,
   onUpload,
@@ -33,22 +39,31 @@ export default function EditCoverImageField({
   );
 
   return (
-    <div>
-      <label>Cover Photo</label>
+    <section className="edit-cover-field">
+      <div className="edit-cover-header">
+        <h2>Cover Image</h2>
+        <p>Select a default image or upload a custom image.</p>
+      </div>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <label>
+      <div className="edit-cover-mode-tabs">
+        <label
+          className={`edit-cover-mode-tab ${
+            coverImageMode === "default" ? "active" : ""
+          }`}
+        >
           <input
             type="radio"
             checked={coverImageMode === "default"}
             onChange={() => onModeChange("default")}
           />
-          Default Image
+          Default Images
         </label>
 
-        <br />
-
-        <label>
+        <label
+          className={`edit-cover-mode-tab ${
+            coverImageMode === "custom" ? "active" : ""
+          }`}
+        >
           <input
             type="radio"
             checked={coverImageMode === "custom"}
@@ -59,100 +74,146 @@ export default function EditCoverImageField({
       </div>
 
       {coverImageMode === "default" && (
-        <div
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-            marginTop: "10px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
-            {images.map((image) => (
-              <div
-                key={image.id}
-                onClick={() => onImageSelect(image.id)}
-                style={{
-                  border:
-                    coverImageId === image.id
-                      ? "3px solid green"
-                      : "1px solid #aaa",
-                  padding: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  src={getImageUrl(image.filePath)}
-                  alt="Default"
-                  width={120}
-                  height={120}
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="edit-cover-default-images">
+          {images.map((image) => (
+            <button
+              key={image.id}
+              type="button"
+              className={`edit-cover-image-option ${
+                coverImageId === image.id ? "selected" : ""
+              }`}
+              onClick={() => onImageSelect(image.id)}
+            >
+              <img
+                src={getImageUrl(image.filePath)}
+                alt="Default cover option"
+              />
+
+              {coverImageId === image.id && (
+                <span className="edit-cover-selected-label">
+                  Selected
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       )}
 
       {coverImageMode === "custom" && (
-        <>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={onUpload}
-          />
+        <div className="edit-cover-image-panel">
+          <label
+            className={`edit-cover-upload ${
+              isUploading ? "edit-cover-upload-loading" : ""
+            }`}
+          >
+            {isUploading ? (
+              <div className="edit-cover-upload-progress">
+                <strong>
+                  {uploadProgress < 100
+                    ? "Uploading image..."
+                    : "Processing image..."}
+                </strong>
 
-          <br />
-          <br />
-        </>
+                <span className="edit-cover-upload-percentage">
+                  {uploadProgress}%
+                </span>
+
+                <div className="edit-cover-progress-track">
+                  <div
+                    className={`edit-cover-progress-bar ${
+                      uploadProgress === 100
+                        ? "edit-cover-progress-bar-processing"
+                        : ""
+                    }`}
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+
+                <small>
+                  {uploadProgress < 100
+                    ? "Please wait while the image is being uploaded."
+                    : "Upload complete. Processing the image..."}
+                </small>
+              </div>
+            ) : (
+              <>
+                <span className="edit-cover-upload-icon">↑</span>
+
+                <strong>Upload a cover image</strong>
+
+                <small>Choose an image from your device.</small>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onUpload}
+                />
+              </>
+            )}
+          </label>
+        </div>
       )}
 
-      <hr />
+      <div className="edit-cover-preview-section">
+        <div className="edit-cover-preview-header">
+          <div>
+            <h3>Current Image</h3>
+            <p>
+              Click the current image to restore the original selection.
+            </p>
+          </div>
 
-      <p>Current Image</p>
+          {!hasCoverImageChanged && (
+            <span className="edit-cover-current-label">
+              Current
+            </span>
+          )}
+        </div>
 
-      <div
-        onClick={onRestoreOriginal}
-        style={{
-          display: "inline-block",
-          border: !hasCoverImageChanged
-            ? "3px solid green"
-            : "1px solid #aaa",
-          padding: "4px",
-          cursor: "pointer",
-        }}
-      >
-        <img
-          src={getImageUrl(originalCoverImageUrl)}
-          width={250}
-          alt="Current Cover"
-        />
+        <button
+          type="button"
+          className={`edit-cover-preview ${
+            !hasCoverImageChanged ? "selected" : ""
+          }`}
+          onClick={onRestoreOriginal}
+        >
+          <img
+            src={getImageUrl(originalCoverImageUrl)}
+            alt="Current cover"
+          />
+        </button>
       </div>
 
       {hasCoverImageChanged && (
-        <>
-          <p>New Selected Image</p>
+        <div className="edit-cover-preview-section">
+          <div className="edit-cover-preview-header">
+            <div>
+              <h3>New Selected Image</h3>
+              <p>This image will replace the current cover after saving.</p>
+            </div>
+
+            <span className="edit-cover-new-label">
+              New
+            </span>
+          </div>
 
           {selectedCoverImage ? (
-            <img
-              src={getImageUrl(selectedCoverImage.filePath)}
-              width={250}
-              alt="New Selected Cover"
-            />
+            <div className="edit-cover-preview">
+              <img
+                src={getImageUrl(selectedCoverImage.filePath)}
+                alt="New selected cover"
+              />
+            </div>
           ) : customCoverImageUrl ? (
-            <img
-              src={getImageUrl(customCoverImageUrl)}
-              width={250}
-              alt="New Selected Cover"
-            />
+            <div className="edit-cover-preview">
+              <img
+                src={getImageUrl(customCoverImageUrl)}
+                alt="New selected cover"
+              />
+            </div>
           ) : null}
-        </>
+        </div>
       )}
-    </div>
+    </section>
   );
 }

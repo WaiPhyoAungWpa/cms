@@ -12,6 +12,7 @@ import { validateContentForm } from "../utils/contentValidation";
 import { useEditContentSections } from "../hooks/content/useEditContentSections";
 import { useEditCoverImage } from "../hooks/content/useEditCoverImage";
 import { useEditContentForm } from "../hooks/content/useEditContentForm";
+import "../styles/pages/EditContentPage.css";
 
 type UpdateOperation = (
   id: number,
@@ -63,6 +64,8 @@ export default function EditContentPage() {
         customCoverImageUrl,
         originalCoverImageUrl,
         hasCoverImageChanged,
+        isCoverUploading,
+        coverUploadProgress,    
         handleCoverUpload,
         restoreOriginalCoverImage,
         resetCoverImage,
@@ -256,80 +259,150 @@ export default function EditContentPage() {
     };
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <main className="edit-content-page">
+                <div className="edit-content-state">
+                    <h2>Loading content</h2>
+                    <p>Please wait while the content is being retrieved.</p>
+                </div>
+            </main>
+        );
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return (
+            <main className="edit-content-page">
+                <div className="edit-content-state edit-content-state-error">
+                    <h2>Unable to load content</h2>
+                    <p>{error}</p>
+
+                    <button
+                        type="button"
+                        onClick={() => navigate("/content")}
+                    >
+                        Back to Manage Content
+                    </button>
+                </div>
+            </main>
+        );
     }
 
     if (!content) {
-        return <p>Content not found.</p>;
+        return (
+            <main className="edit-content-page">
+                <div className="edit-content-state">
+                    <h2>Content not found</h2>
+                    <p>The requested content record could not be found.</p>
+
+                    <button
+                        type="button"
+                        onClick={() => navigate("/content")}
+                    >
+                        Back to Manage Content
+                    </button>
+                </div>
+            </main>
+        );
     }
 
     return (
-        <div>
-            <h1>Edit Content</h1>
+        <main className="edit-content-page">
+            <div className="edit-content-container">
+                <header className="edit-content-header">
+                    <div>
+                        <p className="edit-content-eyebrow">
+                            Content Management
+                        </p>
 
-            <p>Status: {content.status}</p>
+                        <h1>Edit Content</h1>
 
-            <EditContentBasicFields
-                categoryId={categoryId}
-                visibilityStatus={visibilityStatus}
-                title={title}
-                description={description}
-                onCategoryChange={handleCategoryChange}
-                onVisibilityStatusChange={setVisibilityStatus}
-                onTitleChange={setTitle}
-                onDescriptionChange={setDescription}
-            />
+                        <p className="edit-content-subtitle">
+                            Update the content details, images, and sections.
+                        </p>
+                    </div>
 
-            <EditCoverImageField
-                images={images}
-                coverImageId={coverImageId}
-                coverImageMode={coverImageMode}
-                originalCoverImageUrl={originalCoverImageUrl}
-                customCoverImageUrl={customCoverImageUrl}
-                hasCoverImageChanged={hasCoverImageChanged}
-                onImageSelect={setCoverImageId}
-                onModeChange={setCoverImageMode}
-                onUpload={handleCoverUpload}
-                onRestoreOriginal={restoreOriginalCoverImage}
-            />
+                    <div className="edit-content-status">
+                        <span>Current Status</span>
+                        <strong>{content.status}</strong>
+                    </div>
+                </header>
 
-            <hr/>
-            <br/>
+                <div className="edit-content-form">
+                    <EditContentBasicFields
+                        categoryId={categoryId}
+                        visibilityStatus={visibilityStatus}
+                        title={title}
+                        description={description}
+                        onCategoryChange={handleCategoryChange}
+                        onVisibilityStatusChange={setVisibilityStatus}
+                        onTitleChange={setTitle}
+                        onDescriptionChange={setDescription}
+                    />
 
-            <button type="button" onClick={addSection}>
-                Add Section
-            </button>
+                    <EditCoverImageField
+                        images={images}
+                        coverImageId={coverImageId}
+                        coverImageMode={coverImageMode}
+                        originalCoverImageUrl={originalCoverImageUrl}
+                        customCoverImageUrl={customCoverImageUrl}
+                        hasCoverImageChanged={hasCoverImageChanged}
+                        isUploading={isCoverUploading}
+                        uploadProgress={coverUploadProgress}
+                        onImageSelect={setCoverImageId}
+                        onModeChange={setCoverImageMode}
+                        onUpload={handleCoverUpload}
+                        onRestoreOriginal={restoreOriginalCoverImage}
+                    />
 
-            <h2>Sections</h2>
+                    <section className="edit-content-sections">
+                        <div className="edit-content-sections-header">
+                            <div>
+                                <h2>Content Sections</h2>
+                                <p>
+                                    Add, edit, or remove sections from this content.
+                                </p>
+                            </div>
 
-            {sections.map((section, index) => (
-                <EditContentSection
-                    key={section.id ?? index}
-                    section={section}
-                    index={index}
-                    images={images}
-                    onTitleChange={updateSectionTitle}
-                    onDescriptionChange={updateSectionDescription}
-                    onImageChange={updateSectionImage}
-                    onImageModeChange={setSectionImageMode}
-                    onImageUpload={handleSectionUpload}
-                    onRestoreOriginalImage={restoreOriginalSectionImage}
-                    onRemove={removeSection}
-                />
-            ))}
+                            <button
+                                type="button"
+                                className="edit-content-add-section"
+                                onClick={addSection}
+                            >
+                                + Add Section
+                            </button>
+                        </div>
 
-            <EditContentActions
-                status={content.status}
-                isSubmitting={isSubmitting}
-                onCancel={handleCancel}
-                onSaveDraft={handleSaveDraft}
-                onPublish={handlePublish}
-                onSaveChanges={handleSaveChanges}
-            />
-        </div>
+                        <div className="edit-content-sections-list">
+                            {sections.map((section, index) => (
+                                <EditContentSection
+                                    key={section.id ?? index}
+                                    section={section}
+                                    index={index}
+                                    images={images}
+                                    onTitleChange={updateSectionTitle}
+                                    onDescriptionChange={updateSectionDescription}
+                                    onImageChange={updateSectionImage}
+                                    onImageModeChange={setSectionImageMode}
+                                    onImageUpload={handleSectionUpload}
+                                    onRestoreOriginalImage={
+                                        restoreOriginalSectionImage
+                                    }
+                                    onRemove={removeSection}
+                                />
+                            ))}
+                        </div>
+                    </section>
+
+                    <EditContentActions
+                        status={content.status}
+                        isSubmitting={isSubmitting}
+                        onCancel={handleCancel}
+                        onSaveDraft={handleSaveDraft}
+                        onPublish={handlePublish}
+                        onSaveChanges={handleSaveChanges}
+                    />
+                </div>
+            </div>
+        </main>
     );
 }

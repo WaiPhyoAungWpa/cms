@@ -5,4 +5,6 @@ export interface EditSection extends UpdateSectionRequest {
   customImageUrl: string;
   originalImageId: number;
   originalImageUrl: string;
+  isUploading: boolean;
+  uploadProgress: number;
 }

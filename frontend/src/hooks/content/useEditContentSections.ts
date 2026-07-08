@@ -83,11 +83,35 @@ export function useEditContentSections(categoryId: number) {
             return;
         }
 
+        setSections((previousSections) =>
+            previousSections.map((section, sectionIndex) =>
+                sectionIndex === index
+                    ? {
+                        ...section,
+                        isUploading: true,
+                        uploadProgress: 0,
+                    }
+                    : section
+            )
+        );
+
         try {
             const result = await uploadImage(
                 file,
                 categoryId,
-                token
+                token,
+                (progress) => {
+                    setSections((previousSections) =>
+                        previousSections.map((section, sectionIndex) =>
+                            sectionIndex === index
+                                ? {
+                                    ...section,
+                                    uploadProgress: progress,
+                                }
+                                : section
+                        )
+                    );
+                }
             );
 
             setSections((previousSections) =>
@@ -102,8 +126,23 @@ export function useEditContentSections(categoryId: number) {
                     : section
                 )
             );
-        } catch {
-            alert("Failed to upload image");
+        } catch (error) {
+            if (error instanceof Error) {
+                alert(error.message);
+            } else {
+                alert("Unable to upload image. Please try again.");
+            }
+        } finally {
+            setSections((previousSections) =>
+                previousSections.map((section, sectionIndex) =>
+                    sectionIndex === index
+                        ? {
+                            ...section,
+                            isUploading: false,
+                        }
+                        : section
+                )
+            );
         }
     };
 
@@ -132,6 +171,8 @@ export function useEditContentSections(categoryId: number) {
                 customImageUrl: "",
                 originalImageId: 0,
                 originalImageUrl: "",
+                isUploading: false,
+                uploadProgress: 0,
             },
         ]);
     };
@@ -179,6 +220,8 @@ export function useEditContentSections(categoryId: number) {
                 sectionImageId: 0,
                 customImageUrl: "",
                 imageMode: "default",
+                isUploading: false,
+                uploadProgress: 0,
                 }))
         );
     };

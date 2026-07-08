@@ -3,6 +3,8 @@ import { EditSection } from "../../../types/editContent";
 import { DefaultImage } from "../../../types/image";
 import { getImageUrl } from "../../../utils/image";
 
+import "../../../styles/components/content/edit-content/EditContentSection.css";
+
 interface EditContentSectionProps {
   section: EditSection;
   index: number;
@@ -45,68 +47,73 @@ export default function EditContentSection({
     section.sectionImageId !== section.originalImageId;
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        padding: "1rem",
-        marginBottom: "1rem",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h3>Section {index + 1}</h3>
+    <article className="edit-section-card">
+      <div className="edit-section-header">
+        <div>
+          <span className="edit-section-number">
+            Section {index + 1}
+          </span>
+
+          <h3>
+            {section.title.trim() || "Untitled Section"}
+          </h3>
+        </div>
 
         <button
           type="button"
+          className="edit-section-remove"
           onClick={() => onRemove(index)}
         >
-          Remove Section
+          Remove
         </button>
       </div>
 
-      <div>
-        <label>Section Title</label>
+      <div className="edit-section-fields">
+        <div className="edit-section-field">
+          <label htmlFor={`section-title-${index}`}>
+            Section Title
+          </label>
 
-        <br />
+          <input
+            id={`section-title-${index}`}
+            type="text"
+            value={section.title}
+            onChange={(event) =>
+              onTitleChange(index, event.target.value)
+            }
+            placeholder="Enter section title"
+          />
+        </div>
 
-        <input
-          type="text"
-          value={section.title}
-          onChange={(event) =>
-            onTitleChange(index, event.target.value)
-          }
-        />
+        <div className="edit-section-field">
+          <label htmlFor={`section-description-${index}`}>
+            Section Description
+          </label>
+
+          <textarea
+            id={`section-description-${index}`}
+            rows={5}
+            value={section.description}
+            onChange={(event) =>
+              onDescriptionChange(index, event.target.value)
+            }
+            placeholder="Enter section description"
+          />
+        </div>
       </div>
 
-      <br />
+      <div className="edit-section-image-area">
+        <div className="edit-section-image-header">
+          <h4>Section Image</h4>
+          <p>Select a default image or upload a custom image.</p>
+        </div>
 
-      <div>
-        <label>Section Description</label>
-
-        <br />
-
-        <textarea
-          rows={4}
-          cols={40}
-          value={section.description}
-          onChange={(event) =>
-            onDescriptionChange(index, event.target.value)
-          }
-        />
-      </div>
-
-      <br />
-
-      <div>
-        <label>Section Image</label>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label>
+        <div className="edit-section-mode-tabs">
+          <label
+            className={`edit-section-mode-tab ${
+              section.imageMode === "default" ? "active" : ""
+            }`}
+          >
             <input
               type="radio"
               checked={section.imageMode === "default"}
@@ -114,12 +121,14 @@ export default function EditContentSection({
                 onImageModeChange(index, "default")
               }
             />
-            Default Image
+            Default Images
           </label>
 
-          <br />
-
-          <label>
+          <label
+            className={`edit-section-mode-tab ${
+              section.imageMode === "custom" ? "active" : ""
+            }`}
+          >
             <input
               type="radio"
               checked={section.imageMode === "custom"}
@@ -132,107 +141,170 @@ export default function EditContentSection({
         </div>
 
         {section.imageMode === "default" && (
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-              marginTop: "10px",
-            }}
-          >
+          <div className="edit-section-default-images">
             {images.map((image) => (
-              <div
+              <button
                 key={image.id}
+                type="button"
+                className={`edit-section-image-option ${
+                  section.sectionImageId === image.id
+                    ? "selected"
+                    : ""
+                }`}
                 onClick={() =>
                   onImageChange(index, image.id)
                 }
-                style={{
-                  border:
-                    section.sectionImageId === image.id
-                      ? "3px solid green"
-                      : "1px solid #aaa",
-                  padding: "4px",
-                  cursor: "pointer",
-                }}
               >
                 <img
                   src={getImageUrl(image.filePath)}
-                  width={100}
-                  height={100}
-                  alt="Default"
-                  style={{ objectFit: "cover" }}
+                  alt="Default section option"
                 />
-              </div>
+
+                {section.sectionImageId === image.id && (
+                  <span className="edit-section-selected-label">
+                    Selected
+                  </span>
+                )}
+              </button>
             ))}
           </div>
         )}
 
         {section.imageMode === "custom" && (
-          <>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(event) =>
-                onImageUpload(index, event)
-              }
-            />
+          <div className="edit-section-image-panel">
+            <label
+              className={`edit-section-upload ${
+                section.isUploading
+                  ? "edit-section-upload-loading"
+                  : ""
+              }`}
+            >
+              {section.isUploading ? (
+                <div className="edit-section-upload-progress">
+                  <strong>
+                    {section.uploadProgress < 100
+                      ? "Uploading image..."
+                      : "Processing image..."}
+                  </strong>
 
-            <br />
-            <br />
-          </>
+                  <span className="edit-section-upload-percentage">
+                    {section.uploadProgress}%
+                  </span>
+
+                  <div className="edit-section-progress-track">
+                    <div
+                      className={`edit-section-progress-bar ${
+                        section.uploadProgress === 100
+                          ? "edit-section-progress-bar-processing"
+                          : ""
+                      }`}
+                      style={{
+                        width: `${section.uploadProgress}%`,
+                      }}
+                    />
+                  </div>
+
+                  <small>
+                    {section.uploadProgress < 100
+                      ? "Please wait while the image is being uploaded."
+                      : "Upload complete. Processing the image..."}
+                  </small>
+                </div>
+              ) : (
+                <>
+                  <span className="edit-section-upload-icon">
+                    ↑
+                  </span>
+
+                  <strong>Upload a section image</strong>
+
+                  <small>
+                    Choose an image from your device.
+                  </small>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) =>
+                      onImageUpload(index, event)
+                    }
+                  />
+                </>
+              )}
+            </label>
+          </div>
         )}
 
         {!isNewSection && (
-          <>
-            <hr />
+          <div className="edit-section-preview-area">
+            <div className="edit-section-preview-header">
+              <div>
+                <h4>Current Image</h4>
+                <p>
+                  Click the current image to restore the original selection.
+                </p>
+              </div>
 
-            <p>Current Image</p>
+              {!hasSectionImageChanged && (
+                <span className="edit-section-current-label">
+                  Current
+                </span>
+              )}
+            </div>
 
-            <div
+            <button
+              type="button"
+              className={`edit-section-preview ${
+                !hasSectionImageChanged ? "selected" : ""
+              }`}
               onClick={() =>
                 onRestoreOriginalImage(index)
               }
-              style={{
-                display: "inline-block",
-                border: !hasSectionImageChanged
-                  ? "3px solid green"
-                  : "1px solid #aaa",
-                padding: "4px",
-                cursor: "pointer",
-              }}
             >
               <img
                 src={getImageUrl(section.originalImageUrl)}
-                width={200}
-                alt="Current Section"
+                alt="Current section"
               />
-            </div>
-          </>
+            </button>
+          </div>
         )}
 
         {section.sectionImageId > 0 &&
           (isNewSection || hasSectionImageChanged) && (
-            <>
-              <p>New Selected Image</p>
+            <div className="edit-section-preview-area">
+              <div className="edit-section-preview-header">
+                <div>
+                  <h4>New Selected Image</h4>
+                  <p>
+                    This image will be used after saving.
+                  </p>
+                </div>
+
+                <span className="edit-section-new-label">
+                  New
+                </span>
+              </div>
 
               {selectedSectionImage ? (
-                <img
-                  src={getImageUrl(
-                    selectedSectionImage.filePath
-                  )}
-                  width={200}
-                  alt="New Selected Section"
-                />
+                <div className="edit-section-preview">
+                  <img
+                    src={getImageUrl(
+                      selectedSectionImage.filePath
+                    )}
+                    alt="New selected section"
+                  />
+                </div>
               ) : section.customImageUrl ? (
-                <img
-                  src={getImageUrl(section.customImageUrl)}
-                  width={200}
-                  alt="New Selected Section"
-                />
+                <div className="edit-section-preview">
+                  <img
+                    src={getImageUrl(section.customImageUrl)}
+                    alt="New selected section"
+                  />
+                </div>
               ) : null}
-            </>
+            </div>
           )}
       </div>
-    </div>
+    </article>
   );
 }

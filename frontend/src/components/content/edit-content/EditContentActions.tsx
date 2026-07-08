@@ -1,3 +1,5 @@
+import "../../../styles/components/content/edit-content/EditContentActions.css";
+
 interface EditContentActionsProps {
   status: string;
   isSubmitting: boolean;
@@ -17,56 +19,56 @@ export default function EditContentActions({
   onSaveChanges,
 }: EditContentActionsProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "10px",
-        marginTop: "2rem",
-      }}
-    >
+    <div className="edit-content-actions">
       <button
         type="button"
+        className="edit-action-cancel"
         onClick={onCancel}
         disabled={isSubmitting}
       >
         Cancel
       </button>
 
-      {status === "Draft" && (
-        <>
+      <div className="edit-content-primary-actions">
+        {status === "Draft" && (
+          <>
+            <button
+              type="button"
+              className="edit-action-secondary"
+              onClick={onSaveDraft}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Processing..."
+                : "Save as Draft"}
+            </button>
+
+            <button
+              type="button"
+              className="edit-action-primary"
+              onClick={onPublish}
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Processing..."
+                : "Publish"}
+            </button>
+          </>
+        )}
+
+        {status === "Published" && (
           <button
             type="button"
-            onClick={onSaveDraft}
+            className="edit-action-primary"
+            onClick={onSaveChanges}
             disabled={isSubmitting}
           >
             {isSubmitting
               ? "Processing..."
-              : "Save as Draft"}
+              : "Save Changes"}
           </button>
-
-          <button
-            type="button"
-            onClick={onPublish}
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? "Processing..."
-              : "Publish"}
-          </button>
-        </>
-      )}
-
-      {status === "Published" && (
-        <button
-          type="button"
-          onClick={onSaveChanges}
-          disabled={isSubmitting}
-        >
-          {isSubmitting
-            ? "Processing..."
-            : "Save Changes"}
-        </button>
-      )}
+        )}
+      </div>
     </div>
   );
 }
