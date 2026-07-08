@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import ContentTemplateRenderer from "../components/content/ContentTemplateRenderer";
-
+import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import { getContent } from "../services/contentService";
-
 import { ContentDetail } from "../types/content";
+import "../styles/pages/ContentDetailPage.css";
 
 export default function ContentDetailPage() {
   const { id } = useParams();
@@ -43,16 +41,41 @@ export default function ContentDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <main className="content-detail-state">
+        <div className="content-detail-state-card">
+          <h2>Loading content</h2>
+          <p>Please wait while the content details are being retrieved.</p>
+        </div>
+      </main>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <main className="content-detail-state">
+        <div className="content-detail-state-card">
+          <h2>Unable to load content</h2>
+          <p>{error}</p>
+        </div>
+      </main>
+    );
   }
 
   if (!content) {
-    return <p>Content not found.</p>;
+    return (
+      <main className="content-detail-state">
+        <div className="content-detail-state-card">
+          <h2>Content not found</h2>
+          <p>The requested content could not be found.</p>
+        </div>
+      </main>
+    );
   }
 
-  return <ContentTemplateRenderer content={content} />;
+  return (
+    <main className="content-detail-page">
+      <ContentTemplateRenderer content={content} />
+    </main>
+  );
 }

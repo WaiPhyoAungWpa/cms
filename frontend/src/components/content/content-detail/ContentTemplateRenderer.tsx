@@ -1,4 +1,4 @@
-import { ContentDetail } from "../../types/content";
+import { ContentDetail } from "../../../types/content";
 
 import ExperienceTemplate from "./ExperienceTemplate";
 import LearningTemplate from "./LearningTemplate";

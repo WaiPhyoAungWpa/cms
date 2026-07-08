@@ -1,6 +1,6 @@
-import { ContentDetail } from "../../types/content";
-import { getImageUrl } from "../../utils/image";
-import ContentDetailHeader from "./ContentDetailHeader";
+import { ContentDetail } from "../../../types/content";
+import { getImageUrl } from "../../../utils/image";
+import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
 import "./LearningTemplate.css";
 
@@ -12,7 +12,7 @@ export default function LearningTemplate({ content }: Props) {
 
   return (
     <div className="learning-template">
-      <ContentDetailHeader />
+      <AdminContentDetailHeader />
 
       <h1 className="learning-category">
         {content.category}

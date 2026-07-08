@@ -1,6 +1,6 @@
-import { ContentDetail } from "../../types/content";
-import { getImageUrl } from "../../utils/image";
-import ContentDetailHeader from "./ContentDetailHeader";
+import { ContentDetail } from "../../../types/content";
+import { getImageUrl } from "../../../utils/image";
+import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
 import "./ExperienceTemplate.css";
 
@@ -12,7 +12,7 @@ export default function ExperienceTemplate({ content }: Props) {
 
   return (
     <div className="experience-template">
-      <ContentDetailHeader />
+      <AdminContentDetailHeader />
 
       <h1 className="experience-category">
         {content.category}

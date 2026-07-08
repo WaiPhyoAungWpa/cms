@@ -1,6 +1,6 @@
-import { ContentDetail } from "../../types/content";
-import { getImageUrl } from "../../utils/image";
-import ContentDetailHeader from "./ContentDetailHeader";
+import { ContentDetail } from "../../../types/content";
+import { getImageUrl } from "../../../utils/image";
+import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
 import "./LifestyleTemplate.css";
 
@@ -12,7 +12,7 @@ export default function LifestyleTemplate({ content }: Props) {
 
   return (
     <div className="lifestyle-template">
-      <ContentDetailHeader />
+      <AdminContentDetailHeader />
 
       <h1 className="lifestyle-category">
         {content.category}
