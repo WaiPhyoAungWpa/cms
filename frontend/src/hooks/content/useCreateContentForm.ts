@@ -5,11 +5,6 @@ export default function useCreateContentForm() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
-    const resetBasicFields = () => {
-      setTitle("");
-      setDescription("");
-    };
-
     return {
       categoryId,
       setCategoryId,
@@ -17,6 +12,5 @@ export default function useCreateContentForm() {
       setTitle,
       description,
       setDescription,
-      resetBasicFields,
     };
 }

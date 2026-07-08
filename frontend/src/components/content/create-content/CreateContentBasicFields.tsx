@@ -18,11 +18,14 @@ export default function CreateContentBasicFields({
   onDescriptionChange,
 }: CreateContentBasicFieldsProps) {
   return (
-    <>
-      <div>
-        <label>Category</label>
-        <br />
+    <div className="create-content-fields">
+      <div className="create-content-field">
+        <label htmlFor="create-content-category">
+          Category
+        </label>
+
         <select
+          id="create-content-category"
           value={categoryId}
           onChange={onCategoryChange}
         >
@@ -32,34 +35,37 @@ export default function CreateContentBasicFields({
         </select>
       </div>
 
-      <br />
+      <div className="create-content-field">
+        <label htmlFor="create-content-title">
+          Title
+        </label>
 
-      <div>
-        <label>Title</label>
-        <br />
         <input
+          id="create-content-title"
           type="text"
           value={title}
+          placeholder="Enter content title"
           onChange={(event) =>
             onTitleChange(event.target.value)
           }
         />
       </div>
 
-      <br />
+      <div className="create-content-field">
+        <label htmlFor="create-content-description">
+          Description
+        </label>
 
-      <div>
-        <label>Description</label>
-        <br />
         <textarea
-          rows={5}
-          cols={50}
+          id="create-content-description"
+          rows={6}
           value={description}
+          placeholder="Enter a short description of the content"
           onChange={(event) =>
             onDescriptionChange(event.target.value)
           }
         />
       </div>
-    </>
+    </div>
   );
 }

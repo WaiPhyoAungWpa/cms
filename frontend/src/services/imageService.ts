@@ -18,30 +18,60 @@ export async function getDefaultImages(
   return response.json();
 }
 
-export async function uploadImage(
+export function uploadImage(
   file: File,
   categoryId: number,
-  token: string
+  token: string,
+  onProgress?: (progress: number) => void
 ): Promise<UploadImageResponse> {
-  const formData = new FormData();
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
 
-  formData.append("file", file);
-  formData.append("categoryId", categoryId.toString());
+    formData.append("file", file);
+    formData.append("categoryId", categoryId.toString());
 
-  const response = await fetch(
-    `${API_URL}/upload`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: formData
-    }
-  );
+    const xhr = new XMLHttpRequest();
 
-  if (!response.ok) {
-    throw new Error("Failed to upload image");
-  }
+    xhr.open("POST", `${API_URL}/upload`);
 
-  return response.json();
+    xhr.setRequestHeader(
+      "Authorization",
+      `Bearer ${token}`
+    );
+
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) {
+        return;
+      }
+
+      const progress = Math.round(
+        (event.loaded / event.total) * 100
+      );
+
+      onProgress?.(progress);
+    };
+
+    xhr.onload = () => {
+      if (xhr.status < 200 || xhr.status >= 300) {
+        reject(new Error("Failed to upload image"));
+        return;
+      }
+
+      try {
+        const result = JSON.parse(
+          xhr.responseText
+        ) as UploadImageResponse;
+
+        resolve(result);
+      } catch {
+        reject(new Error("Invalid upload response"));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Failed to upload image"));
+    };
+
+    xhr.send(formData);
+  });
 }

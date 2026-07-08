@@ -5,6 +5,8 @@ export default function useCreateCoverImage(categoryId: number) {
     const [coverImageId, setCoverImageId] = useState(0);
     const [customCoverImageUrl, setCustomCoverImageUrl] = useState("");
     const [coverImageMode, setCoverImageMode] = useState<"default" | "custom">("default");
+    const [isCoverUploading, setIsCoverUploading] = useState(false);
+    const [coverUploadProgress, setCoverUploadProgress] = useState(0);
 
     const handleCoverUpload = async (
       event: React.ChangeEvent<HTMLInputElement>
@@ -22,11 +24,17 @@ export default function useCreateCoverImage(categoryId: number) {
         return;
       }
 
+      setIsCoverUploading(true);
+      setCoverUploadProgress(0);
+
       try {
         const result = await uploadImage(
           file,
           categoryId,
-          token
+          token,
+          (progress) => {
+            setCoverUploadProgress(progress);
+          }
         );
 
         setCoverImageId(result.id);
@@ -38,6 +46,8 @@ export default function useCreateCoverImage(categoryId: number) {
         } else {
           alert("Unable to upload image. Please try again.");
         }
+      } finally {
+        setIsCoverUploading(false);
       }
     };
 
@@ -45,6 +55,8 @@ export default function useCreateCoverImage(categoryId: number) {
       setCoverImageId(0);
       setCustomCoverImageUrl("");
       setCoverImageMode("default");
+      setIsCoverUploading(false);
+      setCoverUploadProgress(0);
     };
 
     return {
@@ -53,6 +65,8 @@ export default function useCreateCoverImage(categoryId: number) {
       customCoverImageUrl,
       coverImageMode,
       setCoverImageMode,
+      isCoverUploading,
+      coverUploadProgress,
       handleCoverUpload,
       resetCoverImage,
     };

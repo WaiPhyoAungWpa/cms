@@ -12,6 +12,7 @@ import useCreateContentForm from "../hooks/content/useCreateContentForm";
 import useCreateContentSections from "../hooks/content/useCreateContentSections";
 import useCreateCoverImage from "../hooks/content/useCreateCoverImage";
 import { validateContentForm } from "../utils/contentValidation";
+import "../styles/pages/CreateContentPage.css";
 
 export default function CreateContentPage() {
     const navigate = useNavigate();
@@ -23,7 +24,6 @@ export default function CreateContentPage() {
       setTitle,
       description,
       setDescription,
-      resetBasicFields,
     } = useCreateContentForm();
 
     const [images, setImages] = useState<DefaultImage[]>([]);
@@ -38,7 +38,6 @@ export default function CreateContentPage() {
       updateSectionImageMode,
       removeSection,
       resetSectionImages,
-      resetSections,
     } = useCreateContentSections(categoryId);
 
     const {
@@ -47,6 +46,8 @@ export default function CreateContentPage() {
       customCoverImageUrl,
       coverImageMode,
       setCoverImageMode,
+      isCoverUploading,
+      coverUploadProgress,
       handleCoverUpload,
       resetCoverImage,
     } = useCreateCoverImage(categoryId);
@@ -117,10 +118,10 @@ export default function CreateContentPage() {
         try {
           const request = buildCreateRequest();   
 
-          await publishContent(request, token);
+          const createdContent = await publishContent(request, token);
 
           alert("The content has been published successfully.");
-          resetForm();
+          navigate(`/content/${createdContent.id}`);
         } catch (error) {
             if (error instanceof Error) {
               alert(error.message);
@@ -152,7 +153,7 @@ export default function CreateContentPage() {
             await saveDraft(request, token);
 
             alert("Draft saved successfully.");
-            resetForm();
+            navigate("/content");
         } catch (error) {
         if (error instanceof Error) {
             alert(error.message);
@@ -208,76 +209,126 @@ export default function CreateContentPage() {
           resetSectionImages();
     };
 
-    const resetForm = () => {
-      resetBasicFields();
-      resetCoverImage();
-      resetSections();
-    };
-
     return (
-      <div>
-        <h1>Create Content</h1>
+      <main className="create-content-page">
+        <div className="create-content-container">
+          <header className="create-content-header">
+            <div>
+              <p className="create-content-eyebrow">Content Management</p>
+              <h1>Create Content</h1>
+              <p className="create-content-subtitle">
+                Create a new article, configure its images, and add content sections.
+              </p>
+            </div>
+          </header>
 
-        <CreateContentBasicFields
-            categoryId={categoryId}
-            title={title}
-            description={description}
-            onCategoryChange={handleCategoryChange}
-            onTitleChange={setTitle}
-            onDescriptionChange={setDescription}
-        />
+          <div className="create-content-form">
+            <section className="create-content-card">
+              <div className="create-content-card-header">
+                <span className="create-content-step">01</span>
 
-        <br />
+                <div>
+                  <h2>Content Details</h2>
+                  <p>Choose a category and enter the main content information.</p>
+                </div>
+              </div>
 
-        <CreateCoverImageField
-            images={images}
-            coverImageId={coverImageId}
-            coverImageMode={coverImageMode}
-            customCoverImageUrl={customCoverImageUrl}
-            onImageSelect={setCoverImageId}
-            onModeChange={setCoverImageMode}
-            onUpload={handleCoverUpload}
-        />
+              <CreateContentBasicFields
+                categoryId={categoryId}
+                title={title}
+                description={description}
+                onCategoryChange={handleCategoryChange}
+                onTitleChange={setTitle}
+                onDescriptionChange={setDescription}
+              />
+            </section>
 
-        <br />
+            <section className="create-content-card">
+              <div className="create-content-card-header">
+                <span className="create-content-step">02</span>
 
-        <h2>Sections</h2>
+                <div>
+                  <h2>Cover Image</h2>
+                  <p>Select a default image or upload a custom image.</p>
+                </div>
+              </div>
 
-        {sections.map((section, index) => (
-          <CreateContentSection
-            key={index}
-            index={index}
-            title={section.title}
-            description={section.description}
-            sectionImageId={section.sectionImageId}
-            imageMode={section.imageMode}
-            customImageUrl={section.customImageUrl}
-            images={images}
-            onTitleChange={(value) => updateSectionTitle(index, value)}
-            onDescriptionChange={(value) => updateSectionDescription(index, value)}
-            onImageSelect={(imageId) => updateSectionImage(index, imageId)}
-            onImageModeChange={(imageMode) => updateSectionImageMode(index, imageMode)}
-            onUpload={(event) => handleSectionUpload(index, event)}
-            onRemove={() => removeSection(index)}
-          />
-        ))}
+              <CreateCoverImageField
+                images={images}
+                coverImageId={coverImageId}
+                coverImageMode={coverImageMode}
+                customCoverImageUrl={customCoverImageUrl}
+                isUploading={isCoverUploading}
+                uploadProgress={coverUploadProgress}
+                onImageSelect={setCoverImageId}
+                onModeChange={setCoverImageMode}
+                onUpload={handleCoverUpload}
+              />
+            </section>
 
-        <button 
-            onClick={handleAddSection} 
-            disabled={isSubmitting}
-          >
-            Add Section
-        </button>
+            <section className="create-content-card">
+              <div className="create-content-card-header create-content-sections-header">
+                <div className="create-content-card-title">
+                  <span className="create-content-step">03</span>
 
-        <br/>
+                  <div>
+                    <h2>Content Sections</h2>
+                    <p>Add supporting sections to structure the article.</p>
+                  </div>
+                </div>
 
-        <CreateContentActions
-          isSubmitting={isSubmitting}
-          onPreview={handlePreview}
-          onCancel={handleCancel}
-          onSaveDraft={handleSaveDraft}
-          onPublish={handlePublish}
-        />
-      </div>
+                <span className="create-content-section-count">
+                  {sections.length} {sections.length === 1 ? "section" : "sections"}
+                </span>
+              </div>
+
+              <div className="create-content-sections">
+                {sections.map((section, index) => (
+                  <CreateContentSection
+                    key={index}
+                    index={index}
+                    title={section.title}
+                    description={section.description}
+                    sectionImageId={section.sectionImageId}
+                    imageMode={section.imageMode}
+                    customImageUrl={section.customImageUrl}
+                    isUploading={section.isUploading}
+                    uploadProgress={section.uploadProgress}
+                    images={images}
+                    onTitleChange={(value) => updateSectionTitle(index, value)}
+                    onDescriptionChange={(value) =>
+                      updateSectionDescription(index, value)
+                    }
+                    onImageSelect={(imageId) =>
+                      updateSectionImage(index, imageId)
+                    }
+                    onImageModeChange={(imageMode) =>
+                      updateSectionImageMode(index, imageMode)
+                    }
+                    onUpload={(event) => handleSectionUpload(index, event)}
+                    onRemove={() => removeSection(index)}
+                  />
+                ))}
+              </div>
+
+              <button
+                className="create-content-add-section-button"
+                onClick={handleAddSection}
+                disabled={isSubmitting}
+              >
+                + Add Section
+              </button>
+            </section>
+
+            <CreateContentActions
+              isSubmitting={isSubmitting}
+              onPreview={handlePreview}
+              onCancel={handleCancel}
+              onSaveDraft={handleSaveDraft}
+              onPublish={handlePublish}
+            />
+          </div>
+        </div>
+      </main>
     );
 }

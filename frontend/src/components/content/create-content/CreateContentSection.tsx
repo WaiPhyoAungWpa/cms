@@ -8,6 +8,8 @@ interface CreateContentSectionProps {
   sectionImageId: number;
   imageMode: "default" | "custom";
   customImageUrl: string;
+  isUploading: boolean;
+  uploadProgress: number;
   images: DefaultImage[];
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -26,6 +28,8 @@ export default function CreateContentSection({
   sectionImageId,
   imageMode,
   customImageUrl,
+  isUploading,
+  uploadProgress,
   images,
   onTitleChange,
   onDescriptionChange,
@@ -39,145 +43,237 @@ export default function CreateContentSection({
   );
 
   return (
-    <div>
-      <h3>Section {index + 1}</h3>
+    <article className="create-content-section">
+      <div className="create-content-section-header">
+        <div>
+          <span className="create-content-section-label">
+            Content Section
+          </span>
+          <h3>Section {index + 1}</h3>
+        </div>
 
-      <button
-        type="button"
-        onClick={onRemove}
-      >
-        Remove Section
-      </button>
-
-      <div>
-        <label>Section Title</label>
-        <br />
-        <input
-          type="text"
-          value={title}
-          onChange={(event) =>
-            onTitleChange(event.target.value)
-          }
-        />
+        <button
+          type="button"
+          className="create-content-remove-section-button"
+          onClick={onRemove}
+        >
+          Remove
+        </button>
       </div>
 
-      <br />
+      <div className="create-content-fields">
+        <div className="create-content-field">
+          <label htmlFor={`section-${index}-title`}>
+            Section Title
+          </label>
 
-      <div>
-        <label>Section Description</label>
-        <br />
-        <textarea
-          rows={4}
-          cols={40}
-          value={description}
-          onChange={(event) =>
-            onDescriptionChange(event.target.value)
-          }
-        />
+          <input
+            id={`section-${index}-title`}
+            type="text"
+            value={title}
+            placeholder="Enter section title"
+            onChange={(event) =>
+              onTitleChange(event.target.value)
+            }
+          />
+        </div>
+
+        <div className="create-content-field">
+          <label htmlFor={`section-${index}-description`}>
+            Section Description
+          </label>
+
+          <textarea
+            id={`section-${index}-description`}
+            rows={5}
+            value={description}
+            placeholder="Enter section description"
+            onChange={(event) =>
+              onDescriptionChange(event.target.value)
+            }
+          />
+        </div>
       </div>
 
-      <br />
+      <div className="create-section-image-field">
+        <div className="create-section-image-heading">
+          <h4>Section Image</h4>
+          <p>Select a default image or upload a custom image.</p>
+        </div>
 
-      <div>
-        <label>Section Image</label>
-        <br />
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label>
+        <div className="create-image-mode-selector">
+          <label
+            className={`create-image-mode-option ${
+              imageMode === "default"
+                ? "create-image-mode-option-active"
+                : ""
+            }`}
+          >
             <input
               type="radio"
+              name={`section-${index}-image-mode`}
               checked={imageMode === "default"}
               onChange={() => onImageModeChange("default")}
             />
-            Default Image
+
+            <span>
+              <strong>Default Image</strong>
+              <small>Choose from the available category images.</small>
+            </span>
           </label>
 
-          <br />
-
-          <label>
+          <label
+            className={`create-image-mode-option ${
+              imageMode === "custom"
+                ? "create-image-mode-option-active"
+                : ""
+            }`}
+          >
             <input
               type="radio"
+              name={`section-${index}-image-mode`}
               checked={imageMode === "custom"}
               onChange={() => onImageModeChange("custom")}
             />
-            Upload Custom Image
+
+            <span>
+              <strong>Custom Image</strong>
+              <small>Upload your own section image.</small>
+            </span>
           </label>
         </div>
 
         {imageMode === "default" && (
-          <>
-            <div
-              style={{
-                border: "1px solid #ccc",
-                padding: "1rem",
-                marginTop: "10px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  flexWrap: "wrap",
-                }}
-              >
-                {images.map((image) => (
-                  <div
+          <div className="create-image-panel">
+            <p className="create-image-panel-label">
+              Available Images
+            </p>
+
+            <div className="create-image-grid">
+              {images.map((image) => {
+                const isSelected =
+                  sectionImageId === image.id;
+
+                return (
+                  <button
                     key={image.id}
+                    type="button"
+                    className={`create-image-option ${
+                      isSelected
+                        ? "create-image-option-selected"
+                        : ""
+                    }`}
                     onClick={() => onImageSelect(image.id)}
-                    style={{
-                      border:
-                        sectionImageId === image.id
-                          ? "3px solid green"
-                          : "1px solid #aaa",
-                      padding: "4px",
-                      cursor: "pointer",
-                    }}
                   >
                     <img
                       src={getImageUrl(image.filePath)}
-                      alt="Default"
-                      width={120}
-                      height={120}
-                      style={{ objectFit: "cover" }}
+                      alt={`Section ${index + 1} image option`}
                     />
-                  </div>
-                ))}
-              </div>
+
+                    {isSelected && (
+                      <span className="create-image-selected-badge">
+                        Selected
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-            <p>Selected Image</p>
-
             {selectedSectionImage && (
-              <img
-                src={getImageUrl(selectedSectionImage.filePath)}
-                width={250}
-                alt="Selected Section"
-              />
+              <div className="create-selected-image">
+                <div>
+                  <p className="create-image-panel-label">
+                    Selected Image
+                  </p>
+                  <span>
+                    This image will be used for section {index + 1}.
+                  </span>
+                </div>
+
+                <img
+                  src={getImageUrl(selectedSectionImage.filePath)}
+                  alt={`Selected image for section ${index + 1}`}
+                />
+              </div>
             )}
-          </>
+          </div>
         )}
 
         {imageMode === "custom" && (
-          <>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={onUpload}
-            />
+          <div className="create-image-panel">
+            <label
+              className={`create-image-upload ${
+                isUploading ? "create-image-upload-loading" : ""
+              }`}
+            >
+              {isUploading ? (
+                <div className="create-image-upload-progress">
+                  <strong>
+                    {uploadProgress < 100
+                      ? "Uploading image..."
+                      : "Processing image..."}
+                  </strong>
 
-            <br />
-            <br />
+                  <span className="create-image-upload-percentage">
+                    {uploadProgress}%
+                  </span>
 
-            {customImageUrl && (
-              <img
-                src={getImageUrl(customImageUrl)}
-                width={250}
-                alt="Custom Section"
-              />
+                  <div className="create-image-progress-track">
+                    <div
+                      className={`create-image-progress-bar ${
+                        uploadProgress === 100
+                          ? "create-image-progress-bar-processing"
+                          : ""
+                      }`}
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+
+                  <small>
+                    {uploadProgress < 100
+                      ? "Please wait while the image is being uploaded."
+                      : "Upload complete. Processing the image..."}
+                  </small>
+                </div>
+              ) : (
+                <>
+                  <span className="create-image-upload-icon">↑</span>
+
+                  <strong>Upload a section image</strong>
+
+                  <small>Choose an image from your device.</small>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={onUpload}
+                  />
+                </>
+              )}
+            </label>
+
+            {customImageUrl && !isUploading && (
+              <div className="create-selected-image">
+                <div>
+                  <p className="create-image-panel-label">
+                    Uploaded Image
+                  </p>
+
+                  <span>
+                    This image will be used for section {index + 1}.
+                  </span>
+                </div>
+
+                <img
+                  src={getImageUrl(customImageUrl)}
+                  alt={`Uploaded image for section ${index + 1}`}
+                />
+              </div>
             )}
-          </>
+          </div>
         )}
       </div>
-    </div>
+    </article>
   );
 }

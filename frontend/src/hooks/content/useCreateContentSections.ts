@@ -5,6 +5,8 @@ import { uploadImage } from "../../services/imageService";
 export interface CreateSectionForm extends CreateSectionRequest {
     imageMode: "default" | "custom";
     customImageUrl: string;
+    isUploading: boolean;
+    uploadProgress: number;
 }
 
 export default function useCreateContentSections(categoryId: number) {
@@ -27,11 +29,35 @@ export default function useCreateContentSections(categoryId: number) {
           return;
         }
 
+        setSections((previousSections) =>
+          previousSections.map((section, sectionIndex) =>
+            sectionIndex === index
+              ? {
+                  ...section,
+                  isUploading: true,
+                  uploadProgress: 0,
+                }
+              : section
+          )
+        );
+
         try {
           const result = await uploadImage(
             file,
             categoryId,
-            token
+            token,
+            (progress) => {
+              setSections((previousSections) =>
+                previousSections.map((section, sectionIndex) =>
+                  sectionIndex === index
+                    ? {
+                        ...section,
+                        uploadProgress: progress,
+                      }
+                    : section
+                )
+              );
+            }
           );
 
           setSections((previousSections) =>
@@ -52,6 +78,17 @@ export default function useCreateContentSections(categoryId: number) {
           } else {
             alert("Unable to upload image. Please try again.");
           }
+        } finally {
+          setSections((previousSections) =>
+            previousSections.map((section, sectionIndex) =>
+              sectionIndex === index
+                ? {
+                    ...section,
+                    isUploading: false,
+                  }
+                : section
+            )
+          );
         }
     };
     
@@ -64,6 +101,8 @@ export default function useCreateContentSections(categoryId: number) {
           sectionImageId: 0,
           imageMode: "default",
           customImageUrl: "",
+          isUploading: false,
+          uploadProgress: 0,
         },
       ]);
     };
@@ -147,12 +186,10 @@ export default function useCreateContentSections(categoryId: number) {
           sectionImageId: 0,
           imageMode: "default",
           customImageUrl: "",
+          isUploading: false,
+          uploadProgress: 0,
           }))
       );
-    };
-
-    const resetSections = () => {
-      setSections([]);
     };
 
     return {
@@ -165,6 +202,5 @@ export default function useCreateContentSections(categoryId: number) {
       updateSectionImageMode,
       removeSection,
       resetSectionImages,
-      resetSections,
     };
 }
