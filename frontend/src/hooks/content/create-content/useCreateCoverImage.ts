@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { uploadImage } from "../../services/imageService";
+import { uploadImage } from "../../../services/imageService";
 
 export default function useCreateCoverImage(categoryId: number) {
     const [coverImageId, setCoverImageId] = useState(0);

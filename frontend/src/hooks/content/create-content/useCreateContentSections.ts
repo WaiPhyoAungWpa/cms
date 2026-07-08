@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { CreateSectionRequest } from "../../types/content";
-import { uploadImage } from "../../services/imageService";
+import { CreateSectionRequest } from "../../../types/content";
+import { uploadImage } from "../../../services/imageService";
 
 export interface CreateSectionForm extends CreateSectionRequest {
     imageMode: "default" | "custom";

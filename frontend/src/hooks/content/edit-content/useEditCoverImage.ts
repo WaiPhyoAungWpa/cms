@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { uploadImage } from "../../services/imageService";
+import { uploadImage } from "../../../services/imageService";
 
 export function useEditCoverImage(categoryId: number) {
     const [coverImageId, setCoverImageId] = useState(0);

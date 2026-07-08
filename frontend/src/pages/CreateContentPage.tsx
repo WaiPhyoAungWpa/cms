@@ -8,9 +8,9 @@ import CreateContentBasicFields from "../components/content/create-content/Creat
 import CreateCoverImageField from "../components/content/create-content/CreateCoverImageField";
 import CreateContentSection from "../components/content/create-content/CreateContentSection";
 import CreateContentActions from "../components/content/create-content/CreateContentActions";
-import useCreateContentForm from "../hooks/content/useCreateContentForm";
-import useCreateContentSections from "../hooks/content/useCreateContentSections";
-import useCreateCoverImage from "../hooks/content/useCreateCoverImage";
+import useCreateContentForm from "../hooks/content/create-content/useCreateContentForm";
+import useCreateContentSections from "../hooks/content/create-content/useCreateContentSections";
+import useCreateCoverImage from "../hooks/content/create-content/useCreateCoverImage";
 import { validateContentForm } from "../utils/contentValidation";
 import "../styles/pages/CreateContentPage.css";
 

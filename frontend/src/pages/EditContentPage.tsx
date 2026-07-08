@@ -9,9 +9,9 @@ import EditCoverImageField from "../components/content/edit-content/EditCoverIma
 import EditContentBasicFields from "../components/content/edit-content/EditContentBasicFields";
 import EditContentActions from "../components/content/edit-content/EditContentActions";
 import { validateContentForm } from "../utils/contentValidation";
-import { useEditContentSections } from "../hooks/content/useEditContentSections";
-import { useEditCoverImage } from "../hooks/content/useEditCoverImage";
-import { useEditContentForm } from "../hooks/content/useEditContentForm";
+import { useEditContentSections } from "../hooks/content/edit-content/useEditContentSections";
+import { useEditCoverImage } from "../hooks/content/edit-content/useEditCoverImage";
+import { useEditContentForm } from "../hooks/content/edit-content/useEditContentForm";
 import "../styles/pages/EditContentPage.css";
 
 type UpdateOperation = (

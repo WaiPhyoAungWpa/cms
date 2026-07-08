@@ -1,9 +1,9 @@
 import { ChangeEvent, useState } from "react";
-import { uploadImage } from "../../services/imageService";
-import { EditSection } from "../../types/editContent";
-import { SectionDetail } from "../../types/content";
-import { mapToEditSections } from "../../utils/editContent";
-import { DefaultImage } from "../../types/image";
+import { uploadImage } from "../../../services/imageService";
+import { EditSection } from "../../../types/editContent";
+import { SectionDetail } from "../../../types/content";
+import { mapToEditSections } from "../../../utils/editContent";
+import { DefaultImage } from "../../../types/image";
 
 export function useEditContentSections(categoryId: number) {
     const [sections, setSections] = useState<EditSection[]>([]);
