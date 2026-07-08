@@ -1,5 +1,6 @@
 import { DefaultImage } from "../../../types/image";
 import { getImageUrl } from "../../../utils/image";
+import "../../../styles/components/content/create-content/CreateCoverImageField.css";
 
 interface CreateCoverImageFieldProps {
   images: DefaultImage[];

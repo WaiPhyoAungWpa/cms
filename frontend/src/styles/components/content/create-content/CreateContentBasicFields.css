@@ -1,0 +1,51 @@
+.create-content-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.create-content-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-content-field label {
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.create-content-field input,
+.create-content-field select,
+.create-content-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.create-content-field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.create-content-field input:focus,
+.create-content-field select:focus,
+.create-content-field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.create-content-field input::placeholder,
+.create-content-field textarea::placeholder {
+  color: #9ca3af;
+}

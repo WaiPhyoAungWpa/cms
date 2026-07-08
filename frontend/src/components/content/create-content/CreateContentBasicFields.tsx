@@ -1,3 +1,5 @@
+import "../../../styles/components/content/create-content/CreateContentBasicFields.css";
+
 interface CreateContentBasicFieldsProps {
   categoryId: number;
   title: string;

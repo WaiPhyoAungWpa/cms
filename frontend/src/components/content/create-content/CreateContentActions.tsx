@@ -1,3 +1,5 @@
+import "../../../styles/components/content/create-content/CreateContentActions.css";
+
 interface CreateContentActionsProps {
   isSubmitting: boolean;
   onPreview: () => void;
