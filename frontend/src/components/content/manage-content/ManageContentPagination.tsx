@@ -1,3 +1,5 @@
+import "../../../styles/pages/ManageContentPage.css";
+
 interface ManageContentPaginationProps {
   page: number;
   totalPages: number;
@@ -12,28 +14,38 @@ export default function ManageContentPagination({
   setPage,
 }: ManageContentPaginationProps) {
   return (
-    <>
-      <p>
-        Showing page {page} of {totalPages}
-      </p>
+    <div className="manage-content-pagination">
+      <div className="pagination-summary">
+        <span>
+          Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+        </span>
 
-      <p>
-        Total Records: {totalCount}
-      </p>
+        <span className="pagination-divider" />
 
-      <button
-        disabled={page === 1}
-        onClick={() => setPage(page - 1)}
-      >
-        Previous
-      </button>
+        <span>
+          <strong>{totalCount}</strong> total records
+        </span>
+      </div>
 
-      <button
-        disabled={page === totalPages}
-        onClick={() => setPage(page + 1)}
-      >
-        Next
-      </button>
-    </>
+      <div className="pagination-actions">
+        <button
+          className="pagination-button"
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Previous
+        </button>
+
+        <span className="pagination-current-page">{page}</span>
+
+        <button
+          className="pagination-button"
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
   );
 }

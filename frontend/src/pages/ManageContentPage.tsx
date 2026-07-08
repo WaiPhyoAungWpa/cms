@@ -35,16 +35,41 @@ export default function ManageContentPage() {
   } = useManageContent();
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="manage-content-state">
+        <div className="manage-content-spinner" />
+
+        <h2>Loading content</h2>
+
+        <p>Please wait while your content records are being retrieved.</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <div className="manage-content-state">
+        <div className="manage-content-error-icon">!</div>
+
+        <h2>Unable to load content</h2>
+
+        <p>{error}</p>
+
+        <button onClick={() => window.location.reload()}>
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Manage Content</h1>
+    <div className="manage-content-page">
+      <header className="manage-content-header">
+        <div>
+          <h1>Manage Content</h1>
+          <p>View, edit, delete, and restore your content.</p>
+        </div>
+      </header>
 
       <ManageContentFilters
         searchInput={searchInput}
