@@ -2,21 +2,18 @@ import { ContentDetail } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
 import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
-import "./LearningTemplate.css";
+import "../../../styles/components/content/content-detail/LearningTemplate.css";
 
 interface Props {
   content: ContentDetail;
 }
 
 export default function LearningTemplate({ content }: Props) {
-
   return (
     <div className="learning-template">
       <AdminContentDetailHeader />
 
-      <h1 className="learning-category">
-        {content.category}
-      </h1>
+      <p className="learning-category">{content.category}</p>
 
       <div className="learning-cover-wrapper">
         <img
@@ -25,24 +22,19 @@ export default function LearningTemplate({ content }: Props) {
           alt={content.title}
         />
 
-        <h2 className="learning-title">
-          {content.title}
-        </h2>
+        <div className="learning-cover-overlay" />
+
+        <h1 className="learning-title">{content.title}</h1>
       </div>
 
-      <p className="learning-description">
-        {content.description}
-      </p>
+      <div className="learning-intro">
+        <p className="learning-description">{content.description}</p>
+      </div>
 
       <div className="learning-sections">
         {content.sections.map((section) => (
-          <section
-            key={section.id}
-            className="learning-section"
-          >
-            <h3 className="learning-section-title">
-              {section.title}
-            </h3>
+          <section key={section.id} className="learning-section">
+            <h2 className="learning-section-title">{section.title}</h2>
 
             <img
               className="learning-section-image"
@@ -51,7 +43,7 @@ export default function LearningTemplate({ content }: Props) {
             />
 
             <p className="learning-section-description">
-                {section.description}
+              {section.description}
             </p>
           </section>
         ))}

@@ -2,21 +2,18 @@ import { ContentDetail } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
 import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
-import "./LifestyleTemplate.css";
+import "../../../styles/components/content/content-detail/LifestyleTemplate.css";
 
 interface Props {
   content: ContentDetail;
 }
 
 export default function LifestyleTemplate({ content }: Props) {
-
   return (
     <div className="lifestyle-template">
       <AdminContentDetailHeader />
 
-      <h1 className="lifestyle-category">
-        {content.category}
-      </h1>
+      <p className="lifestyle-category">{content.category}</p>
 
       <div className="lifestyle-cover-wrapper">
         <img
@@ -25,14 +22,12 @@ export default function LifestyleTemplate({ content }: Props) {
           alt={content.title}
         />
 
-        <div className="lifestyle-cover-content">
-          <h2 className="lifestyle-title">
-            {content.title}
-          </h2>
+        <div className="lifestyle-cover-overlay" />
 
-          <p className="lifestyle-description">
-            {content.description}
-          </p>
+        <div className="lifestyle-cover-content">
+          <h1 className="lifestyle-title">{content.title}</h1>
+
+          <p className="lifestyle-description">{content.description}</p>
         </div>
       </div>
 
@@ -45,9 +40,7 @@ export default function LifestyleTemplate({ content }: Props) {
             }`}
           >
             <div className="lifestyle-section-content">
-              <h3 className="lifestyle-section-title">
-                {section.title}
-              </h3>
+              <h2 className="lifestyle-section-title">{section.title}</h2>
 
               <p className="lifestyle-section-description">
                 {section.description}

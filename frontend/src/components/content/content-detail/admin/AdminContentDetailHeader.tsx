@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import "../../../../styles/components/content/content-detail/admin/AdminContentDetailHeader.css"
+import "../../../../styles/components/content/content-detail/admin/AdminContentDetailHeader.css";
 
 export default function AdminContentDetailHeader() {
   const navigate = useNavigate();
@@ -8,7 +8,8 @@ export default function AdminContentDetailHeader() {
   return (
     <div className="content-detail-header">
       <button type="button" onClick={() => navigate(-1)}>
-        ← Back
+        <span aria-hidden="true">←</span>
+        Back
       </button>
     </div>
   );

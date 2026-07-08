@@ -52,6 +52,16 @@
   outline-offset: 3px;
 }
 
+.content-detail-header button span {
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.content-detail-header button:hover span {
+  transform: translateX(-2px);
+}
+
 @media (max-width: 768px) {
   .content-detail-header {
     margin-bottom: 20px;
