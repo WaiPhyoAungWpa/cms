@@ -4,6 +4,7 @@ interface EditContentActionsProps {
   status: string;
   isSubmitting: boolean;
 
+  onPreview: () => void;
   onCancel: () => void;
   onSaveDraft: () => void;
   onPublish: () => void;
@@ -13,6 +14,7 @@ interface EditContentActionsProps {
 export default function EditContentActions({
   status,
   isSubmitting,
+  onPreview,
   onCancel,
   onSaveDraft,
   onPublish,
@@ -20,14 +22,25 @@ export default function EditContentActions({
 }: EditContentActionsProps) {
   return (
     <div className="edit-content-actions">
-      <button
-        type="button"
-        className="edit-action-cancel"
-        onClick={onCancel}
-        disabled={isSubmitting}
-      >
-        Cancel
-      </button>
+      <div className="edit-content-secondary-actions">
+        <button
+          type="button"
+          className="edit-action-cancel"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="edit-action-preview"
+          onClick={onPreview}
+          disabled={isSubmitting}
+        >
+          Preview
+        </button>
+      </div>
 
       <div className="edit-content-primary-actions">
         {status === "Draft" && (
@@ -38,9 +51,7 @@ export default function EditContentActions({
               onClick={onSaveDraft}
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Processing..."
-                : "Save as Draft"}
+              {isSubmitting ? "Processing..." : "Save as Draft"}
             </button>
 
             <button
@@ -49,9 +60,7 @@ export default function EditContentActions({
               onClick={onPublish}
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Processing..."
-                : "Publish"}
+              {isSubmitting ? "Processing..." : "Publish"}
             </button>
           </>
         )}
@@ -63,9 +72,7 @@ export default function EditContentActions({
             onClick={onSaveChanges}
             disabled={isSubmitting}
           >
-            {isSubmitting
-              ? "Processing..."
-              : "Save Changes"}
+            {isSubmitting ? "Processing..." : "Save Changes"}
           </button>
         )}
       </div>

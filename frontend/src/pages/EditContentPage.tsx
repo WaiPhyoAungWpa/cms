@@ -8,6 +8,7 @@ import EditContentSection from "../components/content/edit-content/EditContentSe
 import EditCoverImageField from "../components/content/edit-content/EditCoverImageField";
 import EditContentBasicFields from "../components/content/edit-content/EditContentBasicFields";
 import EditContentActions from "../components/content/edit-content/EditContentActions";
+import ContentPreview from "../components/content/content-preview/ContentPreview";
 import { validateContentForm } from "../utils/contentValidation";
 import { useEditContentSections } from "../hooks/content/edit-content/useEditContentSections";
 import { useEditCoverImage } from "../hooks/content/edit-content/useEditCoverImage";
@@ -72,6 +73,19 @@ export default function EditContentPage() {
     } = useEditCoverImage(categoryId);
     
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [previewContent, setPreviewContent] = useState<ContentDetail | null>(null);
+
+    const getSelectedImageUrl = (
+        imageId: number,
+        customImageUrl: string
+    ): string => {
+        if (customImageUrl) {
+            return customImageUrl;
+        }
+
+        return images.find((image) => image.id === imageId)?.filePath ?? "";
+    };
 
     const loadContent = async () => {
         try {
@@ -172,6 +186,72 @@ export default function EditContentPage() {
         return true;
     };
 
+    const getEditImageUrl = (
+        imageId: number,
+        customImageUrl: string,
+        originalImageId: number,
+        originalImageUrl: string
+    ): string => {
+        const defaultImage = images.find((image) => image.id === imageId);
+
+        if (defaultImage) {
+            return defaultImage.filePath;
+        }
+
+        if (imageId === originalImageId) {
+            return originalImageUrl;
+        }
+
+        return customImageUrl;
+    };
+
+    const handlePreview = () => {
+        if (!content) {
+            return;
+        }
+
+        if (!validateForm()) {
+            return;
+        }
+
+        const categoryNames: Record<number, string> = {
+            1: "Experience",
+            2: "Learning",
+            3: "Lifestyle",
+        };
+
+        const preview: ContentDetail = {
+            id: content.id,
+            categoryId,
+            category: categoryNames[categoryId],
+            title,
+            description,
+            status: content.status,
+            visibilityStatus,
+            coverImageId,
+            coverImageUrl: getEditImageUrl(
+                coverImageId,
+                customCoverImageUrl,
+                content.coverImageId,
+                originalCoverImageUrl
+            ),
+            sections: sections.map((section, index) => ({
+                id: section.id ?? index,
+                title: section.title,
+                description: section.description,
+                sectionImageId: section.sectionImageId,
+                imageUrl: getEditImageUrl(
+                    section.sectionImageId,
+                    section.customImageUrl,
+                    section.originalImageId,
+                    section.originalImageUrl
+                ),
+            })),
+        };
+
+        setPreviewContent(preview);
+    };
+
     const submitUpdate = async (
         operation: UpdateOperation,
         successMessage: string,
@@ -195,9 +275,9 @@ export default function EditContentPage() {
 
                 await operation(Number(id), request, token);
 
-                await loadContent();
-
                 alert(successMessage);
+
+                navigate("/content");
             } catch (err) {
                 if (err instanceof Error) {
                 alert(err.message);
@@ -305,6 +385,15 @@ export default function EditContentPage() {
         );
     }
 
+    if (previewContent) {
+        return (
+            <ContentPreview
+                content={previewContent}
+                onClose={() => setPreviewContent(null)}
+            />
+        );
+    }
+
     return (
         <main className="edit-content-page">
             <div className="edit-content-container">
@@ -396,6 +485,7 @@ export default function EditContentPage() {
                     <EditContentActions
                         status={content.status}
                         isSubmitting={isSubmitting}
+                        onPreview={handlePreview}
                         onCancel={handleCancel}
                         onSaveDraft={handleSaveDraft}
                         onPublish={handlePublish}

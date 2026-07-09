@@ -9,6 +9,7 @@
     background: #ffffff;
 }
 
+.edit-content-secondary-actions,
 .edit-content-primary-actions {
     display: flex;
     align-items: center;
@@ -41,12 +42,14 @@
     color: #111827;
 }
 
+.edit-action-preview,
 .edit-action-secondary {
     border: 1px solid #d1d5db;
     background: #ffffff;
     color: #111827;
 }
 
+.edit-action-preview:hover:not(:disabled),
 .edit-action-secondary:hover:not(:disabled) {
     border-color: #9ca3af;
     background: #f3f4f6;
@@ -75,6 +78,7 @@
         padding: 20px;
     }
 
+    .edit-content-secondary-actions,
     .edit-content-primary-actions {
         flex-direction: column;
     }

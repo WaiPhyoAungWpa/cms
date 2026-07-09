@@ -132,10 +132,10 @@ export default function CreateContentPage() {
         try {
           const request = buildCreateRequest();   
 
-          const createdContent = await publishContent(request, token);
+          publishContent(request, token);
 
           alert("The content has been published successfully.");
-          navigate(`/content/${createdContent.id}`);
+          navigate("/content");
         } catch (error) {
             if (error instanceof Error) {
               alert(error.message);
@@ -260,13 +260,13 @@ export default function CreateContentPage() {
           resetSectionImages();
     };
 
-  if (previewContent) {
-      return (
-        <ContentPreview
-          content={previewContent}
-          onClose={() => setPreviewContent(null)}
-        />
-      );
+    if (previewContent) {
+        return (
+          <ContentPreview
+            content={previewContent}
+            onClose={() => setPreviewContent(null)}
+          />
+        );
     }
 
     return (
