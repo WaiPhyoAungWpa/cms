@@ -1,6 +1,5 @@
 import { ContentDetail } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
-import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
 import "../../../styles/components/content/content-detail/LearningTemplate.css";
 
@@ -11,7 +10,6 @@ interface Props {
 export default function LearningTemplate({ content }: Props) {
   return (
     <div className="learning-template">
-      <AdminContentDetailHeader />
 
       <p className="learning-category">{content.category}</p>
 

@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { saveDraft, publishContent } from "../services/contentService";
 import { getDefaultImages } from "../services/imageService";
 import { DefaultImage } from "../types/image";
-import { CreateContentRequest } from "../types/content";
+import { CreateContentRequest, ContentDetail } from "../types/content";
 import CreateContentBasicFields from "../components/content/create-content/CreateContentBasicFields";
 import CreateCoverImageField from "../components/content/create-content/CreateCoverImageField";
 import CreateContentSection from "../components/content/create-content/CreateContentSection";
 import CreateContentActions from "../components/content/create-content/CreateContentActions";
+import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
+import ContentPreview from "../components/content/content-preview/ContentPreview";
 import useCreateContentForm from "../hooks/content/create-content/useCreateContentForm";
 import useCreateContentSections from "../hooks/content/create-content/useCreateContentSections";
 import useCreateCoverImage from "../hooks/content/create-content/useCreateCoverImage";
@@ -53,7 +55,19 @@ export default function CreateContentPage() {
     } = useCreateCoverImage(categoryId);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [previewContent, setPreviewContent] = useState<ContentDetail | null>(null);
   
+    const getSelectedImageUrl = (
+      imageId: number,
+      customImageUrl: string
+    ): string => {
+      if (customImageUrl) {
+        return customImageUrl;
+      }
+
+      return images.find((image) => image.id === imageId)?.filePath ?? "";
+    };
+
     useEffect(() => {
         async function loadImages() {
           try {
@@ -165,7 +179,44 @@ export default function CreateContentPage() {
         }
     };
 
-    const handlePreview = () => {};
+    const handlePreview = () => {
+        if (!validateForm()) {
+          return;
+        }
+
+        const categoryNames: Record<number, string> = {
+          1: "Experience",
+          2: "Learning",
+          3: "Lifestyle",
+        };
+
+        const preview: ContentDetail = {
+          id: 0,
+          categoryId,
+          category: categoryNames[categoryId],
+          title,
+          description,
+          status: "Draft",
+          visibilityStatus: "Private",
+          coverImageId,
+          coverImageUrl: getSelectedImageUrl(
+            coverImageId,
+            customCoverImageUrl
+          ),
+          sections: sections.map((section, index) => ({
+            id: index,
+            title: section.title,
+            description: section.description,
+            sectionImageId: section.sectionImageId,
+            imageUrl: getSelectedImageUrl(
+              section.sectionImageId,
+              section.customImageUrl
+            ),
+          })),
+        };
+
+        setPreviewContent(preview);
+    };
 
     const handleCancel = () => {
         const confirmed = window.confirm(
@@ -208,6 +259,15 @@ export default function CreateContentPage() {
 
           resetSectionImages();
     };
+
+  if (previewContent) {
+      return (
+        <ContentPreview
+          content={previewContent}
+          onClose={() => setPreviewContent(null)}
+        />
+      );
+    }
 
     return (
       <main className="create-content-page">

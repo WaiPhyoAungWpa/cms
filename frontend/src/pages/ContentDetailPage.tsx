@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import { getContent } from "../services/contentService";
 import { ContentDetail } from "../types/content";
+import AdminContentDetailHeader from "../components/content/content-detail/admin/AdminContentDetailHeader";
 import "../styles/pages/ContentDetailPage.css";
 
 export default function ContentDetailPage() {
@@ -75,6 +76,7 @@ export default function ContentDetailPage() {
 
   return (
     <main className="content-detail-page">
+      <AdminContentDetailHeader />
       <ContentTemplateRenderer content={content} />
     </main>
   );

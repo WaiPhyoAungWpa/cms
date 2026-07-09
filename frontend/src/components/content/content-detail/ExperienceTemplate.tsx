@@ -1,6 +1,5 @@
 import { ContentDetail } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
-import AdminContentDetailHeader from "./admin/AdminContentDetailHeader";
 
 import "../../../styles/components/content/content-detail/ExperienceTemplate.css";
 
@@ -11,7 +10,6 @@ interface Props {
 export default function ExperienceTemplate({ content }: Props) {
   return (
     <div className="experience-template">
-      <AdminContentDetailHeader />
 
       <p className="experience-category">{content.category}</p>
 
