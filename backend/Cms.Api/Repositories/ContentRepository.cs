@@ -1,5 +1,6 @@
 using Cms.Api.Data.Context;
 using Cms.Api.Entities;
+using Cms.Api.Entities.Enums;
 using Cms.Api.DTOs.Content;
 using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -96,6 +97,41 @@ public class ContentRepository : IContentRepository
     {
         return await _context.Contents
             .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<(
+        int TotalCount,
+        int PublishedCount,
+        int DraftCount,
+        int SoftDeletedCount,
+        List<Content> RecentContents
+    )> GetDashboardSummaryAsync()
+    {
+        var totalCount = await _context.Contents.CountAsync();
+
+        var publishedCount = await _context.Contents
+            .CountAsync(c => c.Status == ContentStatus.Published);
+
+        var draftCount = await _context.Contents
+            .CountAsync(c => c.Status == ContentStatus.Draft);
+
+        var softDeletedCount = await _context.Contents
+            .CountAsync(c => c.Status == ContentStatus.SoftDeleted);
+
+        var recentContents = await _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category)
+            .OrderByDescending(c => c.UpdatedAt)
+            .Take(5)
+            .ToListAsync();
+
+        return (
+            totalCount,
+            publishedCount,
+            draftCount,
+            softDeletedCount,
+            recentContents
+        );
     }
 
 }

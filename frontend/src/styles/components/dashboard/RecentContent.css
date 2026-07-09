@@ -1,0 +1,130 @@
+.recent-content {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.recent-content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #ddd;
+}
+
+.recent-content-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.recent-content-header button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.recent-content-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-content-item {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 1fr 1fr 1.25fr;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.recent-content-item:last-child {
+  border-bottom: none;
+}
+
+.recent-content-item:hover {
+  background: #f8f8f8;
+}
+
+.recent-content-item p {
+  margin: 0;
+}
+
+.recent-content-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-content-empty {
+  margin: 0;
+  padding: 32px 24px;
+  color: #666;
+  text-align: center;
+}
+
+.recent-content-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) 1fr 1fr 1.25fr;
+  gap: 20px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #ddd;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.recent-content-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.recent-content-status-published {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.recent-content-status-draft {
+  background: #fff3e0;
+  color: #b26a00;
+}
+
+@media (max-width: 768px) {
+  .recent-content-item {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .recent-content-title {
+    grid-column: 1 / -1;
+  }
+
+  .recent-content-columns {
+  display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .recent-content-header {
+    padding: 18px;
+  }
+
+  .recent-content-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 18px;
+  }
+
+  .recent-content-title {
+    grid-column: auto;
+    white-space: normal;
+  }
+}

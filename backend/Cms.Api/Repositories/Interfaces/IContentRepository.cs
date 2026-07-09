@@ -19,4 +19,12 @@ public interface IContentRepository
     Task<Content?> GetByIdForDeleteAsync(int id);
 
     Task<Content?> GetByIdForRestoreAsync(int id);
+
+    Task<(
+        int TotalCount,
+        int PublishedCount,
+        int DraftCount,
+        int SoftDeletedCount,
+        List<Content> RecentContents
+    )> GetDashboardSummaryAsync();
 }

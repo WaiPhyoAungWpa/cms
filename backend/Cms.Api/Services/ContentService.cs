@@ -1,5 +1,6 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.Common;
+using Cms.Api.DTOs.Dashboard;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;
@@ -407,6 +408,29 @@ public class ContentService : IContentService
         await _contentRepository.SaveChangesAsync();
 
         return MapToResponse(content);
+    }
+
+    public async Task<DashboardSummaryResponseDto> GetDashboardSummaryAsync()
+    {
+        var result = await _contentRepository.GetDashboardSummaryAsync();
+
+        return new DashboardSummaryResponseDto
+        {
+            TotalCount = result.TotalCount,
+            PublishedCount = result.PublishedCount,
+            DraftCount = result.DraftCount,
+            SoftDeletedCount = result.SoftDeletedCount,
+            RecentContents = result.RecentContents
+                .Select(content => new DashboardRecentContentResponseDto
+                {
+                    Id = content.Id,
+                    Title = content.Title,
+                    Category = content.Category.Name,
+                    Status = content.Status,
+                    UpdatedAt = content.UpdatedAt
+                })
+                .ToList()
+        };
     }
 
 }

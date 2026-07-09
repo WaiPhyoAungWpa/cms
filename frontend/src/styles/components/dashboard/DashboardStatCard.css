@@ -1,0 +1,17 @@
+.dashboard-stat-card {
+  padding: 24px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.dashboard-stat-label {
+  margin: 0 0 12px;
+  color: #666;
+}
+
+.dashboard-stat-count {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+}

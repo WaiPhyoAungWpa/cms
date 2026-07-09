@@ -1,5 +1,6 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.Common;
+using Cms.Api.DTOs.Dashboard;
 
 namespace Cms.Api.Services.Interfaces;
 
@@ -29,7 +30,9 @@ public interface IContentService
     Task<ContentResponseDto> SoftDeleteAsync(int id);
 
     Task<ContentResponseDto> RestoreAsync(
-    int id,
-    RestoreContentRequestDto request);
+        int id,
+        RestoreContentRequestDto request);
+
+    Task<DashboardSummaryResponseDto> GetDashboardSummaryAsync();
 
 }
