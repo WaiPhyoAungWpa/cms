@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import PublicContentDetailHeader from "../components/public/PublicContentDetailHeader";
+import PageState from "../components/common/PageState";
 import { getPublicContentById } from "../services/publicContentService";
 import type { PublicContentDetail } from "../types/content";
 import "../styles/pages/PublicContentDetailPage.css";
 
 export default function PublicContentDetailPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [content, setContent] = useState<PublicContentDetail | null>(null);
     const [loading, setLoading] = useState(true);
@@ -34,42 +36,33 @@ export default function PublicContentDetailPage() {
 
     if (loading) {
         return (
-        <div className="manage-content-state">
-            <div className="manage-content-spinner" />
-
-            <h2>Loading content</h2>
-
-            <p>Please wait while your content records are being retrieved.</p>
-        </div>
+            <PageState
+            title="Loading content"
+            message="Please wait while the content details are being retrieved."
+            />
         );
     }
 
     if (error) {
         return (
-        <div className="manage-content-state">
-            <div className="manage-content-error-icon">!</div>
-
-            <h2>Unable to load content</h2>
-
-            <p>{error}</p>
-
-            <button onClick={() => window.location.reload()}>
-            Try Again
-            </button>
-        </div>
+            <PageState
+            title="Unable to load content"
+            message={error}
+            actionLabel="Back to Home"
+            onAction={() => navigate("/")}
+            />
         );
     }
 
     if (!content) {
-    return (
-        <div className="public-content-detail-state">
-        <div className="public-content-detail-error-icon">!</div>
-
-        <h2>Content not found</h2>
-
-        <p>The requested content could not be found.</p>
-        </div>
-    );
+        return (
+            <PageState
+            title="Content not found"
+            message="The requested content could not be found."
+            actionLabel="Back to Home"
+            onAction={() => navigate("/")}
+            />
+        );
     }
 
     return (

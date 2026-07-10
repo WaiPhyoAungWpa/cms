@@ -7,6 +7,7 @@ import LatestContent from "../components/public/LatestContent";
 import PublicContentGrid from "../components/public/PublicContentGrid";
 import PublicContentFilters from "../components/public/PublicContentFilters";
 import PublicContentPagination from "../components/public/PublicContentPagination";
+import PageState from "../components/common/PageState";
 import "../styles/pages/PublicHomePage.css";
 
 export default function PublicHomePage() {
@@ -61,41 +62,32 @@ export default function PublicHomePage() {
 
   if (loading) {
     return (
-      <div className="public-home-state">
-        <div className="public-home-spinner" />
-
-        <h2>Loading content</h2>
-
-        <p>Please wait while published content is being retrieved.</p>
-      </div>
+      <PageState
+        title="Loading content"
+        message="Please wait while published content is being retrieved."
+      />
     );
   }
 
   if (error) {
     return (
-      <div className="public-home-state">
-        <div className="public-home-error-icon">!</div>
-
-        <h2>Unable to load content</h2>
-
-        <p>{error}</p>
-
-        <button type="button" onClick={() => window.location.reload()}>
-          Try Again
-        </button>
-      </div>
+      <PageState
+        title="Unable to load content"
+        message={error}
+        actionLabel="Try Again"
+        onAction={() => window.location.reload()}
+      />
     );
   }
 
   if (!data) {
     return (
-      <div className="public-home-state">
-        <div className="public-home-empty-icon">○</div>
-
-        <h2>No content available</h2>
-
-        <p>There is no published content available at the moment.</p>
-      </div>
+      <PageState
+        title="No content available"
+        message="There is no published content available at the moment."
+        actionLabel="Try Again"
+        onAction={() => window.location.reload()}
+      />
     );
   }
 

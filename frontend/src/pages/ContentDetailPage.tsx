@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import { getContent } from "../services/contentService";
 import { ContentDetail } from "../types/content";
 import AdminContentDetailHeader from "../components/content/content-detail/admin/AdminContentDetailHeader";
+import PageState from "../components/common/PageState";
 import "../styles/pages/ContentDetailPage.css";
 
 export default function ContentDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [content, setContent] = useState<ContentDetail | null>(null);
 
@@ -43,34 +45,32 @@ export default function ContentDetailPage() {
 
   if (loading) {
     return (
-      <main className="content-detail-state">
-        <div className="content-detail-state-card">
-          <h2>Loading content</h2>
-          <p>Please wait while the content details are being retrieved.</p>
-        </div>
-      </main>
+      <PageState
+        title="Loading content"
+        message="Please wait while the content details are being retrieved."
+      />
     );
   }
 
   if (error) {
     return (
-      <main className="content-detail-state">
-        <div className="content-detail-state-card">
-          <h2>Unable to load content</h2>
-          <p>{error}</p>
-        </div>
-      </main>
+      <PageState
+        title="Unable to load content"
+        message={error}
+        actionLabel="Back to Manage Content"
+        onAction={() => navigate("/content")}
+      />
     );
   }
 
   if (!content) {
     return (
-      <main className="content-detail-state">
-        <div className="content-detail-state-card">
-          <h2>Content not found</h2>
-          <p>The requested content could not be found.</p>
-        </div>
-      </main>
+      <PageState
+        title="Content not found"
+        message="The requested content could not be found."
+        actionLabel="Back to Manage Content"
+        onAction={() => navigate("/content")}
+      />
     );
   }
 

@@ -4,6 +4,7 @@ import { DashboardSummary } from "../types/dashboard";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardStats from "../components/dashboard/DashboardStats";
 import RecentContent from "../components/dashboard/RecentContent";
+import PageState from "../components/common/PageState";
 import "../styles/pages/AdminHomePage.css";
 
 export default function AdminHomePage() {
@@ -38,15 +39,34 @@ export default function AdminHomePage() {
     }, []);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <PageState
+            title="Loading dashboard"
+            message="Please wait while the dashboard data is being retrieved."
+            />
+        );
     }
 
     if (error) {
-        return <p>{error}</p>;
+        return (
+            <PageState
+            title="Unable to load dashboard"
+            message={error}
+            actionLabel="Try Again"
+            onAction={() => window.location.reload()}
+            />
+        );
     }
 
     if (!dashboard) {
-        return <p>Dashboard data not available.</p>;
+        return (
+            <PageState
+            title="Dashboard data not available"
+            message="The dashboard data could not be found."
+            actionLabel="Try Again"
+            onAction={() => window.location.reload()}
+            />
+        );
     }
 
     return (

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../../styles/components/public/PublicContentDetailHeader.css";
+import "../../styles/components/content/content-detail/public/PublicContentDetailHeader.css";
 
 interface Props {
   title: string;

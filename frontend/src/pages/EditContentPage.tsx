@@ -9,6 +9,7 @@ import EditCoverImageField from "../components/content/edit-content/EditCoverIma
 import EditContentBasicFields from "../components/content/edit-content/EditContentBasicFields";
 import EditContentActions from "../components/content/edit-content/EditContentActions";
 import ContentPreview from "../components/content/content-preview/ContentPreview";
+import PageState from "../components/common/PageState";
 import { validateContentForm } from "../utils/contentValidation";
 import { useEditContentSections } from "../hooks/content/edit-content/useEditContentSections";
 import { useEditCoverImage } from "../hooks/content/edit-content/useEditCoverImage";
@@ -340,48 +341,32 @@ export default function EditContentPage() {
 
     if (loading) {
         return (
-            <main className="edit-content-page">
-                <div className="edit-content-state">
-                    <h2>Loading content</h2>
-                    <p>Please wait while the content is being retrieved.</p>
-                </div>
-            </main>
+            <PageState
+            title="Loading content"
+            message="Please wait while the content is being retrieved."
+            />
         );
     }
 
     if (error) {
         return (
-            <main className="edit-content-page">
-                <div className="edit-content-state edit-content-state-error">
-                    <h2>Unable to load content</h2>
-                    <p>{error}</p>
-
-                    <button
-                        type="button"
-                        onClick={() => navigate("/content")}
-                    >
-                        Back to Manage Content
-                    </button>
-                </div>
-            </main>
+            <PageState
+            title="Unable to load content"
+            message={error}
+            actionLabel="Back to Manage Content"
+            onAction={() => navigate("/content")}
+            />
         );
     }
 
     if (!content) {
         return (
-            <main className="edit-content-page">
-                <div className="edit-content-state">
-                    <h2>Content not found</h2>
-                    <p>The requested content record could not be found.</p>
-
-                    <button
-                        type="button"
-                        onClick={() => navigate("/content")}
-                    >
-                        Back to Manage Content
-                    </button>
-                </div>
-            </main>
+            <PageState
+            title="Content not found"
+            message="The requested content record could not be found."
+            actionLabel="Back to Manage Content"
+            onAction={() => navigate("/content")}
+            />
         );
     }
 

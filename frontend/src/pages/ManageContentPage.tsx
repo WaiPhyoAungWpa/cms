@@ -3,6 +3,7 @@ import ManageContentFilters from "../components/content/manage-content/ManageCon
 import ManageContentTable from "../components/content/manage-content/ManageContentTable";
 import ManageContentPagination from "../components/content/manage-content/ManageContentPagination";
 import RestoreContentModal from "../components/content/manage-content/RestoreContentModal";
+import PageState from "../components/common/PageState";
 import "../styles/pages/ManageContentPage.css";
 
 export default function ManageContentPage() {
@@ -36,29 +37,21 @@ export default function ManageContentPage() {
 
   if (loading) {
     return (
-      <div className="manage-content-state">
-        <div className="manage-content-spinner" />
-
-        <h2>Loading content</h2>
-
-        <p>Please wait while your content records are being retrieved.</p>
-      </div>
+      <PageState
+        title="Loading content"
+        message="Please wait while your content records are being retrieved."
+      />
     );
   }
 
   if (error) {
     return (
-      <div className="manage-content-state">
-        <div className="manage-content-error-icon">!</div>
-
-        <h2>Unable to load content</h2>
-
-        <p>{error}</p>
-
-        <button onClick={() => window.location.reload()}>
-          Try Again
-        </button>
-      </div>
+      <PageState
+        title="Unable to load content"
+        message={error}
+        actionLabel="Try Again"
+        onAction={() => window.location.reload()}
+      />
     );
   }
 
