@@ -9,6 +9,9 @@ using Microsoft.OpenApi;
 using Cms.Api.Repositories;
 using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Configurations;
+using Cms.Api.Entities;
+using Microsoft.AspNetCore.Identity;
+using Cms.Api.Data;
 
 namespace Cms.Api.Extensions;
 
@@ -24,9 +27,16 @@ public static class ServiceCollectionExtensions
         services.Configure<CloudinarySettings>(
             configuration.GetSection(CloudinarySettings.SectionName));
 
+        services.Configure<InitialAdminSettings>(
+            configuration.GetSection(InitialAdminSettings.SectionName));
+
         services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
 
         services.AddScoped<IAdminRepository, AdminRepository>();
+        
+        services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+
+        services.AddScoped<AdminDatabaseInitializer>();
 
         services.AddScoped<IAuthService, AuthService>();
 

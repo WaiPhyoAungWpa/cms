@@ -19,4 +19,9 @@ public class AdminRepository : IAdminRepository
         return await _context.Admins
             .FirstOrDefaultAsync(a => a.Username == username);
     }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

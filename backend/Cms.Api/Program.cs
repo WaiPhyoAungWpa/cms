@@ -1,6 +1,7 @@
 using Cms.Api.Extensions;
 using DotNetEnv;
 using System.Text.Json.Serialization;
+using Cms.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var initializer =
+        scope.ServiceProvider.GetRequiredService<AdminDatabaseInitializer>();
+
+    await initializer.InitializeAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

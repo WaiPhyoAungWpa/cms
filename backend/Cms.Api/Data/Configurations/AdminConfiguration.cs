@@ -14,6 +14,9 @@ public class AdminConfiguration : IEntityTypeConfiguration<Admin>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.HasIndex(admin => admin.Username)
+            .IsUnique();
+
         builder.Property(admin => admin.PasswordHash)
             .IsRequired()
             .HasMaxLength(255);   
