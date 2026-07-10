@@ -1,0 +1,15 @@
+.public-header {
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.public-header-inner {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.public-header-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+}

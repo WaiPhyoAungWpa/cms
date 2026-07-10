@@ -11,13 +11,14 @@ import ManageContentPage from "./pages/ManageContentPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ContentDetailPage from "./pages/ContentDetailPage";
 import EditContentPage from "./pages/EditContentPage";
+import PublicHomePage from "./pages/PublicHomePage";
 
 export default function App() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route
-                    path="/"
+                    path="/login"
                     element={<LoginPage />}
                 />
 
@@ -63,6 +64,8 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
+
+                <Route path="/" element={<PublicHomePage />} />
             </Routes>
         </BrowserRouter>
     );

@@ -2,6 +2,7 @@ using Cms.Api.Data.Context;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.PublicContent;
 using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,6 +68,81 @@ public class ContentRepository : IContentRepository
             .ToListAsync();
 
         return (items, totalCount);
+    }
+
+    public async Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
+        PublicContentQueryRequestDto request)
+    {
+        var query = _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category)
+            .Include(c => c.CoverImage)
+            .Where(c =>
+                c.Status == ContentStatus.Published &&
+                c.VisibilityStatus == VisibilityStatus.Public);
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(c =>
+                EF.Functions.ILike(c.Title, $"%{request.Search}%") ||
+                EF.Functions.ILike(c.Description, $"%{request.Search}%"));
+        }
+
+        if (request.CategoryId.HasValue)
+        {
+            query = query.Where(c =>
+                c.CategoryId == request.CategoryId.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    public async Task<(
+        Content? LatestContent,
+        int TotalCount,
+        int ExperienceCount,
+        int LearningCount,
+        int LifestyleCount
+    )> GetPublicSummaryAsync()
+    {
+        var query = _context.Contents
+            .AsNoTracking()
+            .Where(c =>
+                c.Status == ContentStatus.Published &&
+                c.VisibilityStatus == VisibilityStatus.Public);
+
+        var totalCount = await query.CountAsync();
+
+        var experienceCount = await query
+            .CountAsync(c => c.Category.Name == "Experience");
+
+        var learningCount = await query
+            .CountAsync(c => c.Category.Name == "Learning");
+
+        var lifestyleCount = await query
+            .CountAsync(c => c.Category.Name == "Lifestyle");
+
+        var latestContent = await query
+            .Include(c => c.Category)
+            .Include(c => c.CoverImage)
+            .OrderByDescending(c => c.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        return (
+            latestContent,
+            totalCount,
+            experienceCount,
+            learningCount,
+            lifestyleCount
+        );
     }
 
     public async Task<Content?> GetByIdAsync(int id)

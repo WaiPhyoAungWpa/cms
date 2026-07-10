@@ -39,6 +39,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IImageService, ImageService>();
 
+        services.AddScoped<IPublicContentService, PublicContentService>();
+
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

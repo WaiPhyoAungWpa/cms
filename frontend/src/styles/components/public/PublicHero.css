@@ -1,0 +1,89 @@
+.public-hero {
+  padding: 72px 0 64px;
+  text-align: center;
+}
+
+.public-hero-title {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.1;
+}
+
+.public-hero-description {
+  max-width: 640px;
+  margin: 20px auto 0;
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.public-hero-button {
+  margin-top: 28px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.public-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 56px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.public-hero-stat {
+  padding: 24px 16px;
+}
+
+.public-hero-stat + .public-hero-stat {
+  border-left: 1px solid #e5e7eb;
+}
+
+.public-hero-stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.public-hero-stat-label {
+  display: block;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .public-hero {
+    padding: 56px 0 48px;
+  }
+
+  .public-hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .public-hero-stat + .public-hero-stat {
+    border-left: 0;
+  }
+
+  .public-hero-stat:nth-child(even) {
+    border-left: 1px solid #e5e7eb;
+  }
+
+  .public-hero-stat:nth-child(n + 3) {
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+@media (max-width: 480px) {
+  .public-home-main,
+  .public-header-inner {
+    width: min(100% - 32px, 1200px);
+  }
+}

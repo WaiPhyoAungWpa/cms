@@ -1,5 +1,6 @@
 using Cms.Api.Entities;
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.PublicContent;
 
 namespace Cms.Api.Repositories.Interfaces;
 
@@ -11,6 +12,17 @@ public interface IContentRepository
 
     Task<(List<Content> Items, int TotalCount)> GetAllAsync(
         ContentQueryRequestDto request);
+
+    Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
+        PublicContentQueryRequestDto request);
+
+    Task<(
+        Content? LatestContent,
+        int TotalCount,
+        int ExperienceCount,
+        int LearningCount,
+        int LifestyleCount
+    )> GetPublicSummaryAsync();
 
     Task<Content?> GetByIdAsync(int id);
 

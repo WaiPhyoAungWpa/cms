@@ -1,3 +1,5 @@
+import { PagedResponse } from "./pagination";
+
 export interface CreateSectionRequest {
   title: string;
   description: string;
@@ -58,4 +60,32 @@ export interface UpdateContentRequest {
   description: string;
   coverImageId: number;
   sections: UpdateSectionRequest[];
+}
+
+export interface PublicContentListItem {
+  id: number;
+  title: string;
+  category: string;
+  coverImageUrl: string;
+}
+
+export interface PublicLatestContent {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  coverImageUrl: string;
+}
+
+export interface PublicContentStats {
+  total: number;
+  experience: number;
+  learning: number;
+  lifestyle: number;
+}
+
+export interface PublicContentListResponse {
+  contents: PagedResponse<PublicContentListItem>;
+  latestContent: PublicLatestContent | null;
+  stats: PublicContentStats;
 }
