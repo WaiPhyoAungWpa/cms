@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { PublicLatestContent } from "../../types/content";
 import { getImageUrl } from "../../utils/image";
 import "../../styles/components/public/LatestContent.css";
@@ -7,13 +8,18 @@ interface Props {
 }
 
 export default function LatestContent({ content }: Props) {
+  const navigate = useNavigate();
+  
   return (
     <section className="latest-content">
       <h2 className="latest-content-title">
         Latest Content
       </h2>
 
-      <article className="latest-content-card">
+      <article 
+        className="latest-content-card" 
+        onClick={() => navigate(`/public/content/${content.id}`)}
+      >
         <img
           className="latest-content-image"
           src={getImageUrl(content.coverImageUrl)}

@@ -1,11 +1,11 @@
-import { ContentDetail } from "../../../types/content";
+import { ContentTemplateData  } from "../../../types/content";
 
 import ExperienceTemplate from "./ExperienceTemplate";
 import LearningTemplate from "./LearningTemplate";
 import LifestyleTemplate from "./LifestyleTemplate";
 
 interface Props {
-  content: ContentDetail;
+  content: ContentTemplateData;
 }
 
 export default function ContentTemplateRenderer({ content }: Props) {

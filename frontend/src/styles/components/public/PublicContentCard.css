@@ -3,6 +3,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   background: #ffffff;
+  cursor: pointer;
 }
 
 .public-content-card-image {

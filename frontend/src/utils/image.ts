@@ -7,5 +7,5 @@ export function getImageUrl(url: string): string {
 
   const backendBase = API_BASE_URL.replace("/api", "");
 
-  return `${backendBase}${url}`;
+  return `${backendBase}${url}?v=2`;
 }

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import { PublicContentListResponse } from "../types/content";
+import { PublicContentListResponse, PublicContentDetail } from "../types/content";
 
 const API_URL = `${API_BASE_URL}/public/content`;
 
@@ -35,6 +35,18 @@ export async function getPublicContents({
     throw new Error(
       "Unable to retrieve content. Please try again later."
     );
+  }
+
+  return response.json();
+}
+
+export async function getPublicContentById(
+  id: number
+): Promise<PublicContentDetail> {
+  const response = await fetch(`${API_URL}/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to retrieve content.");
   }
 
   return response.json();

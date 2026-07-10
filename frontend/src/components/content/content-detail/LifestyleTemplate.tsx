@@ -1,10 +1,10 @@
-import { ContentDetail } from "../../../types/content";
+import { ContentTemplateData  } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
 
 import "../../../styles/components/content/content-detail/LifestyleTemplate.css";
 
 interface Props {
-  content: ContentDetail;
+  content: ContentTemplateData;
 }
 
 export default function LifestyleTemplate({ content }: Props) {

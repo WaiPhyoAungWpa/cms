@@ -6,4 +6,6 @@ public interface IPublicContentService
 {
     Task<PublicContentListResponseDto> GetAllAsync(
         PublicContentQueryRequestDto request);
+
+    Task<PublicContentDetailResponseDto> GetByIdAsync(int id);
 }

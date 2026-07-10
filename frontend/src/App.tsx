@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ContentDetailPage from "./pages/ContentDetailPage";
 import EditContentPage from "./pages/EditContentPage";
 import PublicHomePage from "./pages/PublicHomePage";
+import PublicContentDetailPage from "./pages/PublicContentDetailPage";
 
 export default function App() {
     return (
@@ -66,6 +67,11 @@ export default function App() {
                 />
 
                 <Route path="/" element={<PublicHomePage />} />
+
+                <Route
+                    path="/public/content/:id"
+                    element={<PublicContentDetailPage />}
+                />
             </Routes>
         </BrowserRouter>
     );

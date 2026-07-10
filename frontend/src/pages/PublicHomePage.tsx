@@ -60,15 +60,43 @@ export default function PublicHomePage() {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="public-home-state">
+        <div className="public-home-spinner" />
+
+        <h2>Loading content</h2>
+
+        <p>Please wait while published content is being retrieved.</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <div className="public-home-state">
+        <div className="public-home-error-icon">!</div>
+
+        <h2>Unable to load content</h2>
+
+        <p>{error}</p>
+
+        <button type="button" onClick={() => window.location.reload()}>
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   if (!data) {
-    return <p>No content available.</p>;
+    return (
+      <div className="public-home-state">
+        <div className="public-home-empty-icon">○</div>
+
+        <h2>No content available</h2>
+
+        <p>There is no published content available at the moment.</p>
+      </div>
+    );
   }
 
   return (

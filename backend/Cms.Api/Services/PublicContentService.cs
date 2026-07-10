@@ -69,4 +69,33 @@ public class PublicContentService : IPublicContentService
             }
         };
     }
+
+    public async Task<PublicContentDetailResponseDto> GetByIdAsync(int id)
+    {
+        var content = await _contentRepository.GetPublishedByIdAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        return new PublicContentDetailResponseDto
+        {
+            Id = content.Id,
+            Category = content.Category.Name,
+            Title = content.Title,
+            Description = content.Description,
+            CoverImageUrl = content.CoverImage.FilePath,
+            Sections = content.Sections
+                .Select(section => new PublicContentSectionResponseDto
+                {
+                    Id = section.Id,
+                    Title = section.Title,
+                    Description = section.Description,
+                    ImageUrl = section.SectionImage.FilePath
+                })
+                .ToList()
+        };
+    }
+
 }

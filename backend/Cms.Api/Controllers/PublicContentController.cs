@@ -24,4 +24,23 @@ public class PublicContentController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<PublicContentDetailResponseDto>> GetById(int id)
+    {
+        try
+        {
+            var content = await _publicContentService.GetByIdAsync(id);
+
+            return Ok(content);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message
+            });
+        }
+    }
 }
+

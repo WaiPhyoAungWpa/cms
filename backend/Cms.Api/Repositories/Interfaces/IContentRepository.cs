@@ -39,4 +39,6 @@ public interface IContentRepository
         int SoftDeletedCount,
         List<Content> RecentContents
     )> GetDashboardSummaryAsync();
+
+    Task<Content?> GetPublishedByIdAsync(int id);
 }

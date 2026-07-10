@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { PublicContentListItem } from "../../types/content";
 import { getImageUrl } from "../../utils/image";
 import "../../styles/components/public/PublicContentCard.css";
@@ -7,8 +8,13 @@ interface Props {
 }
 
 export default function PublicContentCard({ content }: Props) {
+  const navigate = useNavigate();
+
   return (
-    <article className="public-content-card">
+    <article 
+      className="public-content-card"
+      onClick={() => navigate(`/public/content/${content.id}`)}
+    >
       <img
         className="public-content-card-image"
         src={getImageUrl(content.coverImageUrl)}

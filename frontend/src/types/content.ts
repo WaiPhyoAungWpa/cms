@@ -89,3 +89,33 @@ export interface PublicContentListResponse {
   latestContent: PublicLatestContent | null;
   stats: PublicContentStats;
 }
+
+export interface PublicContentSection {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
+export interface PublicContentDetail {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  coverImageUrl: string;
+  sections: PublicContentSection[];
+}
+
+export interface ContentTemplateData {
+  id: number;
+  category: string;
+  title: string;
+  description: string;
+  coverImageUrl: string;
+  sections: {
+    id: number;
+    title: string;
+    description: string;
+    imageUrl: string;
+  }[];
+}
