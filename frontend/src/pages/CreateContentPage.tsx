@@ -132,7 +132,7 @@ export default function CreateContentPage() {
         try {
           const request = buildCreateRequest();   
 
-          publishContent(request, token);
+          await publishContent(request, token);
 
           alert("The content has been published successfully.");
           navigate("/content");
