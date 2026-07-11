@@ -2,6 +2,7 @@ using Cms.Api.DTOs.Common;
 using Cms.Api.DTOs.PublicContent;
 using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services.Interfaces;
+using Cms.Api.Validators;
 
 namespace Cms.Api.Services;
 
@@ -17,6 +18,8 @@ public class PublicContentService : IPublicContentService
     public async Task<PublicContentListResponseDto> GetAllAsync(
         PublicContentQueryRequestDto request)
     {
+        PaginationValidator.Validate(request.Page, request.PageSize);
+
         var (items, totalCount) =
             await _contentRepository.GetAllPublicAsync(request);
 

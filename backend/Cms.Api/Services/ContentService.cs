@@ -5,6 +5,7 @@ using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services.Interfaces;
+using Cms.Api.Validators;
 
 namespace Cms.Api.Services;
 
@@ -120,6 +121,8 @@ public class ContentService : IContentService
     public async Task<PagedResponseDto<ContentListResponseDto>>
         GetAllAsync(ContentQueryRequestDto request)
     {
+        PaginationValidator.Validate(request.Page, request.PageSize);
+
         var result = await _contentRepository.GetAllAsync(request);
 
         var items = result.Items.Select(content => new ContentListResponseDto
