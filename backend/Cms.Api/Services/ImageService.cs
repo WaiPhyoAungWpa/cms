@@ -38,13 +38,22 @@ public class ImageService : IImageService
     IFormFile file,
     int categoryId)
     {
+        const long MaxFileSize = 5 * 1024 * 1024;
+
+        if (file is null)
+        {
+            throw new ArgumentException("No file uploaded.");
+        }
+
         if (file.Length == 0)
         {
             throw new ArgumentException("Image file is empty.");
         }
-        
-        if (file.Length > 5 * 1024 * 1024)
+
+        if (file.Length > MaxFileSize)
+        {
             throw new ArgumentException("Image size cannot exceed 5 MB.");
+        }  
 
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
 
@@ -53,6 +62,19 @@ public class ImageService : IImageService
         if (!allowedExtensions.Contains(extension))
         {
             throw new ArgumentException("Only JPG, JPEG, PNG and WEBP images are allowed.");
+        }
+
+        var allowedContentTypes = new[]
+        {
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        };
+
+        if (!allowedContentTypes.Contains(file.ContentType))
+        {
+            throw new ArgumentException(
+                "Only JPG, JPEG, PNG and WEBP images are allowed.");
         }
 
         var folder = ImageFolderHelper.GetFolder(categoryId);

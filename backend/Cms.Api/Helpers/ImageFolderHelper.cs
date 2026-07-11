@@ -1,4 +1,5 @@
 namespace Cms.Api.Helpers;
+
 public static class ImageFolderHelper
 {
     public static string GetFolder(int categoryId)
@@ -8,7 +9,7 @@ public static class ImageFolderHelper
             1 => "cms/experience",
             2 => "cms/learning",
             3 => "cms/lifestyle",
-            _ => "cms"
+            _ => throw new ArgumentException("Invalid category.")
         };
     }
 }

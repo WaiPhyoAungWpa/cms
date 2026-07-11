@@ -30,11 +30,6 @@ public class ImagesController : ControllerBase
         IFormFile file,
         [FromForm] int categoryId)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("No file uploaded.");
-        }
-
         var result = await _imageService.UploadAsync(file, categoryId);
 
         return Ok(result);
