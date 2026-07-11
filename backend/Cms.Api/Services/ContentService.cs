@@ -275,7 +275,7 @@ public class ContentService : IContentService
     {
         ValidateRequest(request);
 
-        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+        var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
         {
@@ -303,7 +303,7 @@ public class ContentService : IContentService
     {
         ValidateRequest(request);
 
-        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+        var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
         {
@@ -331,7 +331,7 @@ public class ContentService : IContentService
     {
         ValidateRequest(request);
 
-        var content = await _contentRepository.GetByIdForUpdateAsync(id);
+        var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
         {
@@ -355,7 +355,7 @@ public class ContentService : IContentService
 
     public async Task<ContentResponseDto> SoftDeleteAsync(int id)
     {
-        var content = await _contentRepository.GetByIdForDeleteAsync(id);
+        var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
         {
@@ -383,7 +383,7 @@ public class ContentService : IContentService
         int id,
         RestoreContentRequestDto request)
     {
-        var content = await _contentRepository.GetByIdForRestoreAsync(id);
+        var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
         {

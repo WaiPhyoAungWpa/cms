@@ -156,22 +156,10 @@ public class ContentRepository : IContentRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<Content?> GetByIdForUpdateAsync(int id)
+    public async Task<Content?> GetByIdTrackedAsync(int id)
     {
         return await _context.Contents
             .Include(c => c.Sections)
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<Content?> GetByIdForDeleteAsync(int id)
-    {
-        return await _context.Contents
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<Content?> GetByIdForRestoreAsync(int id)
-    {
-        return await _context.Contents
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
