@@ -2,6 +2,7 @@ using Cms.Api.Extensions;
 using DotNetEnv;
 using System.Text.Json.Serialization;
 using Cms.Api.Data;
+using Cms.Api.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddControllers()
     });
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddCors(options =>
 {
@@ -48,6 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("Frontend");

@@ -12,6 +12,11 @@ public class ContentService : IContentService
 {
     private readonly IContentRepository _contentRepository;
 
+    public ContentService(IContentRepository contentRepository)
+    {
+        _contentRepository = contentRepository;
+    }
+
     private static void ValidateRequest(CreateContentRequestDto request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -80,11 +85,6 @@ public class ContentService : IContentService
             Status = content.Status.ToString(),
             VisibilityStatus = content.VisibilityStatus.ToString()
         };
-    }
-
-    public ContentService(IContentRepository contentRepository)
-    {
-        _contentRepository = contentRepository;
     }
 
     public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)

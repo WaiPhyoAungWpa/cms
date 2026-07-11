@@ -22,7 +22,7 @@ public class ContentController : ControllerBase
     public async Task<IActionResult> Publish(CreateContentRequestDto request)
     {
         var result = await _contentService.PublishAsync(request);
-
+        
         return Ok(result);
     }
 
@@ -30,7 +30,7 @@ public class ContentController : ControllerBase
     public async Task<IActionResult> SaveDraft(CreateContentRequestDto request)
     {
         var result = await _contentService.SaveDraftAsync(request);
-
+        
         return Ok(result);
     }
 
@@ -46,18 +46,9 @@ public class ContentController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ContentDetailResponseDto>> GetById(int id)
     {
-        try
-        {
-            var content = await _contentService.GetByIdAsync(id);
-            return Ok(content);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
+        var content = await _contentService.GetByIdAsync(id);
+        
+        return Ok(content);
     }
 
     [HttpPut("{id:int}/draft")]
@@ -65,26 +56,9 @@ public class ContentController : ControllerBase
         int id,
         UpdateContentRequestDto request)
     {
-        try
-        {
-            var result = await _contentService.UpdateDraftAsync(id, request);
+        var result = await _contentService.UpdateDraftAsync(id, request);
 
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return Ok(result);
     }
 
     [HttpPut("{id:int}/publish")]
@@ -92,26 +66,9 @@ public class ContentController : ControllerBase
         int id,
         UpdateContentRequestDto request)
     {
-        try
-        {
-            var result = await _contentService.PublishDraftAsync(id, request);
+        var result = await _contentService.PublishDraftAsync(id, request);
 
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return Ok(result);
     }
 
     [HttpPut("{id:int}")]
@@ -119,44 +76,17 @@ public class ContentController : ControllerBase
         int id,
         UpdateContentRequestDto request)
     {
-        try
-        {
-            var result = await _contentService.UpdatePublishedAsync(id, request);
+        var result = await _contentService.UpdatePublishedAsync(id, request);
 
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new
-            {
-                message = ex.Message
-            });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new
-            {
-                message = ex.Message
-            });
-        }
+        return Ok(result);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ContentResponseDto>> SoftDelete(int id)
     {
-        try
-        {
-            var result = await _contentService.SoftDeleteAsync(id);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _contentService.SoftDeleteAsync(id);
+            
+        return Ok(result);
     }
 
     [HttpPut("{id:int}/restore")]
@@ -164,19 +94,9 @@ public class ContentController : ControllerBase
         int id,
         RestoreContentRequestDto request)
     {
-        try
-        {
-            var result = await _contentService.RestoreAsync(id, request);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _contentService.RestoreAsync(id, request);
+        
+        return Ok(result);
     }
 
 }
