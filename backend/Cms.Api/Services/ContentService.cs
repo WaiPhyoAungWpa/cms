@@ -282,9 +282,12 @@ public class ContentService : IContentService
         }
     }
 
-    public async Task<ContentResponseDto> UpdateDraftAsync(
+    private async Task<ContentResponseDto> UpdateContentAsync(
         int id,
-        UpdateContentRequestDto request)
+        UpdateContentRequestDto request,
+        ContentStatus requiredStatus,
+        ContentStatus targetStatus,
+        string invalidStatusMessage)
     {
         ValidateRequest(request);
 
@@ -295,75 +298,54 @@ public class ContentService : IContentService
             throw new KeyNotFoundException("Content not found.");
         }
 
-        if (content.Status != ContentStatus.Draft)
+        if (content.Status != requiredStatus)
         {
-            throw new InvalidOperationException(
-                "Only draft content can be saved as draft.");
+            throw new InvalidOperationException(invalidStatusMessage);
         }
 
         ApplyUpdates(content, request);
 
-        content.Status = ContentStatus.Draft;
+        content.Status = targetStatus;
 
         await _contentRepository.SaveChangesAsync();
 
         return MapToResponse(content);
     }
 
-    public async Task<ContentResponseDto> PublishDraftAsync(
+    public Task<ContentResponseDto> UpdateDraftAsync(
         int id,
         UpdateContentRequestDto request)
     {
-        ValidateRequest(request);
-
-        var content = await _contentRepository.GetByIdTrackedAsync(id);
-
-        if (content is null)
-        {
-            throw new KeyNotFoundException("Content not found.");
-        }
-
-        if (content.Status != ContentStatus.Draft)
-        {
-            throw new InvalidOperationException(
-                "Only draft content can be published.");
-        }
-
-        ApplyUpdates(content, request);
-
-        content.Status = ContentStatus.Published;
-
-        await _contentRepository.SaveChangesAsync();
-
-        return MapToResponse(content);
+        return UpdateContentAsync(
+            id,
+            request,
+            ContentStatus.Draft,
+            ContentStatus.Draft,
+            "Only draft content can be saved as draft.");
     }
 
-    public async Task<ContentResponseDto> UpdatePublishedAsync(
+    public Task<ContentResponseDto> PublishDraftAsync(
         int id,
         UpdateContentRequestDto request)
     {
-        ValidateRequest(request);
+        return UpdateContentAsync(
+            id,
+            request,
+            ContentStatus.Draft,
+            ContentStatus.Published,
+            "Only draft content can be published.");
+    }
 
-        var content = await _contentRepository.GetByIdTrackedAsync(id);
-
-        if (content is null)
-        {
-            throw new KeyNotFoundException("Content not found.");
-        }
-
-        if (content.Status != ContentStatus.Published)
-        {
-            throw new InvalidOperationException(
-                "Only published content can be updated.");
-        }
-
-        ApplyUpdates(content, request);
-
-        content.Status = ContentStatus.Published;
-
-        await _contentRepository.SaveChangesAsync();
-
-        return MapToResponse(content);
+    public Task<ContentResponseDto> UpdatePublishedAsync(
+        int id,
+        UpdateContentRequestDto request)
+    {
+        return UpdateContentAsync(
+            id,
+            request,
+            ContentStatus.Published,
+            ContentStatus.Published,
+            "Only published content can be updated.");
     }
 
     public async Task<ContentResponseDto> SoftDeleteAsync(int id)
