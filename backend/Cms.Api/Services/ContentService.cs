@@ -18,23 +18,65 @@ public class ContentService : IContentService
         _contentRepository = contentRepository;
     }
 
+    private readonly record struct SectionValidationData(
+        string Title,
+        string Description,
+        int SectionImageId);
+
     private static void ValidateRequest(CreateContentRequestDto request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        if (request.CategoryId <= 0)
+        ValidateContentFields(
+            request.CategoryId,
+            request.Title,
+            request.Description,
+            request.CoverImageId,
+            request.Sections.Select(s =>
+                new SectionValidationData(
+                    s.Title,
+                    s.Description,
+                    s.SectionImageId))
+        );
+    }
+
+    private static void ValidateRequest(UpdateContentRequestDto request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        ValidateContentFields(
+            request.CategoryId,
+            request.Title,
+            request.Description,
+            request.CoverImageId,
+            request.Sections.Select(s =>
+                new SectionValidationData(
+                    s.Title,
+                    s.Description,
+                    s.SectionImageId))
+        );
+    }
+
+    private static void ValidateContentFields(
+        int categoryId,
+        string title,
+        string description,
+        int coverImageId,
+        IEnumerable<SectionValidationData> sections)
+    {
+        if (categoryId <= 0)
             throw new ArgumentException("Category is required.");
 
-        if (string.IsNullOrWhiteSpace(request.Title))
+        if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title is required.");
 
-        if (string.IsNullOrWhiteSpace(request.Description))
+        if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("Description is required.");
 
-        if (request.CoverImageId <= 0)
+        if (coverImageId <= 0)
             throw new ArgumentException("Cover image is required.");
 
-        foreach (var section in request.Sections)
+        foreach (var section in sections)
         {
             if (string.IsNullOrWhiteSpace(section.Title))
                 throw new ArgumentException("Section title is required.");
@@ -182,35 +224,6 @@ public class ContentService : IContentService
                 })
                 .ToList()
         };
-    }
-
-    private static void ValidateRequest(UpdateContentRequestDto request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        if (request.CategoryId <= 0)
-            throw new ArgumentException("Category is required.");
-
-        if (string.IsNullOrWhiteSpace(request.Title))
-            throw new ArgumentException("Title is required.");
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-            throw new ArgumentException("Description is required.");
-
-        if (request.CoverImageId <= 0)
-            throw new ArgumentException("Cover image is required.");
-
-        foreach (var section in request.Sections)
-        {
-            if (string.IsNullOrWhiteSpace(section.Title))
-                throw new ArgumentException("Section title is required.");
-
-            if (string.IsNullOrWhiteSpace(section.Description))
-                throw new ArgumentException("Section description is required.");
-
-            if (section.SectionImageId <= 0)
-                throw new ArgumentException("Section image is required.");
-        }
     }
 
     private static void ApplyUpdates(
