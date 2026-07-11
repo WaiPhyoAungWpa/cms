@@ -15,14 +15,14 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
             .HasMaxLength(255);
 
         builder.Property(section => section.Description)
-            .IsRequired();  
-            
+            .IsRequired();
+
         builder.HasOne(section => section.Content)
             .WithMany(content => content.Sections)
             .HasForeignKey(section => section.ContentId);
 
         builder.HasOne(section => section.SectionImage)
-            .WithMany(image => image.Sections)  
-            .HasForeignKey(section => section.SectionImageId);  
+            .WithMany(image => image.Sections)
+            .HasForeignKey(section => section.SectionImageId);
     }
 }

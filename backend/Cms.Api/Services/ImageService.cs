@@ -4,7 +4,6 @@ using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Helpers;
-using Microsoft.AspNetCore.Http;
 
 namespace Cms.Api.Services;
 
@@ -53,7 +52,7 @@ public class ImageService : IImageService
         if (file.Length > MaxFileSize)
         {
             throw new ArgumentException("Image size cannot exceed 5 MB.");
-        }  
+        }
 
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
 

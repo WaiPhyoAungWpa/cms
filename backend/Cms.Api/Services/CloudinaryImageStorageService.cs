@@ -1,8 +1,6 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Cms.Api.Configurations;
-using Cms.Api.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace Cms.Api.Services;
@@ -47,32 +45,4 @@ public class CloudinaryImageStorageService : IImageStorageService
         return result.SecureUrl.ToString();
     }
 
-    public async Task DeleteAsync(string filePath)
-    {
-        if (string.IsNullOrWhiteSpace(filePath))
-        {
-            return;
-        }
-
-        var uri = new Uri(filePath);
-
-        var segments = uri.AbsolutePath.Split('/');
-
-        var uploadIndex = Array.IndexOf(segments, "upload");
-
-        if (uploadIndex == -1)
-        {
-            return;
-        }
-
-        var publicId = string.Join(
-            "/",
-            segments[(uploadIndex + 2)..]);
-
-        publicId = Path.ChangeExtension(publicId, null);
-
-        var deleteParams = new DeletionParams(publicId);
-
-        await _cloudinary.DestroyAsync(deleteParams);
-    }
 }

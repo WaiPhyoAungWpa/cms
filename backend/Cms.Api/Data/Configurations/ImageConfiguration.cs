@@ -21,7 +21,7 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
 
         builder.HasOne(image => image.Category)
             .WithMany(category => category.Images)
-            .HasForeignKey(image => image.CategoryId);   
+            .HasForeignKey(image => image.CategoryId);
 
         builder.HasData(
             new Image
@@ -49,42 +49,42 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
             {
                 Id = 4,
                 FilePath = "/images/defaults/learning-1.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 2
             },
             new Image
             {
                 Id = 5,
                 FilePath = "/images/defaults/learning-2.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 2
             },
             new Image
             {
                 Id = 6,
                 FilePath = "/images/defaults/learning-3.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 2
             },
             new Image
             {
                 Id = 7,
                 FilePath = "/images/defaults/lifestyle-1.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 3
             },
             new Image
             {
                 Id = 8,
                 FilePath = "/images/defaults/lifestyle-2.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 3
             },
             new Image
             {
                 Id = 9,
                 FilePath = "/images/defaults/lifestyle-3.png",
-                Type = ImageType.Default,           
+                Type = ImageType.Default,
                 CategoryId = 3
             }
         );

@@ -22,7 +22,7 @@ public class ContentController : ControllerBase
     public async Task<IActionResult> Publish(CreateContentRequestDto request)
     {
         var result = await _contentService.PublishAsync(request);
-        
+
         return Ok(result);
     }
 
@@ -30,7 +30,7 @@ public class ContentController : ControllerBase
     public async Task<IActionResult> SaveDraft(CreateContentRequestDto request)
     {
         var result = await _contentService.SaveDraftAsync(request);
-        
+
         return Ok(result);
     }
 
@@ -47,7 +47,7 @@ public class ContentController : ControllerBase
     public async Task<ActionResult<ContentDetailResponseDto>> GetById(int id)
     {
         var content = await _contentService.GetByIdAsync(id);
-        
+
         return Ok(content);
     }
 
@@ -85,7 +85,7 @@ public class ContentController : ControllerBase
     public async Task<ActionResult<ContentResponseDto>> SoftDelete(int id)
     {
         var result = await _contentService.SoftDeleteAsync(id);
-            
+
         return Ok(result);
     }
 
@@ -95,7 +95,7 @@ public class ContentController : ControllerBase
         RestoreContentRequestDto request)
     {
         var result = await _contentService.RestoreAsync(id, request);
-        
+
         return Ok(result);
     }
 

@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
 
         services.AddScoped<IAdminRepository, AdminRepository>();
-        
+
         services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 
         services.AddScoped<AdminDatabaseInitializer>();

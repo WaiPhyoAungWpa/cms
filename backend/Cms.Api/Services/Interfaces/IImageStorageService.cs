@@ -4,5 +4,4 @@ public interface IImageStorageService
         IFormFile file,
         string folder);
 
-    Task DeleteAsync(string filePath);
 }

@@ -19,12 +19,12 @@ public class AdminConfiguration : IEntityTypeConfiguration<Admin>
 
         builder.Property(admin => admin.PasswordHash)
             .IsRequired()
-            .HasMaxLength(255);   
+            .HasMaxLength(255);
 
         builder.Property(admin => admin.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(admin => admin.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");     
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

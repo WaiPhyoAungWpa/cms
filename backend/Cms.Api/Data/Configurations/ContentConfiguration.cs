@@ -36,7 +36,7 @@ public class ContentConfiguration : IEntityTypeConfiguration<Content>
         builder.HasMany(content => content.Sections)
             .WithOne(section => section.Content)
             .HasForeignKey(section => section.ContentId);
-            
+
         builder.Property(content => content.Status)
             .HasConversion<string>();
 
@@ -48,10 +48,10 @@ public class ContentConfiguration : IEntityTypeConfiguration<Content>
 
         builder.Property(content => content.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");        
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(content => content.UpdatedAt)
             .IsRequired()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");    
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }
