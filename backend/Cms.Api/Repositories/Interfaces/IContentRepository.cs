@@ -6,23 +6,13 @@ namespace Cms.Api.Repositories.Interfaces;
 
 public interface IContentRepository
 {
+    // Persistence
     Task AddAsync(Content content);
-
     Task SaveChangesAsync();
 
+    // Admin content
     Task<(List<Content> Items, int TotalCount)> GetAllAsync(
         ContentQueryRequestDto request);
-
-    Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
-        PublicContentQueryRequestDto request);
-
-    Task<(
-        Content? LatestContent,
-        int TotalCount,
-        int ExperienceCount,
-        int LearningCount,
-        int LifestyleCount
-    )> GetPublicSummaryAsync();
 
     Task<Content?> GetByIdAsync(int id);
 
@@ -35,6 +25,18 @@ public interface IContentRepository
         int SoftDeletedCount,
         List<Content> RecentContents
     )> GetDashboardSummaryAsync();
+
+    // Public content
+    Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
+        PublicContentQueryRequestDto request);
+
+    Task<(
+        Content? LatestContent,
+        int TotalCount,
+        int ExperienceCount,
+        int LearningCount,
+        int LifestyleCount
+    )> GetPublicSummaryAsync();
 
     Task<Content?> GetPublishedByIdAsync(int id);
 }

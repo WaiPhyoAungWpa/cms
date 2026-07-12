@@ -3,17 +3,19 @@ using System.Security.Claims;
 using System.Text;
 using Cms.Api.Entities;
 using Cms.Api.Services.Interfaces;
+using Cms.Api.Configurations;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 
 namespace Cms.Api.Services;
 
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public JwtTokenGenerator(IConfiguration configuration)
+    public JwtTokenGenerator(IOptions<JwtSettings> jwtOptions)
     {
-        _configuration = configuration;
+        _jwtSettings = jwtOptions.Value;
     }
 
     public string GenerateToken(Admin admin)
@@ -25,7 +27,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         };
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            Encoding.UTF8.GetBytes(_jwtSettings.Key));
 
         var credentials =
             new SigningCredentials(
@@ -33,10 +35,10 @@ public class JwtTokenGenerator : IJwtTokenGenerator
                 SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
+            expires: DateTime.UtcNow.AddHours(_jwtSettings.TokenLifetimeHours),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler()

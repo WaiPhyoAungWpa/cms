@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cms.Api.Controllers;
 
+/// <summary>
+/// Provides dashboard summary information for administrators.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -17,6 +20,9 @@ public class DashboardController : ControllerBase
         _contentService = contentService;
     }
 
+    /// <summary>
+    /// Retrieves the dashboard summary.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<DashboardSummaryResponseDto>> GetSummary()
     {

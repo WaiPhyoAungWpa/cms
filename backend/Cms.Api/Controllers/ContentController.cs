@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cms.Api.Controllers;
 
+/// <summary>
+/// Provides endpoints for administrators to create, manage, update,
+/// delete, and restore content.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -18,6 +22,11 @@ public class ContentController : ControllerBase
         _contentService = contentService;
     }
 
+    /// <summary>
+    /// Publishes a new content item.
+    /// </summary>
+    /// <param name="request">The content creation request.</param>
+    /// <returns>The created published content.</returns>
     [HttpPost("publish")]
     public async Task<IActionResult> Publish(CreateContentRequestDto request)
     {
@@ -26,6 +35,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Saves a new content item as a draft.
+    /// </summary>
     [HttpPost("draft")]
     public async Task<IActionResult> SaveDraft(CreateContentRequestDto request)
     {
@@ -34,6 +46,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of content items.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<PagedResponseDto<ContentListResponseDto>>> GetAll(
         [FromQuery] ContentQueryRequestDto request)
@@ -43,6 +58,9 @@ public class ContentController : ControllerBase
         return Ok(contents);
     }
 
+    /// <summary>
+    /// Retrieves the details of a content item.
+    /// </summary>
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ContentDetailResponseDto>> GetById(int id)
     {
@@ -51,6 +69,9 @@ public class ContentController : ControllerBase
         return Ok(content);
     }
 
+    /// <summary>
+    /// Updates an existing draft.
+    /// </summary>
     [HttpPut("{id:int}/draft")]
     public async Task<ActionResult<ContentResponseDto>> UpdateDraft(
         int id,
@@ -61,6 +82,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Publishes an existing draft.
+    /// </summary>
     [HttpPut("{id:int}/publish")]
     public async Task<ActionResult<ContentResponseDto>> PublishDraft(
         int id,
@@ -71,6 +95,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Updates an existing published content item.
+    /// </summary>
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ContentResponseDto>> UpdatePublished(
         int id,
@@ -81,6 +108,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Soft-deletes a content item.
+    /// </summary>
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ContentResponseDto>> SoftDelete(int id)
     {
@@ -89,6 +119,9 @@ public class ContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Restores a previously soft-deleted content item.
+    /// </summary>
     [HttpPut("{id:int}/restore")]
     public async Task<ActionResult<ContentResponseDto>> Restore(
         int id,

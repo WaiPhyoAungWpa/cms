@@ -1,4 +1,5 @@
 using Cms.Api.Entities;
+using Cms.Api.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +13,7 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
 
         builder.Property(section => section.Title)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(EntityFieldLengths.Title);
 
         builder.Property(section => section.Description)
             .IsRequired();

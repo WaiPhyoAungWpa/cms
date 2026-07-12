@@ -1,3 +1,5 @@
+using Cms.Api.Constants;
+
 namespace Cms.Api.Helpers;
 
 public static class ImageFolderHelper
@@ -6,9 +8,9 @@ public static class ImageFolderHelper
     {
         return categoryId switch
         {
-            1 => "cms/experience",
-            2 => "cms/learning",
-            3 => "cms/lifestyle",
+            CategoryIds.Experience => ImageStorageFolders.Experience,
+            CategoryIds.Learning => ImageStorageFolders.Learning,
+            CategoryIds.Lifestyle => ImageStorageFolders.Lifestyle,
             _ => throw new ArgumentException("Invalid category.")
         };
     }

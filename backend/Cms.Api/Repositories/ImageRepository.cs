@@ -15,23 +15,25 @@ public class ImageRepository : IImageRepository
         _context = context;
     }
 
+    // Persistence
+    public async Task AddAsync(Image image)
+    {
+        await _context.Images.AddAsync(image);
+    }
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    // Default images
     public async Task<List<Image>> GetDefaultImagesByCategoryAsync(int categoryId)
     {
         return await _context.Images
+            .AsNoTracking()
             .Where(image =>
                 image.CategoryId == categoryId &&
                 image.Type == ImageType.Default)
             .OrderBy(image => image.Id)
             .ToListAsync();
-    }
-
-    public async Task AddAsync(Image image)
-    {
-        await _context.Images.AddAsync(image);
-    }
-
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
     }
 }

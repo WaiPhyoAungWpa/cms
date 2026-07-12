@@ -1,6 +1,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Cms.Api.Configurations;
+using Cms.Api.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
 namespace Cms.Api.Services;

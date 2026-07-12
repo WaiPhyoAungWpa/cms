@@ -362,7 +362,7 @@ public class ContentService : IContentService
             "Only published content can be updated.");
     }
 
-    // Delete / Restore
+    // Delete
     public async Task<ContentResponseDto> SoftDeleteAsync(int id)
     {
         var content = await _contentRepository.GetByIdTrackedAsync(id);
@@ -389,6 +389,7 @@ public class ContentService : IContentService
         return MapToResponse(content);
     }
 
+    // Restore
     public async Task<ContentResponseDto> RestoreAsync(
         int id,
         RestoreContentRequestDto request)

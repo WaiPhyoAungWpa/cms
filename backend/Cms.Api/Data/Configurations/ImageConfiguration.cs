@@ -1,5 +1,6 @@
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
+using Cms.Api.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,7 +14,7 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
 
         builder.Property(image => image.FilePath)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(EntityFieldLengths.ImageFilePath);
 
         builder.Property(image => image.Type)
             .IsRequired()

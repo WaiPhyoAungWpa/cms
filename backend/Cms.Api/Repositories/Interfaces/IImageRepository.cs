@@ -4,9 +4,10 @@ namespace Cms.Api.Repositories.Interfaces;
 
 public interface IImageRepository
 {
-    Task<List<Image>> GetDefaultImagesByCategoryAsync(int categoryId);
-
+    // Persistence
     Task AddAsync(Image image);
-
     Task SaveChangesAsync();
+
+    // Default images
+    Task<List<Image>> GetDefaultImagesByCategoryAsync(int categoryId);
 }

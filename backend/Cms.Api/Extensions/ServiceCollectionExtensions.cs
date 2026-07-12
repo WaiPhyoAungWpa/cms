@@ -15,8 +15,16 @@ using Microsoft.OpenApi;
 
 namespace Cms.Api.Extensions;
 
+/// <summary>
+/// Provides extension methods for registering application services
+/// and Swagger documentation.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers the application's services, repositories,
+    /// authentication, authorization, and configuration.
+    /// </summary>
     public static IServiceCollection AddApplicationServices(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -34,6 +42,9 @@ public static class ServiceCollectionExtensions
 
         services.Configure<ImageUploadSettings>(
             configuration.GetSection(ImageUploadSettings.SectionName));
+
+        services.Configure<JwtSettings>(
+            configuration.GetSection(JwtSettings.SectionName));
 
         // Infrastructure
         services.AddHttpContextAccessor();
@@ -79,6 +90,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Registers Swagger/OpenAPI documentation and JWT authentication support.
+    /// </summary>
     public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>

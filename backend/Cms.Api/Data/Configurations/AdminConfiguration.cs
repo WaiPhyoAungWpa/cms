@@ -1,4 +1,5 @@
 using Cms.Api.Entities;
+using Cms.Api.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,14 +13,14 @@ public class AdminConfiguration : IEntityTypeConfiguration<Admin>
 
         builder.Property(admin => admin.Username)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(EntityFieldLengths.AdminUsername);
 
         builder.HasIndex(admin => admin.Username)
             .IsUnique();
 
         builder.Property(admin => admin.PasswordHash)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(EntityFieldLengths.PasswordHash);
 
         builder.Property(admin => admin.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Cms.Api.Controllers;
 
+/// <summary>
+/// Provides endpoints for retrieving default images and uploading custom images.
+/// </summary>
 [ApiController]
 [Route("api/images")]
 public class ImagesController : ControllerBase
@@ -16,6 +19,9 @@ public class ImagesController : ControllerBase
         _imageService = imageService;
     }
 
+    /// <summary>
+    /// Retrieves the default images for a category.
+    /// </summary>
     [HttpGet("defaults/{categoryId}")]
     public async Task<IActionResult> GetDefaultImages(int categoryId)
     {
@@ -24,6 +30,9 @@ public class ImagesController : ControllerBase
         return Ok(images);
     }
 
+    /// <summary>
+    /// Uploads a custom image.
+    /// </summary>
     [Authorize]
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(

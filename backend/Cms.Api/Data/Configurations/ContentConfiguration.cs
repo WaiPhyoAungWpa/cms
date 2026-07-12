@@ -1,4 +1,5 @@
 using Cms.Api.Entities;
+using Cms.Api.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +13,7 @@ public class ContentConfiguration : IEntityTypeConfiguration<Content>
 
         builder.Property(content => content.Title)
             .IsRequired()
-            .HasMaxLength(255);
+            .HasMaxLength(EntityFieldLengths.Title);
 
         builder.Property(content => content.Description)
             .IsRequired();

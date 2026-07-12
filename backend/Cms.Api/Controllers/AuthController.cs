@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Cms.Api.Controllers;
 
+/// <summary>
+/// Provides authentication endpoints for administrators.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -16,6 +19,9 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    /// <summary>
+    /// Authenticates an administrator and returns a JWT.
+    /// </summary>
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginRequestDto request)
@@ -32,6 +38,9 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Returns a simple response to verify the current JWT is valid.
+    /// </summary>
     [Authorize]
     [HttpGet("profile")]
     public IActionResult Profile()

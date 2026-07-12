@@ -10,6 +10,8 @@ namespace Cms.Api.Repositories;
 
 public class ContentRepository : IContentRepository
 {
+    private const int DashboardRecentContentLimit = 5;
+    
     private readonly CmsDbContext _context;
 
     public ContentRepository(CmsDbContext context)
@@ -17,22 +19,23 @@ public class ContentRepository : IContentRepository
         _context = context;
     }
 
+    // Persistence
     public async Task AddAsync(Content content)
     {
         await _context.Contents.AddAsync(content);
     }
-
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();
     }
 
+    // Admin content
     public async Task<(List<Content> Items, int TotalCount)> GetAllAsync(
         ContentQueryRequestDto request)
     {
-        var query = _context.Contents
-            .Include(c => c.Category)
-            .AsQueryable();
+        IQueryable<Content> query = _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -70,6 +73,61 @@ public class ContentRepository : IContentRepository
         return (items, totalCount);
     }
 
+    public async Task<Content?> GetByIdAsync(int id)
+    {
+        return await _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category)
+            .Include(c => c.CoverImage)
+            .Include(c => c.Sections.OrderBy(s => s.Id))
+                .ThenInclude(s => s.SectionImage)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<Content?> GetByIdTrackedAsync(int id)
+    {
+        return await _context.Contents
+            .Include(c => c.Sections)
+            .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<(
+        int TotalCount,
+        int PublishedCount,
+        int DraftCount,
+        int SoftDeletedCount,
+        List<Content> RecentContents
+    )> GetDashboardSummaryAsync()
+    {
+        var query = _context.Contents.AsNoTracking();
+
+        var counts = await query
+            .GroupBy(_ => 1)
+            .Select(group => new
+            {
+                TotalCount = group.Count(),
+                PublishedCount = group.Count(c => c.Status == ContentStatus.Published),
+                DraftCount = group.Count(c => c.Status == ContentStatus.Draft),
+                SoftDeletedCount = group.Count(c => c.Status == ContentStatus.SoftDeleted)
+            })
+            .FirstOrDefaultAsync();
+
+        var recentContents = await query
+            .Include(c => c.Category)
+            .OrderByDescending(c => c.UpdatedAt)
+            .Take(DashboardRecentContentLimit)
+            .ToListAsync();
+
+        return (
+            counts?.TotalCount ?? 0,
+            counts?.PublishedCount ?? 0,
+            counts?.DraftCount ?? 0,
+            counts?.SoftDeletedCount ?? 0,
+            recentContents
+        );
+    }
+
+    // Public content
     public async Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
         PublicContentQueryRequestDto request)
     {
@@ -119,16 +177,16 @@ public class ContentRepository : IContentRepository
                 c.Status == ContentStatus.Published &&
                 c.VisibilityStatus == VisibilityStatus.Public);
 
-        var totalCount = await query.CountAsync();
-
-        var experienceCount = await query
-            .CountAsync(c => c.Category.Name == "Experience");
-
-        var learningCount = await query
-            .CountAsync(c => c.Category.Name == "Learning");
-
-        var lifestyleCount = await query
-            .CountAsync(c => c.Category.Name == "Lifestyle");
+        var counts = await query
+            .GroupBy(_ => 1)
+            .Select(group => new
+            {
+                TotalCount = group.Count(),
+                ExperienceCount = group.Count(c => c.Category.Name == "Experience"),
+                LearningCount = group.Count(c => c.Category.Name == "Learning"),
+                LifestyleCount = group.Count(c => c.Category.Name == "Lifestyle")
+            })
+            .FirstOrDefaultAsync();
 
         var latestContent = await query
             .Include(c => c.Category)
@@ -138,63 +196,10 @@ public class ContentRepository : IContentRepository
 
         return (
             latestContent,
-            totalCount,
-            experienceCount,
-            learningCount,
-            lifestyleCount
-        );
-    }
-
-    public async Task<Content?> GetByIdAsync(int id)
-    {
-        return await _context.Contents
-            .AsNoTracking()
-            .Include(c => c.Category)
-            .Include(c => c.CoverImage)
-            .Include(c => c.Sections.OrderBy(s => s.Id))
-                .ThenInclude(s => s.SectionImage)
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<Content?> GetByIdTrackedAsync(int id)
-    {
-        return await _context.Contents
-            .Include(c => c.Sections)
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<(
-        int TotalCount,
-        int PublishedCount,
-        int DraftCount,
-        int SoftDeletedCount,
-        List<Content> RecentContents
-    )> GetDashboardSummaryAsync()
-    {
-        var totalCount = await _context.Contents.CountAsync();
-
-        var publishedCount = await _context.Contents
-            .CountAsync(c => c.Status == ContentStatus.Published);
-
-        var draftCount = await _context.Contents
-            .CountAsync(c => c.Status == ContentStatus.Draft);
-
-        var softDeletedCount = await _context.Contents
-            .CountAsync(c => c.Status == ContentStatus.SoftDeleted);
-
-        var recentContents = await _context.Contents
-            .AsNoTracking()
-            .Include(c => c.Category)
-            .OrderByDescending(c => c.UpdatedAt)
-            .Take(5)
-            .ToListAsync();
-
-        return (
-            totalCount,
-            publishedCount,
-            draftCount,
-            softDeletedCount,
-            recentContents
+            counts?.TotalCount ?? 0,
+            counts?.ExperienceCount ?? 0,
+            counts?.LearningCount ?? 0,
+            counts?.LifestyleCount ?? 0
         );
     }
 
@@ -211,5 +216,4 @@ public class ContentRepository : IContentRepository
                 c.Status == ContentStatus.Published &&
                 c.VisibilityStatus == VisibilityStatus.Public);
     }
-
 }

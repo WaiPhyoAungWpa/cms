@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace Cms.Api.Exceptions;
 
+/// <summary>
+/// Handles unhandled exceptions and returns standardized JSON error responses.
+/// </summary>
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(

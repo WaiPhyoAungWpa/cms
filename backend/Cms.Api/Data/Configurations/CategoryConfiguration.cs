@@ -1,4 +1,5 @@
 using Cms.Api.Entities;
+using Cms.Api.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +13,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(category => category.Name)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(EntityFieldLengths.CategoryName);
 
         builder.HasIndex(category => category.Name)
             .IsUnique();

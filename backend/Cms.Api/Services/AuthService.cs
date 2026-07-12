@@ -10,7 +10,6 @@ public class AuthService : IAuthService
 {
     private readonly IAdminRepository _adminRepository;
     private readonly IPasswordHasher<Admin> _passwordHasher;
-
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
     public AuthService(
