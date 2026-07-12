@@ -4,22 +4,30 @@ using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Helpers;
+using Cms.Api.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace Cms.Api.Services;
 
 public class ImageService : IImageService
 {
+    // Private types
     private readonly IImageRepository _imageRepository;
     private readonly IImageStorageService _imageStorageService;
+    private readonly ImageUploadSettings _imageUploadSettings;
 
+    // Constructor
     public ImageService(
         IImageRepository imageRepository,
-        IImageStorageService imageStorageService)
+        IImageStorageService imageStorageService,
+        IOptions<ImageUploadSettings> imageUploadSettings)
     {
         _imageRepository = imageRepository;
         _imageStorageService = imageStorageService;
+        _imageUploadSettings = imageUploadSettings.Value;
     }
 
+    // Public methods
     public async Task<List<DefaultImageDto>> GetDefaultImagesAsync(int categoryId)
     {
         var images = await _imageRepository.GetDefaultImagesByCategoryAsync(categoryId);
@@ -34,11 +42,9 @@ public class ImageService : IImageService
     }
 
     public async Task<UploadImageResponseDto> UploadAsync(
-    IFormFile file,
-    int categoryId)
+        IFormFile file,
+        int categoryId)
     {
-        const long MaxFileSize = 5 * 1024 * 1024;
-
         if (file is null)
         {
             throw new ArgumentException("No file uploaded.");
@@ -49,28 +55,19 @@ public class ImageService : IImageService
             throw new ArgumentException("Image file is empty.");
         }
 
-        if (file.Length > MaxFileSize)
+        if (file.Length > _imageUploadSettings.MaxFileSize)
         {
             throw new ArgumentException("Image size cannot exceed 5 MB.");
         }
 
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-        if (!allowedExtensions.Contains(extension))
+        if (!_imageUploadSettings.AllowedExtensions.Contains(extension))
         {
             throw new ArgumentException("Only JPG, JPEG, PNG and WEBP images are allowed.");
         }
 
-        var allowedContentTypes = new[]
-        {
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        };
-
-        if (!allowedContentTypes.Contains(file.ContentType))
+        if (!_imageUploadSettings.AllowedContentTypes.Contains(file.ContentType))
         {
             throw new ArgumentException(
                 "Only JPG, JPEG, PNG and WEBP images are allowed.");

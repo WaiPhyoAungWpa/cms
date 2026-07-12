@@ -1,17 +1,17 @@
 using System.Text;
+using Cms.Api.Configurations;
+using Cms.Api.Data;
 using Cms.Api.Data.Context;
-using Cms.Api.Services.Interfaces;
+using Cms.Api.Entities;
+using Cms.Api.Repositories;
+using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services;
+using Cms.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Cms.Api.Repositories;
-using Cms.Api.Repositories.Interfaces;
-using Cms.Api.Configurations;
-using Cms.Api.Entities;
-using Microsoft.AspNetCore.Identity;
-using Cms.Api.Data;
 
 namespace Cms.Api.Extensions;
 
@@ -21,36 +21,41 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // Database
         services.AddDbContext<CmsDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+        // Configuration
         services.Configure<CloudinarySettings>(
             configuration.GetSection(CloudinarySettings.SectionName));
 
         services.Configure<InitialAdminSettings>(
             configuration.GetSection(InitialAdminSettings.SectionName));
 
-        services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
+        services.Configure<ImageUploadSettings>(
+            configuration.GetSection(ImageUploadSettings.SectionName));
 
-        services.AddScoped<IAdminRepository, AdminRepository>();
-
+        // Infrastructure
+        services.AddHttpContextAccessor();
         services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
-
         services.AddScoped<AdminDatabaseInitializer>();
 
-        services.AddScoped<IAuthService, AuthService>();
-
-        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
+        // Repositories
+        services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IContentRepository, ContentRepository>();
-
-        services.AddScoped<IContentService, ContentService>();
-
         services.AddScoped<IImageRepository, ImageRepository>();
-        services.AddScoped<IImageService, ImageService>();
 
+        // Services
+        services.AddScoped<ICurrentAdminService, CurrentAdminService>();
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
+
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IContentService, ContentService>();
+        services.AddScoped<IImageService, ImageService>();
         services.AddScoped<IPublicContentService, PublicContentService>();
 
+        // Authentication & Authorization
         var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -64,7 +69,8 @@ public static class ServiceCollectionExtensions
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
 

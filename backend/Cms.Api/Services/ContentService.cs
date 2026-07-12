@@ -11,18 +11,25 @@ namespace Cms.Api.Services;
 
 public class ContentService : IContentService
 {
+    // Private types
     private readonly IContentRepository _contentRepository;
-
-    public ContentService(IContentRepository contentRepository)
-    {
-        _contentRepository = contentRepository;
-    }
+    private readonly ICurrentAdminService _currentAdminService;
 
     private readonly record struct SectionValidationData(
         string Title,
         string Description,
         int SectionImageId);
 
+    // Constructor
+    public ContentService(
+        IContentRepository contentRepository,
+        ICurrentAdminService currentAdminService)
+    {
+        _contentRepository = contentRepository;
+        _currentAdminService = currentAdminService;
+    }
+
+    // Validation Helpers
     private static void ValidateRequest(CreateContentRequestDto request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -89,36 +96,7 @@ public class ContentService : IContentService
         }
     }
 
-    private static Content BuildContent(
-        CreateContentRequestDto request,
-        ContentStatus status,
-        VisibilityStatus visibilityStatus)
-    {
-        return new Content
-        {
-            CategoryId = request.CategoryId,
-            Title = request.Title,
-            Description = request.Description,
-            CoverImageId = request.CoverImageId,
-
-            Status = status,
-            VisibilityStatus = visibilityStatus,
-
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-
-            CreatedByAdminId = 1,
-            UpdatedByAdminId = 1,
-
-            Sections = request.Sections.Select(section => new Section
-            {
-                Title = section.Title,
-                Description = section.Description,
-                SectionImageId = section.SectionImageId
-            }).ToList()
-        };
-    }
-
+    // Mapping Helpers
     private static ContentResponseDto MapToResponse(Content content)
     {
         return new ContentResponseDto
@@ -128,76 +106,6 @@ public class ContentService : IContentService
             Status = content.Status.ToString(),
             VisibilityStatus = content.VisibilityStatus.ToString()
         };
-    }
-
-    public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)
-    {
-        ValidateRequest(request);
-
-        var content = BuildContent(
-            request,
-            ContentStatus.Published,
-            VisibilityStatus.Public);
-
-        await _contentRepository.AddAsync(content);
-        await _contentRepository.SaveChangesAsync();
-
-        return MapToResponse(content);
-    }
-
-    public async Task<ContentResponseDto> SaveDraftAsync(CreateContentRequestDto request)
-    {
-        ValidateRequest(request);
-
-        var content = BuildContent(
-            request,
-            ContentStatus.Draft,
-            VisibilityStatus.Private);
-
-        await _contentRepository.AddAsync(content);
-        await _contentRepository.SaveChangesAsync();
-
-        return MapToResponse(content);
-    }
-
-    public async Task<PagedResponseDto<ContentListResponseDto>>
-        GetAllAsync(ContentQueryRequestDto request)
-    {
-        PaginationValidator.Validate(request.Page, request.PageSize);
-
-        var result = await _contentRepository.GetAllAsync(request);
-
-        var items = result.Items.Select(content => new ContentListResponseDto
-        {
-            Id = content.Id,
-            Title = content.Title,
-            Category = content.Category.Name,
-            Status = content.Status,
-            VisibilityStatus = content.VisibilityStatus,
-            PreviousStatus = content.PreviousStatus
-        }).ToList();
-
-        return new PagedResponseDto<ContentListResponseDto>
-        {
-            Items = items,
-            Page = request.Page,
-            PageSize = request.PageSize,
-            TotalCount = result.TotalCount,
-            TotalPages = (int)Math.Ceiling(
-                result.TotalCount / (double)request.PageSize)
-        };
-    }
-
-    public async Task<ContentDetailResponseDto> GetByIdAsync(int id)
-    {
-        var content = await _contentRepository.GetByIdAsync(id);
-
-        if (content is null)
-        {
-            throw new KeyNotFoundException("Content not found.");
-        }
-
-        return MapToDetailResponse(content);
     }
 
     private static ContentDetailResponseDto MapToDetailResponse(Content content)
@@ -226,7 +134,38 @@ public class ContentService : IContentService
         };
     }
 
-    private static void ApplyUpdates(
+    // Entitiy Helpers
+    private Content BuildContent(
+        CreateContentRequestDto request,
+        ContentStatus status,
+        VisibilityStatus visibilityStatus)
+    {
+        return new Content
+        {
+            CategoryId = request.CategoryId,
+            Title = request.Title,
+            Description = request.Description,
+            CoverImageId = request.CoverImageId,
+
+            Status = status,
+            VisibilityStatus = visibilityStatus,
+
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+
+            CreatedByAdminId = _currentAdminService.GetAdminId(),
+            UpdatedByAdminId = _currentAdminService.GetAdminId(),
+
+            Sections = request.Sections.Select(section => new Section
+            {
+                Title = section.Title,
+                Description = section.Description,
+                SectionImageId = section.SectionImageId
+            }).ToList()
+        };
+    }
+
+    private void ApplyUpdates(
         Content content,
         UpdateContentRequestDto request)
     {
@@ -236,7 +175,7 @@ public class ContentService : IContentService
         content.Description = request.Description;
         content.CoverImageId = request.CoverImageId;
         content.UpdatedAt = DateTime.UtcNow;
-        content.UpdatedByAdminId = 1;
+        content.UpdatedByAdminId = _currentAdminService.GetAdminId();
 
         var requestedExistingSectionIds = request.Sections
             .Where(section => section.Id.HasValue)
@@ -282,6 +221,81 @@ public class ContentService : IContentService
         }
     }
 
+    // Public methods
+    // Create
+    public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)
+    {
+        ValidateRequest(request);
+
+        var content = BuildContent(
+            request,
+            ContentStatus.Published,
+            VisibilityStatus.Public);
+
+        await _contentRepository.AddAsync(content);
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
+    public async Task<ContentResponseDto> SaveDraftAsync(CreateContentRequestDto request)
+    {
+        ValidateRequest(request);
+
+        var content = BuildContent(
+            request,
+            ContentStatus.Draft,
+            VisibilityStatus.Private);
+
+        await _contentRepository.AddAsync(content);
+        await _contentRepository.SaveChangesAsync();
+
+        return MapToResponse(content);
+    }
+
+
+    // Read
+    public async Task<PagedResponseDto<ContentListResponseDto>>
+        GetAllAsync(ContentQueryRequestDto request)
+    {
+        PaginationValidator.Validate(request.Page, request.PageSize);
+
+        var result = await _contentRepository.GetAllAsync(request);
+
+        var items = result.Items.Select(content => new ContentListResponseDto
+        {
+            Id = content.Id,
+            Title = content.Title,
+            Category = content.Category.Name,
+            Status = content.Status,
+            VisibilityStatus = content.VisibilityStatus,
+            PreviousStatus = content.PreviousStatus
+        }).ToList();
+
+        return new PagedResponseDto<ContentListResponseDto>
+        {
+            Items = items,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalCount = result.TotalCount,
+            TotalPages = (int)Math.Ceiling(
+                result.TotalCount / (double)request.PageSize)
+        };
+    }
+
+    public async Task<ContentDetailResponseDto> GetByIdAsync(int id)
+    {
+        var content = await _contentRepository.GetByIdAsync(id);
+
+        if (content is null)
+        {
+            throw new KeyNotFoundException("Content not found.");
+        }
+
+        return MapToDetailResponse(content);
+    }
+
+    // Update
     private async Task<ContentResponseDto> UpdateContentAsync(
         int id,
         UpdateContentRequestDto request,
@@ -348,6 +362,7 @@ public class ContentService : IContentService
             "Only published content can be updated.");
     }
 
+    // Delete / Restore
     public async Task<ContentResponseDto> SoftDeleteAsync(int id)
     {
         var content = await _contentRepository.GetByIdTrackedAsync(id);
@@ -367,7 +382,7 @@ public class ContentService : IContentService
         content.PreviousStatus = content.Status;
         content.Status = ContentStatus.SoftDeleted;
         content.UpdatedAt = DateTime.UtcNow;
-        content.UpdatedByAdminId = 1;
+        content.UpdatedByAdminId = _currentAdminService.GetAdminId();
 
         await _contentRepository.SaveChangesAsync();
 
@@ -401,13 +416,14 @@ public class ContentService : IContentService
         content.VisibilityStatus = request.VisibilityStatus;
         content.PreviousStatus = null;
         content.UpdatedAt = DateTime.UtcNow;
-        content.UpdatedByAdminId = 1;
+        content.UpdatedByAdminId = _currentAdminService.GetAdminId();
 
         await _contentRepository.SaveChangesAsync();
 
         return MapToResponse(content);
     }
 
+    // Admin Dashboard
     public async Task<DashboardSummaryResponseDto> GetDashboardSummaryAsync()
     {
         var result = await _contentRepository.GetDashboardSummaryAsync();
