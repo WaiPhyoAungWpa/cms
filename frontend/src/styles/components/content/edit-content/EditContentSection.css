@@ -225,15 +225,6 @@
     background: #f9fafb;
 }
 
-.edit-section-upload-loading {
-    cursor: default;
-}
-
-.edit-section-upload-loading:hover {
-    border-color: #cbd5e1;
-    background: #ffffff;
-}
-
 .edit-section-upload input {
     display: none;
 }
@@ -259,47 +250,6 @@
 .edit-section-upload small {
     color: #6b7280;
     font-size: 0.78rem;
-}
-
-.edit-section-upload-progress {
-    width: min(100%, 420px);
-    display: grid;
-    gap: 10px;
-}
-
-.edit-section-upload-percentage {
-    color: #111827;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.edit-section-progress-track {
-    width: 100%;
-    height: 8px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: #e5e7eb;
-}
-
-.edit-section-progress-bar {
-    height: 100%;
-    border-radius: inherit;
-    background: #111827;
-    transition: width 0.2s ease;
-}
-
-.edit-section-progress-bar-processing {
-    animation: edit-section-processing 1s ease-in-out infinite alternate;
-}
-
-@keyframes edit-section-processing {
-    from {
-        opacity: 0.55;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 .edit-section-preview-area {

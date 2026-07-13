@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getContent, publishDraft, updateDraft, updatePublished, } from "../services/contentService";
-import { getDefaultImages } from "../services/imageService";
+import { getDefaultImages, uploadImage } from "../services/imageService";
 import { ContentDetail, UpdateContentRequest } from "../types/content";
 import { DefaultImage } from "../types/image";
 import EditContentSection from "../components/content/edit-content/EditContentSection";
@@ -66,9 +66,7 @@ export default function EditContentPage() {
         setCoverImageMode,
         customCoverImageUrl,
         originalCoverImageUrl,
-        hasCoverImageChanged,
-        isCoverUploading,
-        coverUploadProgress,    
+        hasCoverImageChanged,   
         handleCoverUpload,
         restoreOriginalCoverImage,
         resetCoverImage,
@@ -255,6 +253,54 @@ export default function EditContentPage() {
         setPreviewContent(preview);
     };
 
+    const uploadPendingImages = async (
+        token: string
+    ): Promise<UpdateContentRequest> => {
+        let finalCoverImageId = coverImageId;
+
+        if (coverImageFile) {
+            const result = await uploadImage(
+                coverImageFile,
+                categoryId,
+                token
+            );
+
+            finalCoverImageId = result.id;
+        }
+
+        const finalSections = [];
+
+        for (const section of sections) {
+            let sectionImageId = section.sectionImageId;
+
+            if (section.imageFile) {
+                const result = await uploadImage(
+                    section.imageFile,
+                    categoryId,
+                    token
+                );
+
+                sectionImageId = result.id;
+            }
+
+            finalSections.push({
+                id: section.id,
+                title: section.title,
+                description: section.description,
+                sectionImageId,
+            });
+        }
+
+        return {
+            categoryId,
+            visibilityStatus,
+            title,
+            description,
+            coverImageId: finalCoverImageId,
+            sections: finalSections,
+        };
+    };
+
     const submitUpdate = async (
         operation: UpdateOperation,
         successMessage: string,
@@ -274,7 +320,7 @@ export default function EditContentPage() {
             try {
                 setIsSubmitting(true);
 
-                const request = buildUpdateRequest();
+                const request = await uploadPendingImages(token);
 
                 await operation(Number(id), request, token);
 
@@ -422,8 +468,6 @@ export default function EditContentPage() {
                         originalCoverImageUrl={originalCoverImageUrl}
                         customCoverImageUrl={customCoverImageUrl}
                         hasCoverImageChanged={hasCoverImageChanged}
-                        isUploading={isCoverUploading}
-                        uploadProgress={coverUploadProgress}
                         onImageSelect={setCoverImageId}
                         onModeChange={setCoverImageMode}
                         onUpload={handleCoverUpload}

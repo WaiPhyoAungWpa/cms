@@ -126,15 +126,6 @@
     background: #f9fafb;
 }
 
-.edit-cover-upload-loading {
-    cursor: default;
-}
-
-.edit-cover-upload-loading:hover {
-    border-color: #cbd5e1;
-    background: #ffffff;
-}
-
 .edit-cover-upload input {
     display: none;
 }
@@ -160,47 +151,6 @@
 .edit-cover-upload small {
     color: #6b7280;
     font-size: 0.78rem;
-}
-
-.edit-cover-upload-progress {
-    width: min(100%, 420px);
-    display: grid;
-    gap: 10px;
-}
-
-.edit-cover-upload-percentage {
-    color: #111827;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.edit-cover-progress-track {
-    width: 100%;
-    height: 8px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: #e5e7eb;
-}
-
-.edit-cover-progress-bar {
-    height: 100%;
-    border-radius: inherit;
-    background: #111827;
-    transition: width 0.2s ease;
-}
-
-.edit-cover-progress-bar-processing {
-    animation: edit-cover-processing 1s ease-in-out infinite alternate;
-}
-
-@keyframes edit-cover-processing {
-    from {
-        opacity: 0.55;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 .edit-cover-preview-section {

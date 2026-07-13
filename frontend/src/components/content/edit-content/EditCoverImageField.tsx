@@ -11,8 +11,6 @@ interface EditCoverImageFieldProps {
   originalCoverImageUrl: string;
   customCoverImageUrl: string;
   hasCoverImageChanged: boolean;
-  isUploading: boolean;
-  uploadProgress: number;
 
   onImageSelect: (imageId: number) => void;
   onModeChange: (mode: "default" | "custom") => void;
@@ -27,8 +25,6 @@ export default function EditCoverImageField({
   originalCoverImageUrl,
   customCoverImageUrl,
   hasCoverImageChanged,
-  isUploading,
-  uploadProgress,
   onImageSelect,
   onModeChange,
   onUpload,
@@ -101,55 +97,22 @@ export default function EditCoverImageField({
 
       {coverImageMode === "custom" && (
         <div className="edit-cover-image-panel">
-          <label
-            className={`edit-cover-upload ${
-              isUploading ? "edit-cover-upload-loading" : ""
-            }`}
-          >
-            {isUploading ? (
-              <div className="edit-cover-upload-progress">
-                <strong>
-                  {uploadProgress < 100
-                    ? "Uploading image..."
-                    : "Processing image..."}
-                </strong>
-
-                <span className="edit-cover-upload-percentage">
-                  {uploadProgress}%
-                </span>
-
-                <div className="edit-cover-progress-track">
-                  <div
-                    className={`edit-cover-progress-bar ${
-                      uploadProgress === 100
-                        ? "edit-cover-progress-bar-processing"
-                        : ""
-                    }`}
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-
-                <small>
-                  {uploadProgress < 100
-                    ? "Please wait while the image is being uploaded."
-                    : "Upload complete. Processing the image..."}
-                </small>
-              </div>
-            ) : (
-              <>
+          <label className="edit-cover-upload" >
+            <>
                 <span className="edit-cover-upload-icon">↑</span>
 
-                <strong>Upload a cover image</strong>
+                <strong>Select a cover image</strong>
 
-                <small>Choose an image from your device.</small>
+                <small>
+                    Choose an image from your device.
+                </small>
 
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onUpload}
+                    type="file"
+                    accept="image/*"
+                    onChange={onUpload}
                 />
-              </>
-            )}
+            </>
           </label>
         </div>
       )}

@@ -172,65 +172,26 @@ export default function EditContentSection({
 
         {section.imageMode === "custom" && (
           <div className="edit-section-image-panel">
-            <label
-              className={`edit-section-upload ${
-                section.isUploading
-                  ? "edit-section-upload-loading"
-                  : ""
-              }`}
-            >
-              {section.isUploading ? (
-                <div className="edit-section-upload-progress">
-                  <strong>
-                    {section.uploadProgress < 100
-                      ? "Uploading image..."
-                      : "Processing image..."}
-                  </strong>
-
-                  <span className="edit-section-upload-percentage">
-                    {section.uploadProgress}%
-                  </span>
-
-                  <div className="edit-section-progress-track">
-                    <div
-                      className={`edit-section-progress-bar ${
-                        section.uploadProgress === 100
-                          ? "edit-section-progress-bar-processing"
-                          : ""
-                      }`}
-                      style={{
-                        width: `${section.uploadProgress}%`,
-                      }}
-                    />
-                  </div>
-
-                  <small>
-                    {section.uploadProgress < 100
-                      ? "Please wait while the image is being uploaded."
-                      : "Upload complete. Processing the image..."}
-                  </small>
-                </div>
-              ) : (
-                <>
+            <label className="edit-section-upload">
+              <>
                   <span className="edit-section-upload-icon">
-                    ↑
+                      ↑
                   </span>
 
                   <strong>Upload a section image</strong>
 
                   <small>
-                    Choose an image from your device.
+                      Choose an image from your device.
                   </small>
 
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event) =>
-                      onImageUpload(index, event)
-                    }
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                          onImageUpload(index, event)
+                      }
                   />
-                </>
-              )}
+              </>
             </label>
           </div>
         )}
@@ -269,14 +230,13 @@ export default function EditContentSection({
           </div>
         )}
 
-        {section.sectionImageId > 0 &&
-          (isNewSection || hasSectionImageChanged) && (
+        {(isNewSection || hasSectionImageChanged || section.imageFile) && (
             <div className="edit-section-preview-area">
               <div className="edit-section-preview-header">
                 <div>
                   <h4>New Selected Image</h4>
                   <p>
-                    This image will be used after saving.
+                    This image will replace the current image after saving.
                   </p>
                 </div>
 

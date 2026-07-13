@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { uploadImage } from "../../../services/imageService";
 import { EditSection } from "../../../types/editContent";
 import { SectionDetail } from "../../../types/content";
 import { mapToEditSections } from "../../../utils/editContent";
@@ -66,7 +65,7 @@ export function useEditContentSections(categoryId: number) {
         );
     };
 
-    const handleSectionUpload = async (
+    const handleSectionUpload = (
         index: number,
         event: ChangeEvent<HTMLInputElement>
     ) => {
@@ -76,86 +75,45 @@ export function useEditContentSections(categoryId: number) {
             return;
         }
 
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            alert("Please login first");
-            return;
-        }
-
         setSections((previousSections) =>
-            previousSections.map((section, sectionIndex) =>
-                sectionIndex === index
-                    ? {
-                        ...section,
-                        isUploading: true,
-                        uploadProgress: 0,
-                    }
-                    : section
-            )
-        );
-
-        try {
-            const result = await uploadImage(
-                file,
-                categoryId,
-                token,
-                (progress) => {
-                    setSections((previousSections) =>
-                        previousSections.map((section, sectionIndex) =>
-                            sectionIndex === index
-                                ? {
-                                    ...section,
-                                    uploadProgress: progress,
-                                }
-                                : section
-                        )
-                    );
+            previousSections.map((section, sectionIndex) => {
+                if (sectionIndex !== index) {
+                    return section;
                 }
-            );
 
-            setSections((previousSections) =>
-                previousSections.map((section, sectionIndex) =>
-                sectionIndex === index
-                    ? {
-                        ...section,
-                        sectionImageId: result.id,
-                        customImageUrl: result.filePath,
-                        imageMode: "custom",
-                    }
-                    : section
-                )
-            );
-        } catch (error) {
-            if (error instanceof Error) {
-                alert(error.message);
-            } else {
-                alert("Unable to upload image. Please try again.");
-            }
-        } finally {
-            setSections((previousSections) =>
-                previousSections.map((section, sectionIndex) =>
-                    sectionIndex === index
-                        ? {
-                            ...section,
-                            isUploading: false,
-                        }
-                        : section
-                )
-            );
-        }
+                if (section.customImageUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(section.customImageUrl);
+                }
+
+                return {
+                    ...section,
+                    imageFile: file,
+                    customImageUrl: URL.createObjectURL(file),
+                    sectionImageId: 0,
+                    imageMode: "custom",
+                };
+            })
+        );
     };
 
     const restoreOriginalSectionImage = (index: number) => {
         setSections((previousSections) =>
-            previousSections.map((section, sectionIndex) =>
-                sectionIndex === index
-                ? {
+            previousSections.map((section, sectionIndex) => {
+                if (sectionIndex !== index) {
+                    return section;
+                }
+
+                if (section.customImageUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(section.customImageUrl);
+                }
+
+                return {
                     ...section,
                     sectionImageId: section.originalImageId,
-                    }
-                : section
-            )
+                    customImageUrl: section.originalImageUrl,
+                    imageFile: null,
+                };
+            })
         );
     };
 
@@ -172,8 +130,6 @@ export function useEditContentSections(categoryId: number) {
                 imageFile: null,
                 originalImageId: 0,
                 originalImageUrl: "",
-                isUploading: false,
-                uploadProgress: 0,
             },
         ]);
     };
@@ -216,14 +172,19 @@ export function useEditContentSections(categoryId: number) {
 
     const resetSectionImages = () => {
         setSections((previousSections) =>
-            previousSections.map((section) => ({
-                ...section,
-                sectionImageId: 0,
-                customImageUrl: "",
-                imageMode: "default",
-                isUploading: false,
-                uploadProgress: 0,
-                }))
+            previousSections.map((section) => {
+                if (section.customImageUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(section.customImageUrl);
+                }
+
+                return {
+                    ...section,
+                    sectionImageId: 0,
+                    customImageUrl: "",
+                    imageFile: null,
+                    imageMode: "default",
+                };
+            })
         );
     };
 

@@ -6,6 +6,4 @@ export interface EditSection extends UpdateSectionRequest {
   imageFile: File | null;
   originalImageId: number;
   originalImageUrl: string;
-  isUploading: boolean;
-  uploadProgress: number;
 }
