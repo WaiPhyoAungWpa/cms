@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { uploadImage } from "../../../services/imageService";
 
-export default function useCreateCoverImage(categoryId: number) {
+export default function useCreateCoverImage() {
     const [coverImageId, setCoverImageId] = useState(0);
     const [customCoverImageUrl, setCustomCoverImageUrl] = useState("");
     const [coverImageMode, setCoverImageMode] = useState<"default" | "custom">("default");
-    const [isCoverUploading, setIsCoverUploading] = useState(false);
-    const [coverUploadProgress, setCoverUploadProgress] = useState(0);
+    const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
-    const handleCoverUpload = async (
+    const handleCoverUpload = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
       const file = event.target.files?.[0];
@@ -17,56 +15,52 @@ export default function useCreateCoverImage(categoryId: number) {
         return;
       }
 
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first");
-        return;
+      // Clean up previous preview
+      if (customCoverImageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(customCoverImageUrl);
       }
 
-      setIsCoverUploading(true);
-      setCoverUploadProgress(0);
+      setCoverImageFile(file);
+      setCustomCoverImageUrl(URL.createObjectURL(file));
+      setCoverImageMode("custom");
 
-      try {
-        const result = await uploadImage(
-          file,
-          categoryId,
-          token,
-          (progress) => {
-            setCoverUploadProgress(progress);
-          }
-        );
+      // Allow selecting the same file again later
+      event.target.value = "";
+    };
 
-        setCoverImageId(result.id);
-        setCustomCoverImageUrl(result.filePath);
-        setCoverImageMode("custom");
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message);
-        } else {
-          alert("Unable to upload image. Please try again.");
+    const updateCoverImageMode = (
+      mode: "default" | "custom"
+    ) => {
+      setCoverImageMode(mode);
+
+      if (mode === "default") {
+        if (customCoverImageUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(customCoverImageUrl);
         }
-      } finally {
-        setIsCoverUploading(false);
+
+        setCustomCoverImageUrl("");
+        setCoverImageFile(null);
       }
     };
 
     const resetCoverImage = () => {
+      if (customCoverImageUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(customCoverImageUrl);
+      }
+
       setCoverImageId(0);
       setCustomCoverImageUrl("");
       setCoverImageMode("default");
-      setIsCoverUploading(false);
-      setCoverUploadProgress(0);
+      setCoverImageFile(null);
     };
 
     return {
       coverImageId,
       setCoverImageId,
+      coverImageFile,
       customCoverImageUrl,
       coverImageMode,
-      setCoverImageMode,
-      isCoverUploading,
-      coverUploadProgress,
+      updateCoverImageMode,
       handleCoverUpload,
       resetCoverImage,
     };

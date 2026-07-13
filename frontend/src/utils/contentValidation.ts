@@ -2,6 +2,7 @@ interface ContentValidationSection {
   title: string;
   description: string;
   sectionImageId: number;
+  imageFile: File | null;
 }
 
 interface ContentValidationData {
@@ -9,6 +10,7 @@ interface ContentValidationData {
   title: string;
   description: string;
   coverImageId: number;
+  coverImageFile: File | null;
   sections: ContentValidationSection[];
 }
 
@@ -17,6 +19,7 @@ export function validateContentForm({
   title,
   description,
   coverImageId,
+  coverImageFile,
   sections,
 }: ContentValidationData): string | null {
   if (categoryId <= 0) {
@@ -31,7 +34,7 @@ export function validateContentForm({
     return "Description is required.";
   }
 
-  if (coverImageId <= 0) {
+  if (coverImageId <= 0 && !coverImageFile) {
     return "Cover image is required.";
   }
 
@@ -46,7 +49,7 @@ export function validateContentForm({
       return `Section ${index + 1} description is required.`;
     }
 
-    if (section.sectionImageId <= 0) {
+    if (section.sectionImageId <= 0 && !section.imageFile) {
       return `Section ${index + 1} image is required.`;
     }
   }

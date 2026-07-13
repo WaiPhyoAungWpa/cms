@@ -1,95 +1,45 @@
 import { useState } from "react";
 import { CreateSectionRequest } from "../../../types/content";
-import { uploadImage } from "../../../services/imageService";
 
 export interface CreateSectionForm extends CreateSectionRequest {
     imageMode: "default" | "custom";
     customImageUrl: string;
-    isUploading: boolean;
-    uploadProgress: number;
+    imageFile: File | null;
 }
 
-export default function useCreateContentSections(categoryId: number) {
+export default function useCreateContentSections() {
     const [sections, setSections] = useState<CreateSectionForm[]>([]);
 
-    const handleSectionUpload = async (
+    const handleSectionUpload = (
       index: number,
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-        const file = event.target.files?.[0];
+      const file = event.target.files?.[0];
 
-        if (!file) {
-          return;
-        }
+      if (!file) {
+        return;
+      }
 
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          alert("Please login first");
-          return;
-        }
-
-        setSections((previousSections) =>
-          previousSections.map((section, sectionIndex) =>
-            sectionIndex === index
-              ? {
-                  ...section,
-                  isUploading: true,
-                  uploadProgress: 0,
-                }
-              : section
-          )
-        );
-
-        try {
-          const result = await uploadImage(
-            file,
-            categoryId,
-            token,
-            (progress) => {
-              setSections((previousSections) =>
-                previousSections.map((section, sectionIndex) =>
-                  sectionIndex === index
-                    ? {
-                        ...section,
-                        uploadProgress: progress,
-                      }
-                    : section
-                )
-              );
-            }
-          );
-
-          setSections((previousSections) =>
-            previousSections.map((section, sectionIndex) =>
-              sectionIndex === index
-                ? {
-                    ...section,
-                    sectionImageId: result.id,
-                    customImageUrl: result.filePath,
-                    imageMode: "custom",
-                  }
-                : section
-            )
-          );
-        } catch (error) {
-          if (error instanceof Error) {
-            alert(error.message);
-          } else {
-            alert("Unable to upload image. Please try again.");
+      setSections((previousSections) =>
+        previousSections.map((section, sectionIndex) => {
+          if (sectionIndex !== index) {
+            return section;
           }
-        } finally {
-          setSections((previousSections) =>
-            previousSections.map((section, sectionIndex) =>
-              sectionIndex === index
-                ? {
-                    ...section,
-                    isUploading: false,
-                  }
-                : section
-            )
-          );
-        }
+
+          if (section.customImageUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(section.customImageUrl);
+          }
+
+          return {
+            ...section,
+            imageFile: file,
+            customImageUrl: URL.createObjectURL(file),
+            imageMode: "custom",
+          };
+        })
+      );
+
+      event.target.value = "";
     };
     
     const handleAddSection = () => {
@@ -101,8 +51,7 @@ export default function useCreateContentSections(categoryId: number) {
           sectionImageId: 0,
           imageMode: "default",
           customImageUrl: "",
-          isUploading: false,
-          uploadProgress: 0,
+          imageFile: null,
         },
       ]);
     };
@@ -160,35 +109,63 @@ export default function useCreateContentSections(categoryId: number) {
       imageMode: "default" | "custom"
     ) => {
       setSections((previousSections) =>
-        previousSections.map((section, sectionIndex) =>
-          sectionIndex === index
-            ? {
-                ...section,
-                imageMode,
-              }
-            : section
-        )
+        previousSections.map((section, sectionIndex) => {
+          if (sectionIndex !== index) {
+            return section;
+          }
+
+          if (
+            imageMode === "default" &&
+            section.customImageUrl.startsWith("blob:")
+          ) {
+            URL.revokeObjectURL(section.customImageUrl);
+          }
+
+          return {
+            ...section,
+            imageMode,
+            customImageUrl:
+              imageMode === "default"
+                ? ""
+                : section.customImageUrl,
+            imageFile:
+              imageMode === "default"
+                ? null
+                : section.imageFile,
+          };
+        })
       );
     };
 
     const removeSection = (index: number) => {
-      setSections((previousSections) =>
-        previousSections.filter(
+      setSections((previousSections) => {
+        const section = previousSections[index];
+
+        if (section?.customImageUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(section.customImageUrl);
+        }
+
+        return previousSections.filter(
           (_, sectionIndex) => sectionIndex !== index
-        )
-      );
+        );
+      });
     };
 
     const resetSectionImages = () => {
       setSections((previousSections) =>
-          previousSections.map((section) => ({
-          ...section,
-          sectionImageId: 0,
-          imageMode: "default",
-          customImageUrl: "",
-          isUploading: false,
-          uploadProgress: 0,
-          }))
+        previousSections.map((section) => {
+          if (section.customImageUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(section.customImageUrl);
+          }
+
+          return {
+            ...section,
+            sectionImageId: 0,
+            imageMode: "default",
+            customImageUrl: "",
+            imageFile: null,
+          };
+        })
       );
     };
 

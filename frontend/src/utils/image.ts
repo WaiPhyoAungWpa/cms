@@ -1,7 +1,17 @@
 import { API_BASE_URL } from "../config/api";
 
 export function getImageUrl(url: string): string {
-  if (url.startsWith("http")) {
+  if (!url) {
+    return "";
+  }
+
+  // Local preview image
+  if (url.startsWith("blob:")) {
+    return url;
+  }
+
+  // Absolute URL (Cloudinary)
+  if (url.startsWith("http://") || url.startsWith("https://")) {
     return url;
   }
 

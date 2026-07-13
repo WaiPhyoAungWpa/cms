@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveDraft, publishContent } from "../services/contentService";
-import { getDefaultImages } from "../services/imageService";
+import { getDefaultImages, uploadImage } from "../services/imageService";
 import { DefaultImage } from "../types/image";
 import { CreateContentRequest, ContentDetail } from "../types/content";
 import CreateContentBasicFields from "../components/content/create-content/CreateContentBasicFields";
 import CreateCoverImageField from "../components/content/create-content/CreateCoverImageField";
 import CreateContentSection from "../components/content/create-content/CreateContentSection";
 import CreateContentActions from "../components/content/create-content/CreateContentActions";
-import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import ContentPreview from "../components/content/content-preview/ContentPreview";
 import useCreateContentForm from "../hooks/content/create-content/useCreateContentForm";
 import useCreateContentSections from "../hooks/content/create-content/useCreateContentSections";
@@ -40,19 +39,18 @@ export default function CreateContentPage() {
       updateSectionImageMode,
       removeSection,
       resetSectionImages,
-    } = useCreateContentSections(categoryId);
+    } = useCreateContentSections();
 
     const {
       coverImageId,
       setCoverImageId,
+      coverImageFile,
       customCoverImageUrl,
       coverImageMode,
-      setCoverImageMode,
-      isCoverUploading,
-      coverUploadProgress,
+      updateCoverImageMode,
       handleCoverUpload,
       resetCoverImage,
-    } = useCreateCoverImage(categoryId);
+    } = useCreateCoverImage();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewContent, setPreviewContent] = useState<ContentDetail | null>(null);
@@ -84,27 +82,61 @@ export default function CreateContentPage() {
         }
     }, [categoryId]);
 
-    const buildCreateRequest = (): CreateContentRequest => {
+    const buildCreateRequest = async (
+      token: string
+    ): Promise<CreateContentRequest> => {
+        let finalCoverImageId = coverImageId;
+
+        if (coverImageFile) {
+            const uploaded = await uploadImage(
+                coverImageFile,
+                categoryId,
+                token
+            );
+
+            finalCoverImageId = uploaded.id;
+        }
+
+        const requestSections: CreateContentRequest["sections"] = [];
+
+        for (const section of sections) {
+
+            let finalImageId = section.sectionImageId;
+
+            if (section.imageFile) {
+                const uploaded = await uploadImage(
+                    section.imageFile,
+                    categoryId,
+                    token
+                );
+
+                finalImageId = uploaded.id;
+            }
+
+            requestSections.push({
+                title: section.title,
+                description: section.description,
+                sectionImageId: finalImageId,
+            });
+        }
+
         return {
           categoryId,
           title,
           description,
-          coverImageId,
-          sections: sections.map((section) => ({
-            title: section.title,
-            description: section.description,
-            sectionImageId: section.sectionImageId,
-          })),
+          coverImageId: finalCoverImageId,
+          sections: requestSections,
         };
     };
 
     const validateForm = (): boolean => {
         const validationError = validateContentForm({
-          categoryId,
-          title,
-          description,
-          coverImageId,
-          sections,
+            categoryId,
+            title,
+            description,
+            coverImageId,
+            coverImageFile,
+            sections,
         });
 
         if (validationError) {
@@ -130,7 +162,7 @@ export default function CreateContentPage() {
         setIsSubmitting(true);
 
         try {
-          const request = buildCreateRequest();   
+          const request = await buildCreateRequest(token);
 
           await publishContent(request, token);
 
@@ -162,7 +194,7 @@ export default function CreateContentPage() {
         setIsSubmitting(true);
 
         try {
-            const request = buildCreateRequest();
+            const request = await buildCreateRequest(token);
 
             await saveDraft(request, token);
 
@@ -318,10 +350,8 @@ export default function CreateContentPage() {
                 coverImageId={coverImageId}
                 coverImageMode={coverImageMode}
                 customCoverImageUrl={customCoverImageUrl}
-                isUploading={isCoverUploading}
-                uploadProgress={coverUploadProgress}
                 onImageSelect={setCoverImageId}
-                onModeChange={setCoverImageMode}
+                onModeChange={updateCoverImageMode}
                 onUpload={handleCoverUpload}
               />
             </section>
@@ -352,8 +382,6 @@ export default function CreateContentPage() {
                     sectionImageId={section.sectionImageId}
                     imageMode={section.imageMode}
                     customImageUrl={section.customImageUrl}
-                    isUploading={section.isUploading}
-                    uploadProgress={section.uploadProgress}
                     images={images}
                     onTitleChange={(value) => updateSectionTitle(index, value)}
                     onDescriptionChange={(value) =>

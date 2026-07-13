@@ -9,8 +9,6 @@ interface CreateContentSectionProps {
   sectionImageId: number;
   imageMode: "default" | "custom";
   customImageUrl: string;
-  isUploading: boolean;
-  uploadProgress: number;
   images: DefaultImage[];
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -29,8 +27,6 @@ export default function CreateContentSection({
   sectionImageId,
   imageMode,
   customImageUrl,
-  isUploading,
-  uploadProgress,
   images,
   onTitleChange,
   onDescriptionChange,
@@ -139,7 +135,7 @@ export default function CreateContentSection({
 
             <span>
               <strong>Custom Image</strong>
-              <small>Upload your own section image.</small>
+              <small>Select an image from your device.</small>
             </span>
           </label>
         </div>
@@ -203,62 +199,27 @@ export default function CreateContentSection({
 
         {imageMode === "custom" && (
           <div className="create-image-panel">
-            <label
-              className={`create-image-upload ${
-                isUploading ? "create-image-upload-loading" : ""
-              }`}
-            >
-              {isUploading ? (
-                <div className="create-image-upload-progress">
-                  <strong>
-                    {uploadProgress < 100
-                      ? "Uploading image..."
-                      : "Processing image..."}
-                  </strong>
+            <label className="create-image-upload">
+              <span className="create-image-upload-icon">↑</span>
 
-                  <span className="create-image-upload-percentage">
-                    {uploadProgress}%
-                  </span>
+              <strong>Select a section image</strong>
 
-                  <div className="create-image-progress-track">
-                    <div
-                      className={`create-image-progress-bar ${
-                        uploadProgress === 100
-                          ? "create-image-progress-bar-processing"
-                          : ""
-                      }`}
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
+              <small>
+                The image will be uploaded when you save or publish.
+              </small>
 
-                  <small>
-                    {uploadProgress < 100
-                      ? "Please wait while the image is being uploaded."
-                      : "Upload complete. Processing the image..."}
-                  </small>
-                </div>
-              ) : (
-                <>
-                  <span className="create-image-upload-icon">↑</span>
-
-                  <strong>Upload a section image</strong>
-
-                  <small>Choose an image from your device.</small>
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={onUpload}
-                  />
-                </>
-              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={onUpload}
+              />
             </label>
 
-            {customImageUrl && !isUploading && (
+            {customImageUrl && (
               <div className="create-selected-image">
                 <div>
                   <p className="create-image-panel-label">
-                    Uploaded Image
+                    Selected Image
                   </p>
 
                   <span>
@@ -267,8 +228,8 @@ export default function CreateContentSection({
                 </div>
 
                 <img
-                  src={getImageUrl(customImageUrl)}
-                  alt={`Uploaded image for section ${index + 1}`}
+                  src={customImageUrl}
+                  alt={`Selected image for section ${index + 1}`}
                 />
               </div>
             )}

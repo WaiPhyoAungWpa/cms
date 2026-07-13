@@ -7,8 +7,6 @@ interface CreateCoverImageFieldProps {
   coverImageId: number;
   coverImageMode: "default" | "custom";
   customCoverImageUrl: string;
-  isUploading: boolean;
-  uploadProgress: number;
   onImageSelect: (imageId: number) => void;
   onModeChange: (mode: "default" | "custom") => void;
   onUpload: (
@@ -21,8 +19,6 @@ export default function CreateCoverImageField({
   coverImageId,
   coverImageMode,
   customCoverImageUrl,
-  isUploading,
-  uploadProgress,
   onImageSelect,
   onModeChange,
   onUpload,
@@ -70,7 +66,7 @@ export default function CreateCoverImageField({
 
           <span>
             <strong>Custom Image</strong>
-            <small>Upload your own cover image.</small>
+            <small>Select an image from your device.</small>
           </span>
         </label>
       </div>
@@ -131,62 +127,27 @@ export default function CreateCoverImageField({
 
       {coverImageMode === "custom" && (
         <div className="create-image-panel">
-          <label
-            className={`create-image-upload ${
-              isUploading ? "create-image-upload-loading" : ""
-            }`}
-          >
-            {isUploading ? (
-              <div className="create-image-upload-progress">
-                <strong>
-                  {uploadProgress < 100
-                    ? "Uploading image..."
-                    : "Processing image..."}
-                </strong>
+          <label className="create-image-upload">
+            <span className="create-image-upload-icon">↑</span>
 
-                <span className="create-image-upload-percentage">
-                  {uploadProgress}%
-                </span>
+            <strong>Select a cover image</strong>
 
-                <div className="create-image-progress-track">
-                  <div
-                    className={`create-image-progress-bar ${
-                      uploadProgress === 100
-                        ? "create-image-progress-bar-processing"
-                        : ""
-                    }`}
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
+            <small>
+              The image will be uploaded when you save or publish.
+            </small>
 
-                <small>
-                  {uploadProgress < 100
-                    ? "Please wait while the image is being uploaded."
-                    : "Upload complete. Processing the image..."}
-                </small>
-              </div>
-            ) : (
-              <>
-                <span className="create-image-upload-icon">↑</span>
-
-                <strong>Upload a cover image</strong>
-
-                <small>Choose an image from your device.</small>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onUpload}
-                />
-              </>
-            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onUpload}
+            />
           </label>
 
-          {customCoverImageUrl && !isUploading && (
+          {customCoverImageUrl && (
             <div className="create-selected-image">
               <div>
                 <p className="create-image-panel-label">
-                  Uploaded Cover
+                  Selected Cover
                 </p>
 
                 <span>
@@ -195,8 +156,8 @@ export default function CreateCoverImageField({
               </div>
 
               <img
-                src={getImageUrl(customCoverImageUrl)}
-                alt="Uploaded custom cover"
+                src={customCoverImageUrl}
+                alt="Selected custom cover"
               />
             </div>
           )}
