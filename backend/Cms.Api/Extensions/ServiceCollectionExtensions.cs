@@ -43,8 +43,25 @@ public static class ServiceCollectionExtensions
         services.Configure<ImageUploadSettings>(
             configuration.GetSection(ImageUploadSettings.SectionName));
 
-        services.Configure<JwtSettings>(
-            configuration.GetSection(JwtSettings.SectionName));
+        services.AddOptions<JwtSettings>()
+            .Bind(configuration.GetRequiredSection(JwtSettings.SectionName))
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Key) &&
+                            settings.Key.Trim() != "...",
+                "Jwt:Key is required and cannot be a placeholder.")
+            .Validate(
+                settings => Encoding.UTF8.GetByteCount(settings.Key) >= 32,
+                "Jwt:Key must be at least 32 bytes for HS256.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Issuer),
+                "Jwt:Issuer is required.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.Audience),
+                "Jwt:Audience is required.")
+            .Validate(
+                settings => settings.TokenLifetimeHours is > 0 and <= 24,
+                "Jwt:TokenLifetimeHours must be between 1 and 24.")
+            .ValidateOnStart();
 
         // Infrastructure
         services.AddHttpContextAccessor();
@@ -67,7 +84,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPublicContentService, PublicContentService>();
 
         // Authentication & Authorization
-        var jwtKey = configuration["Jwt:Key"] ?? "development-placeholder-key-change-me";
+        var jwtKey = configuration["Jwt:Key"]
+            ?? throw new InvalidOperationException("Jwt:Key is required.");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

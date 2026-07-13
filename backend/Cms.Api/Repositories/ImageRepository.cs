@@ -36,4 +36,16 @@ public class ImageRepository : IImageRepository
             .OrderBy(image => image.Id)
             .ToListAsync();
     }
+
+    public async Task<List<Image>> GetByIdsAsync(IEnumerable<int> imageIds)
+    {
+        var ids = imageIds
+            .Distinct()
+            .ToList();
+
+        return await _context.Images
+            .AsNoTracking()
+            .Where(image => ids.Contains(image.Id))
+            .ToListAsync();
+    }
 }

@@ -10,4 +10,6 @@ public interface IImageRepository
 
     // Default images
     Task<List<Image>> GetDefaultImagesByCategoryAsync(int categoryId);
+
+    Task<List<Image>> GetByIdsAsync(IEnumerable<int> imageIds);
 }

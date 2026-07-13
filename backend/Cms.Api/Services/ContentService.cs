@@ -14,6 +14,7 @@ public class ContentService : IContentService
     // Private types
     private readonly IContentRepository _contentRepository;
     private readonly ICurrentAdminService _currentAdminService;
+    private readonly IImageRepository _imageRepository;
 
     private readonly record struct SectionValidationData(
         string Title,
@@ -23,9 +24,11 @@ public class ContentService : IContentService
     // Constructor
     public ContentService(
         IContentRepository contentRepository,
+        IImageRepository imageRepository,
         ICurrentAdminService currentAdminService)
     {
         _contentRepository = contentRepository;
+        _imageRepository = imageRepository;
         _currentAdminService = currentAdminService;
     }
 
@@ -93,6 +96,31 @@ public class ContentService : IContentService
 
             if (section.SectionImageId <= 0)
                 throw new ArgumentException("Section image is required.");
+        }
+    }
+
+    private async Task ValidateImagesBelongToCategoryAsync(
+        int categoryId,
+        int coverImageId,
+        IEnumerable<int> sectionImageIds)
+    {
+        var imageIds = sectionImageIds
+            .Append(coverImageId)
+            .Distinct()
+            .ToList();
+
+        var images = await _imageRepository.GetByIdsAsync(imageIds);
+
+        if (images.Count != imageIds.Count)
+        {
+            throw new ArgumentException(
+                "One or more selected images do not exist.");
+        }
+
+        if (images.Any(image => image.CategoryId != categoryId))
+        {
+            throw new ArgumentException(
+                "All selected images must belong to the selected category.");
         }
     }
 
@@ -226,6 +254,10 @@ public class ContentService : IContentService
     public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)
     {
         ValidateRequest(request);
+        await ValidateImagesBelongToCategoryAsync(
+            request.CategoryId,
+            request.CoverImageId,
+            request.Sections.Select(section => section.SectionImageId));
 
         var content = BuildContent(
             request,
@@ -241,6 +273,10 @@ public class ContentService : IContentService
     public async Task<ContentResponseDto> SaveDraftAsync(CreateContentRequestDto request)
     {
         ValidateRequest(request);
+        await ValidateImagesBelongToCategoryAsync(
+            request.CategoryId,
+            request.CoverImageId,
+            request.Sections.Select(section => section.SectionImageId));
 
         var content = BuildContent(
             request,
@@ -252,7 +288,6 @@ public class ContentService : IContentService
 
         return MapToResponse(content);
     }
-
 
     // Read
     public async Task<PagedResponseDto<ContentListResponseDto>>
@@ -304,6 +339,10 @@ public class ContentService : IContentService
         string invalidStatusMessage)
     {
         ValidateRequest(request);
+        await ValidateImagesBelongToCategoryAsync(
+            request.CategoryId,
+            request.CoverImageId,
+            request.Sections.Select(section => section.SectionImageId));
 
         var content = await _contentRepository.GetByIdTrackedAsync(id);
 
