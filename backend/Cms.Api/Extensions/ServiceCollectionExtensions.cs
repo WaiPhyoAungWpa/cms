@@ -30,18 +30,47 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         // Database
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException(
+                "ConnectionStrings:DefaultConnection is required.");
+
         services.AddDbContext<CmsDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(connectionString));
 
         // Configuration
-        services.Configure<CloudinarySettings>(
-            configuration.GetSection(CloudinarySettings.SectionName));
+        services.AddOptions<CloudinarySettings>()
+            .Bind(configuration.GetRequiredSection(CloudinarySettings.SectionName))
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.CloudName),
+                "Cloudinary:CloudName is required.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.ApiKey),
+                "Cloudinary:ApiKey is required.")
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.ApiSecret),
+                "Cloudinary:ApiSecret is required.")
+            .ValidateOnStart();
 
         services.Configure<InitialAdminSettings>(
             configuration.GetSection(InitialAdminSettings.SectionName));
 
-        services.Configure<ImageUploadSettings>(
-            configuration.GetSection(ImageUploadSettings.SectionName));
+        services.AddOptions<ImageUploadSettings>()
+            .Bind(configuration.GetRequiredSection(ImageUploadSettings.SectionName))
+            .Validate(
+                settings => settings.MaxFileSize > 0,
+                "ImageUpload:MaxFileSize must be greater than zero.")
+            .Validate(
+                settings => settings.AllowedExtensions.Length > 0 &&
+                            settings.AllowedExtensions.All(
+                                extension => !string.IsNullOrWhiteSpace(extension) &&
+                                            extension.StartsWith('.')),
+                "ImageUpload:AllowedExtensions must contain file extensions.")
+            .Validate(
+                settings => settings.AllowedContentTypes.Length > 0 &&
+                            settings.AllowedContentTypes.All(
+                                contentType => !string.IsNullOrWhiteSpace(contentType)),
+                "ImageUpload:AllowedContentTypes must contain MIME types.")
+            .ValidateOnStart();
 
         services.AddOptions<JwtSettings>()
             .Bind(configuration.GetRequiredSection(JwtSettings.SectionName))
@@ -96,6 +125,7 @@ public static class ServiceCollectionExtensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(

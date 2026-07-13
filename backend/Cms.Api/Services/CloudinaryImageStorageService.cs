@@ -1,6 +1,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Cms.Api.Configurations;
+using Cms.Api.Exceptions;
 using Cms.Api.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -41,7 +42,10 @@ public class CloudinaryImageStorageService : IImageStorageService
         var result = await _cloudinary.UploadAsync(uploadParams);
 
         if (result.Error != null)
-            throw new Exception(result.Error.Message);
+        {
+            throw new ExternalServiceException(
+                $"Cloudinary image upload failed: {result.Error.Message}");
+        }
 
         return result.SecureUrl.ToString();
     }

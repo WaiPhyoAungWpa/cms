@@ -6,6 +6,7 @@ using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services.Interfaces;
 using Cms.Api.Validators;
+using Cms.Api.Constants;
 
 namespace Cms.Api.Services;
 
@@ -74,8 +75,8 @@ public class ContentService : IContentService
         int coverImageId,
         IEnumerable<SectionValidationData> sections)
     {
-        if (categoryId <= 0)
-            throw new ArgumentException("Category is required.");
+        if (!CategoryIds.IsValid(categoryId))
+            throw new ArgumentException("Invalid category.");
 
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title is required.");

@@ -1,7 +1,7 @@
 using Cms.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Cms.Api.Controllers;
 
@@ -34,6 +34,7 @@ public class ImagesController : ControllerBase
     /// Uploads a custom image.
     /// </summary>
     [Authorize]
+    [EnableRateLimiting("upload")]
     [HttpPost("upload")]
     public async Task<IActionResult> Upload(
         IFormFile file,

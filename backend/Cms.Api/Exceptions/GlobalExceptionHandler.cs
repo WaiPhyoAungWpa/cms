@@ -8,6 +8,15 @@ namespace Cms.Api.Exceptions;
 /// </summary>
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
+    // Field
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    // Constructor
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
@@ -29,10 +38,32 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             UnauthorizedAccessException ex =>
                 (StatusCodes.Status401Unauthorized, ex.Message),
 
+            ExternalServiceException =>
+                (StatusCodes.Status502BadGateway,
+                "An external service is temporarily unavailable. Please try again later."),
+
             _ =>
                 (StatusCodes.Status500InternalServerError,
                 "An unexpected error occurred.")
         };
+
+        if (statusCode >= StatusCodes.Status500InternalServerError)
+        {
+            _logger.LogError(
+                exception,
+                "Unhandled exception for {Method} {Path}",
+                httpContext.Request.Method,
+                httpContext.Request.Path);
+        }
+        else
+        {
+            _logger.LogWarning(
+                exception,
+                "Request failed for {Method} {Path} with status {StatusCode}",
+                httpContext.Request.Method,
+                httpContext.Request.Path,
+                statusCode);
+        }
 
         httpContext.Response.StatusCode = statusCode;
 

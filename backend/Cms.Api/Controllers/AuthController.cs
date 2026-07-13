@@ -2,6 +2,7 @@ using Cms.Api.DTOs.Auth;
 using Cms.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Cms.Api.Controllers;
 
@@ -22,6 +23,7 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Authenticates an administrator and returns a JWT.
     /// </summary>
+    [EnableRateLimiting("login")]
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         LoginRequestDto request)

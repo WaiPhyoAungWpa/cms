@@ -70,6 +70,8 @@ public class ImageService : IImageService
     // Public methods
     public async Task<List<DefaultImageDto>> GetDefaultImagesAsync(int categoryId)
     {
+        _ = ImageFolderHelper.GetFolder(categoryId);
+
         var images = await _imageRepository.GetDefaultImagesByCategoryAsync(categoryId);
 
         return images
