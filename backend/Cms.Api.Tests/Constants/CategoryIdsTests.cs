@@ -1,6 +1,6 @@
 using Cms.Api.Constants;
 
-namespace Cms.Api.Tests;
+namespace Cms.Api.Tests.Constants;
 
 public class CategoryIdsTests
 {
