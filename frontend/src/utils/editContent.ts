@@ -9,6 +9,7 @@ export function mapToEditSections(
     title: section.title,
     description: section.description,
     sectionImageId: section.sectionImageId,
+    imageFile: null,
     imageMode: "default",
     customImageUrl: section.imageUrl,
     originalImageId: section.sectionImageId,

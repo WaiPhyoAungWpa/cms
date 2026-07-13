@@ -169,6 +169,7 @@ export function useEditContentSections(categoryId: number) {
                 sectionImageId: 0,
                 imageMode: "default",
                 customImageUrl: "",
+                imageFile: null,
                 originalImageId: 0,
                 originalImageUrl: "",
                 isUploading: false,
