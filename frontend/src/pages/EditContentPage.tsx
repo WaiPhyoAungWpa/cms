@@ -61,6 +61,7 @@ export default function EditContentPage() {
         initializeCoverImage,
         coverImageId,
         setCoverImageId,
+        coverImageFile,
         coverImageMode,
         setCoverImageMode,
         customCoverImageUrl,
@@ -176,6 +177,7 @@ export default function EditContentPage() {
             title,
             description,
             coverImageId,
+            coverImageFile,
             sections,
         });
 

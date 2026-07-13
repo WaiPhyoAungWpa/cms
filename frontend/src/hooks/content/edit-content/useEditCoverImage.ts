@@ -8,6 +8,7 @@ export function useEditCoverImage(categoryId: number) {
     const [originalCoverImageId, setOriginalCoverImageId] = useState(0);
     const [isCoverUploading, setIsCoverUploading] = useState(false);
     const [coverUploadProgress, setCoverUploadProgress] = useState(0);
+    const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
     const [
         originalCoverImageUrl,
@@ -85,6 +86,7 @@ export function useEditCoverImage(categoryId: number) {
         initializeCoverImage,
         coverImageId,
         setCoverImageId,
+        coverImageFile,
         coverImageMode,
         setCoverImageMode,
         customCoverImageUrl,
