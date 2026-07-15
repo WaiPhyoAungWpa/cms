@@ -19,7 +19,6 @@ export default function ProtectedRoute({
     let isCurrent = true;
 
     if (!token) {
-      setSessionStatus("invalid");
       return;
     }
 

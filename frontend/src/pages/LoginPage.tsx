@@ -46,7 +46,7 @@ export default function LoginPage() {
     return (
         <main className="login-page">
             <div className="login-background">
-                {backgroundImages.map((image, index) => (
+                {backgroundImages.map((image) => (
                     <div
                         key={image}
                         className="login-background-image"

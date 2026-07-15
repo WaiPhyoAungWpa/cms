@@ -137,7 +137,15 @@ export function useManageContent() {
     };
 
     useEffect(() => {
-        fetchContents();
+        const timeoutId = window.setTimeout(() => {
+            void fetchContents();
+        }, 0);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         page,
         search,

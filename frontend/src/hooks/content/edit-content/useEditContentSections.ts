@@ -4,7 +4,7 @@ import { SectionDetail } from "../../../types/content";
 import { mapToEditSections } from "../../../utils/editContent";
 import { DefaultImage } from "../../../types/image";
 
-export function useEditContentSections(categoryId: number) {
+export function useEditContentSections() {
     const [sections, setSections] = useState<EditSection[]>([]);
 
     const initializeSections = (

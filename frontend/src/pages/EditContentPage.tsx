@@ -55,7 +55,7 @@ export default function EditContentPage() {
         removeSection,  
         synchronizeSectionImageModes,
         resetSectionImages,
-    } = useEditContentSections(categoryId);
+    } = useEditContentSections();
     
     const {
         initializeCoverImage,
@@ -70,22 +70,11 @@ export default function EditContentPage() {
         handleCoverUpload,
         restoreOriginalCoverImage,
         resetCoverImage,
-    } = useEditCoverImage(categoryId);
+    } = useEditCoverImage();
     
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [previewContent, setPreviewContent] = useState<ContentDetail | null>(null);
-
-    const getSelectedImageUrl = (
-        imageId: number,
-        customImageUrl: string
-    ): string => {
-        if (customImageUrl) {
-            return customImageUrl;
-        }
-
-        return images.find((image) => image.id === imageId)?.filePath ?? "";
-    };
 
     const loadContent = async () => {
         try {
@@ -125,7 +114,15 @@ export default function EditContentPage() {
     };
 
     useEffect(() => {
-        loadContent();
+        const timeoutId = window.setTimeout(() => {
+            void loadContent();
+        }, 0);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
     
     useEffect(() => {
@@ -151,23 +148,8 @@ export default function EditContentPage() {
         if (categoryId > 0) {
             loadImages();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categoryId, content]);
-
-    const buildUpdateRequest = (): UpdateContentRequest => {
-        return {
-            categoryId,
-            visibilityStatus,
-            title,
-            description,
-            coverImageId,
-            sections: sections.map((section) => ({
-            id: section.id,
-            title: section.title,
-            description: section.description,
-            sectionImageId: section.sectionImageId,
-            })),
-        };
-    };
 
     const validateForm = (): boolean => {
         const validationError = validateContentForm({

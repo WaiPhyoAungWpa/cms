@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 
-export function useEditCoverImage(categoryId: number) {
+export function useEditCoverImage() {
     const [coverImageId, setCoverImageId] = useState(0);
     const [coverImageMode, setCoverImageMode] = useState<"default" | "custom">("default");
     const [customCoverImageUrl, setCustomCoverImageUrl] = useState("");
