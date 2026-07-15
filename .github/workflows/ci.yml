@@ -27,6 +27,8 @@ jobs:
 
   frontend:
     runs-on: ubuntu-latest
+    env:
+      VITE_API_BASE_URL: http://localhost:5000/api
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
