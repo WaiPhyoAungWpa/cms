@@ -13,6 +13,7 @@ import ContentDetailPage from "./pages/ContentDetailPage";
 import EditContentPage from "./pages/EditContentPage";
 import PublicHomePage from "./pages/PublicHomePage";
 import PublicContentDetailPage from "./pages/PublicContentDetailPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
     return (
@@ -72,6 +73,8 @@ export default function App() {
                     path="/public/content/:id"
                     element={<PublicContentDetailPage />}
                 />
+                
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
     );

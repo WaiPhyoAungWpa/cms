@@ -4,6 +4,11 @@ import "../../styles/components/dashboard/DashboardHeader.css";
 export default function DashboardHeader() {
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
     return (
         <header className="dashboard-header">
             <div className="dashboard-header-text">
@@ -24,6 +29,13 @@ export default function DashboardHeader() {
                 onClick={() => navigate("/content")}
             >
                 Manage Content
+            </button>
+
+            <button
+                className="dashboard-logout-button"
+                onClick={handleLogout}
+                >
+                Logout
             </button>
             </div>
         </header>

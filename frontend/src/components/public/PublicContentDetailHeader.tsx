@@ -9,23 +9,35 @@ export default function PublicContentDetailHeader({ title }: Props) {
   const navigate = useNavigate();
 
   const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title,
-        url: window.location.href,
-      });
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title,
+          url: window.location.href,
+        });
 
-      return;
+        return;
+      }
+
+      if (!navigator.clipboard) {
+        throw new Error("Clipboard is not available.");
+      }
+
+      await navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard.");
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        return;
+      }
+
+      alert("Unable to share this link. Please copy the URL manually.");
     }
-
-    await navigator.clipboard.writeText(window.location.href);
-    alert("Link copied to clipboard.");
   };
 
   return (
     <div className="public-content-detail-header">
       <button type="button" onClick={() => navigate(-1)}>
-        <span>←</span>
+        <span aria-hidden="true">&larr;</span>
         Back
       </button>
 

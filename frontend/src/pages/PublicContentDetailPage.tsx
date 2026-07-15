@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import PublicContentDetailHeader from "../components/public/PublicContentDetailHeader";
+import PublicHeader from "../components/public/PublicHeader";
 import PageState from "../components/common/PageState";
 import { getPublicContentById } from "../services/publicContentService";
 import type { PublicContentDetail } from "../types/content";
@@ -67,6 +68,7 @@ export default function PublicContentDetailPage() {
 
     return (
         <>
+        <PublicHeader />
         <main className="public-content-detail-page">
             <PublicContentDetailHeader title={content.title} />
             <ContentTemplateRenderer content={content} />
