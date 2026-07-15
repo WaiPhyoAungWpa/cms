@@ -11,3 +11,8 @@ dist/
 *.db
 *.sqlite
 !.env.example
+
+# Frontend TypeScript build output
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
