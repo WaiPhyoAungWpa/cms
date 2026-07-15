@@ -7,6 +7,8 @@ using Cms.Api.Configurations;
 using Microsoft.Extensions.Options;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Http.Features;
+using Cms.Api.Data.Context;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,10 @@ builder.Services.Configure<FormOptions>(options =>
 
 // Application Services
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<CmsDbContext>(
+        name: "database",
+        tags: ["ready"]);
 
 // API Documentation
 builder.Services.AddEndpointsApiExplorer();
@@ -121,6 +127,20 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks(
+    "/health/live",
+    new HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
+
+app.MapHealthChecks(
+    "/health/ready",
+    new HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains("ready")
+    });
+    
 // Endpoints
 app.MapControllers();
 

@@ -25,8 +25,6 @@ public class AdminDatabaseInitializer
 
     public async Task InitializeAsync()
     {
-        await _context.Database.MigrateAsync();
-
         if (await _context.Admins.AnyAsync())
             return;
 

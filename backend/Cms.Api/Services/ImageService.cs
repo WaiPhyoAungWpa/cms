@@ -6,6 +6,7 @@ using Cms.Api.Entities.Enums;
 using Cms.Api.Helpers;
 using Cms.Api.Configurations;
 using Microsoft.Extensions.Options;
+using ImageMagick;
 
 namespace Cms.Api.Services;
 
@@ -16,6 +17,17 @@ public class ImageService : IImageService
     private readonly IImageStorageService _imageStorageService;
     private readonly ImageUploadSettings _imageUploadSettings;
     private readonly ILogger<ImageService> _logger;
+
+    private static readonly IReadOnlyDictionary<string, (string MimeType, MagickFormat Format)>
+        SupportedImageFormats =
+            new Dictionary<string, (string MimeType, MagickFormat Format)>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                [".jpg"] = ("image/jpeg", MagickFormat.Jpeg),
+                [".jpeg"] = ("image/jpeg", MagickFormat.Jpeg),
+                [".png"] = ("image/png", MagickFormat.Png),
+                [".webp"] = ("image/webp", MagickFormat.WebP)
+            };
 
     // Constructor
     public ImageService(
@@ -31,42 +43,81 @@ public class ImageService : IImageService
     }
 
     // Validation Helpers
-    private static async Task ValidateImageSignatureAsync(IFormFile file)
+    private static async Task ValidateDecodedImageAsync(
+        IFormFile file,
+        string extension,
+        CancellationToken cancellationToken = default)
     {
-        var header = new byte[12];
-
-        await using var stream = file.OpenReadStream();
-        var bytesRead = await stream.ReadAsync(header);
-
-        var isJpeg = bytesRead >= 3 &&
-                    header[0] == 0xFF &&
-                    header[1] == 0xD8 &&
-                    header[2] == 0xFF;
-
-        var isPng = bytesRead >= 8 &&
-                    header[0] == 0x89 &&
-                    header[1] == 0x50 &&
-                    header[2] == 0x4E &&
-                    header[3] == 0x47 &&
-                    header[4] == 0x0D &&
-                    header[5] == 0x0A &&
-                    header[6] == 0x1A &&
-                    header[7] == 0x0A;
-
-        var isWebp = bytesRead >= 12 &&
-                    header[0] == (byte)'R' &&
-                    header[1] == (byte)'I' &&
-                    header[2] == (byte)'F' &&
-                    header[3] == (byte)'F' &&
-                    header[8] == (byte)'W' &&
-                    header[9] == (byte)'E' &&
-                    header[10] == (byte)'B' &&
-                    header[11] == (byte)'P';
-
-        if (!isJpeg && !isPng && !isWebp)
+        if (!SupportedImageFormats.TryGetValue(extension, out var expectedFormat))
         {
             throw new ArgumentException(
-                "The uploaded file is not a valid JPEG, PNG, or WEBP image.");
+                "Only JPG, JPEG, PNG and WEBP images are allowed.");
+        }
+
+        if (!string.Equals(
+                file.ContentType,
+                expectedFormat.MimeType,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException(
+                "The file extension and declared content type must match.");
+        }
+
+        await using var uploadStream = file.OpenReadStream();
+        using var buffer = new MemoryStream();
+
+        await uploadStream.CopyToAsync(buffer, cancellationToken);
+
+        var bytes = buffer.ToArray();
+
+        ValidateImageContainer(bytes, expectedFormat.Format);
+
+        try
+        {
+            using var image = new MagickImage(bytes);
+
+            if (image.Format != expectedFormat.Format)
+            {
+                throw new ArgumentException(
+                    "The file extension, declared content type, and detected image format must match.");
+            }
+        }
+        catch (MagickException)
+        {
+            throw new ArgumentException(
+                "The uploaded file is not a valid, complete image.");
+        }
+    }
+
+    private static void ValidateImageContainer(
+        byte[] bytes,
+        MagickFormat expectedFormat)
+    {
+        var isComplete = expectedFormat switch
+        {
+            MagickFormat.Jpeg =>
+                bytes.Length >= 4 &&
+                bytes[^2] == 0xFF &&
+                bytes[^1] == 0xD9,
+
+            MagickFormat.Png =>
+                bytes.Length >= 8 &&
+                bytes[^8..].SequenceEqual(
+                    new byte[] { 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 }),
+
+            MagickFormat.WebP =>
+                bytes.Length >= 12 &&
+                bytes[0..4].SequenceEqual("RIFF"u8) &&
+                bytes[8..12].SequenceEqual("WEBP"u8) &&
+                BitConverter.ToUInt32(bytes, 4) == bytes.Length - 8,
+
+            _ => false
+        };
+
+        if (!isComplete)
+        {
+            throw new ArgumentException(
+                "The uploaded file is not a valid, complete image.");
         }
     }
 
@@ -118,7 +169,7 @@ public class ImageService : IImageService
                 "Only JPG, JPEG, PNG and WEBP images are allowed.");
         }
 
-        await ValidateImageSignatureAsync(file);
+        await ValidateDecodedImageAsync(file, extension);
 
         var folder = ImageFolderHelper.GetFolder(categoryId);
 
