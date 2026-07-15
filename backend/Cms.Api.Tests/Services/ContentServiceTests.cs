@@ -9,6 +9,9 @@ using Moq;
 
 namespace Cms.Api.Tests.Services;
 
+/// <summary>
+/// Verifies content creation, retrieval, updates, lifecycle changes, and dashboard behavior.
+/// </summary>
 public class ContentServiceTests
 {
     private readonly Mock<IContentRepository> _contentRepository = new();

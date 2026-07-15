@@ -11,8 +11,12 @@ using Microsoft.AspNetCore.Http.Features;
 var builder = WebApplication.CreateBuilder(args);
 
 // Environment
-Env.Load(Path.Combine(builder.Environment.ContentRootPath, ".env"));
-builder.Configuration.AddEnvironmentVariables();
+// Environment
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    Env.Load(Path.Combine(builder.Environment.ContentRootPath, ".env"));
+    builder.Configuration.AddEnvironmentVariables();
+}
 
 // MVC
 builder.Services.AddControllers()
@@ -89,13 +93,16 @@ _ = app.Services
     .GetRequiredService<IOptions<JwtSettings>>()
     .Value;
 
-// Database Initialization
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var initializer =
-        scope.ServiceProvider.GetRequiredService<AdminDatabaseInitializer>();
+    // Database Initialization
+    using (var scope = app.Services.CreateScope())
+    {
+        var initializer =
+            scope.ServiceProvider.GetRequiredService<AdminDatabaseInitializer>();
 
-    await initializer.InitializeAsync();
+        await initializer.InitializeAsync();
+    }
 }
 
 // Development Tools
@@ -118,3 +125,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}

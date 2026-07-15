@@ -8,6 +8,9 @@ using Moq;
 
 namespace Cms.Api.Tests.Services;
 
+/// <summary>
+/// Verifies administrator login, password verification, and password rehash behavior.
+/// </summary>
 public class AuthServiceTests
 {
     private readonly Mock<IAdminRepository> _adminRepositoryMock;

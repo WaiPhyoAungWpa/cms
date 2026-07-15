@@ -8,8 +8,9 @@ public interface IImageStorageService
     /// <summary>
     /// Saves an image to the configured storage provider.
     /// </summary>
-    Task<string> SaveAsync(
+    Task<StoredImage> SaveAsync(
         IFormFile file,
         string folder);
 
+    Task DeleteAsync(string publicId);
 }

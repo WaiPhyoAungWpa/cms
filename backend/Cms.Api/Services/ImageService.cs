@@ -15,16 +15,19 @@ public class ImageService : IImageService
     private readonly IImageRepository _imageRepository;
     private readonly IImageStorageService _imageStorageService;
     private readonly ImageUploadSettings _imageUploadSettings;
+    private readonly ILogger<ImageService> _logger;
 
     // Constructor
     public ImageService(
         IImageRepository imageRepository,
         IImageStorageService imageStorageService,
-        IOptions<ImageUploadSettings> imageUploadSettings)
+        IOptions<ImageUploadSettings> imageUploadSettings,
+        ILogger<ImageService> logger)
     {
         _imageRepository = imageRepository;
         _imageStorageService = imageStorageService;
         _imageUploadSettings = imageUploadSettings.Value;
+        _logger = logger;
     }
 
     // Validation Helpers
@@ -119,17 +122,37 @@ public class ImageService : IImageService
 
         var folder = ImageFolderHelper.GetFolder(categoryId);
 
-        var imageUrl = await _imageStorageService.SaveAsync(file, folder);
+        var storedImage = await _imageStorageService.SaveAsync(file, folder);
 
         var image = new Image
         {
             Type = ImageType.Custom,
             CategoryId = categoryId,
-            FilePath = imageUrl
+            FilePath = storedImage.Url,
+            StoragePublicId = storedImage.PublicId
         };
 
-        await _imageRepository.AddAsync(image);
-        await _imageRepository.SaveChangesAsync();
+        try
+        {
+            await _imageRepository.AddAsync(image);
+            await _imageRepository.SaveChangesAsync();
+        }
+        catch
+        {
+            try
+            {
+                await _imageStorageService.DeleteAsync(storedImage.PublicId);
+            }
+            catch (Exception cleanupException)
+            {
+                _logger.LogError(
+                    cleanupException,
+                    "Failed to delete orphaned stored image {PublicId}.",
+                    storedImage.PublicId);
+            }
+
+            throw;
+        }
 
         return new UploadImageResponseDto
         {

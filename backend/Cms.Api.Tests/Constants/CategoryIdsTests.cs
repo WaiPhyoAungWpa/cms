@@ -2,6 +2,9 @@ using Cms.Api.Constants;
 
 namespace Cms.Api.Tests.Constants;
 
+/// <summary>
+/// Verifies recognition of supported and unsupported content category IDs.
+/// </summary>
 public class CategoryIdsTests
 {
     [Theory]

@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Cms.Api.Tests.Services;
 
+/// <summary>
+/// Verifies generated JWT claims, settings, lifetime, and signing algorithm.
+/// </summary>
 public class JwtTokenGeneratorTests
 {
     private readonly JwtSettings _settings;

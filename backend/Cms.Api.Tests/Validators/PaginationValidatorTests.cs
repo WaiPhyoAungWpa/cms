@@ -2,6 +2,9 @@ using Cms.Api.Validators;
 
 namespace Cms.Api.Tests.Validators;
 
+/// <summary>
+/// Verifies page and page-size validation rules.
+/// </summary>
 public class PaginationValidatorTests
 {
     [Theory]

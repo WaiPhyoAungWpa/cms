@@ -16,6 +16,9 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
             .IsRequired()
             .HasMaxLength(EntityFieldLengths.ImageFilePath);
 
+        builder.Property(image => image.StoragePublicId)
+            .HasMaxLength(EntityFieldLengths.ImageStoragePublicId);
+
         builder.Property(image => image.Type)
             .IsRequired()
             .HasConversion<string>();

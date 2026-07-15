@@ -12,6 +12,8 @@ public class Image
 
     public string FilePath { get; set; } = string.Empty;
 
+    public string? StoragePublicId { get; set; }
+
     // Navigation Property
     public Category Category { get; set; } = null!;
 

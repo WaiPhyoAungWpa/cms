@@ -27,7 +27,7 @@ public class CloudinaryImageStorageService : IImageStorageService
         };
     }
 
-    public async Task<string> SaveAsync(
+    public async Task<StoredImage> SaveAsync(
         IFormFile file,
         string folder)
     {
@@ -47,7 +47,34 @@ public class CloudinaryImageStorageService : IImageStorageService
                 $"Cloudinary image upload failed: {result.Error.Message}");
         }
 
-        return result.SecureUrl.ToString();
+        if (string.IsNullOrWhiteSpace(result.PublicId))
+        {
+            throw new ExternalServiceException(
+                "Cloudinary image upload did not return a public identifier.");
+        }
+
+        return new StoredImage(
+            result.SecureUrl.ToString(),
+            result.PublicId);
+    }
+
+    public async Task DeleteAsync(string publicId)
+    {
+        var deletionParams = new DeletionParams(publicId);
+
+        var result = await _cloudinary.DestroyAsync(deletionParams);
+
+        if (result.Error != null)
+        {
+            throw new ExternalServiceException(
+                $"Cloudinary image deletion failed: {result.Error.Message}");
+        }
+
+        if (result.Result is not "ok" and not "not found")
+        {
+            throw new ExternalServiceException(
+                $"Cloudinary image deletion returned: {result.Result}");
+        }
     }
 
 }
