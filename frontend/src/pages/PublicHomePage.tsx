@@ -8,6 +8,9 @@ import PublicContentGrid from "../components/public/PublicContentGrid";
 import PublicContentFilters from "../components/public/PublicContentFilters";
 import PublicContentPagination from "../components/public/PublicContentPagination";
 import PageState from "../components/common/PageState";
+import CommunitySection from "../components/public/dashboard/CommunitySection";
+import { getPublicDashboard } from "../services/publicDashboardService";
+import { PublicDashboard } from "../types/publicDashboard";
 import "../styles/pages/PublicHomePage.css";
 
 export default function PublicHomePage() {
@@ -19,6 +22,8 @@ export default function PublicHomePage() {
 
   const [page, setPage] = useState(1);
 
+  const [dashboard, setDashboard] = useState<PublicDashboard | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -28,14 +33,19 @@ export default function PublicHomePage() {
       setError("");
 
       try {
-        const result = await getPublicContents({
-          search: appliedSearch,
-          categoryId,
-          page,
-          pageSize: 9,
-        });
+        const [contentResult, dashboardResult] =
+            await Promise.all([
+                getPublicContents({
+                    search: appliedSearch,
+                    categoryId,
+                    page,
+                    pageSize: 9,
+                }),
+                getPublicDashboard(),
+            ]);
 
-        setData(result);
+        setData(contentResult);
+        setDashboard(dashboardResult);
       } catch (err) {
         setError(
           err instanceof Error
@@ -91,12 +101,25 @@ export default function PublicHomePage() {
     );
   }
 
+  if (!dashboard) {
+      return (
+          <PageState
+              title="Loading dashboard"
+              message="Please wait while dashboard data is being retrieved."
+          />
+      );
+  }
+
   return (
     <div className="public-home-page">
       <PublicHeader />
 
       <main className="public-home-main">
-        <PublicHero stats={data.stats} />
+        <PublicHero />
+
+        <CommunitySection
+          dashboard={dashboard}
+        />
 
         {data.latestContent && (
           <LatestContent content={data.latestContent} />
