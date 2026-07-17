@@ -20,6 +20,10 @@ public class Content
 
     public VisibilityStatus VisibilityStatus { get; set; }
 
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public int CreatedByAdminId { get; set; }
@@ -39,4 +43,8 @@ public class Content
     public Admin UpdatedByAdmin { get; set; } = null!;
 
     public ICollection<Section> Sections { get; set; } = new List<Section>();
+
+    public ICollection<ContentRelationship> RelatedContents { get; set; } = [];
+
+    public ICollection<ContentRelationship> RelatedToContents { get; set; } = [];
 }

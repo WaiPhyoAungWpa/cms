@@ -13,4 +13,6 @@ public static class EntityFieldLengths
     public const int ImageFilePath = 255;
 
     public const int ImageStoragePublicId = 255;
+
+    public const int HyperlinkName = 255;
 }

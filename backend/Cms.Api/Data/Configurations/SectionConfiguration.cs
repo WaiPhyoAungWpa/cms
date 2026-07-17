@@ -18,6 +18,11 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
         builder.Property(section => section.Description)
             .IsRequired();
 
+        builder.Property(content => content.HyperlinkName)
+            .HasMaxLength(EntityFieldLengths.HyperlinkName);
+
+        builder.Property(content => content.HyperlinkUrl);
+
         builder.HasOne(section => section.Content)
             .WithMany(content => content.Sections)
             .HasForeignKey(section => section.ContentId);

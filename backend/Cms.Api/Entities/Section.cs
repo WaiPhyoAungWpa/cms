@@ -12,6 +12,10 @@ public class Section
 
     public int SectionImageId { get; set; }
 
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; }
+
     // Navigation Properties
 
     public Content Content { get; set; } = null!;

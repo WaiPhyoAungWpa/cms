@@ -10,6 +10,7 @@ public class CmsDbContext(DbContextOptions<CmsDbContext> options) : DbContext(op
     public DbSet<Content> Contents => Set<Content>();
     public DbSet<Section> Sections => Set<Section>();
     public DbSet<Image> Images => Set<Image>();
+    public DbSet<ContentRelationship> ContentRelationships => Set<ContentRelationship>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

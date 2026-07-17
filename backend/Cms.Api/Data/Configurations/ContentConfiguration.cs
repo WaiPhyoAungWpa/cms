@@ -18,6 +18,11 @@ public class ContentConfiguration : IEntityTypeConfiguration<Content>
         builder.Property(content => content.Description)
             .IsRequired();
 
+        builder.Property(content => content.HyperlinkName)
+            .HasMaxLength(EntityFieldLengths.HyperlinkName);
+
+        builder.Property(content => content.HyperlinkUrl);
+
         builder.HasOne(content => content.CreatedByAdmin)
             .WithMany(admin => admin.CreatedContents)
             .HasForeignKey(content => content.CreatedByAdminId);
