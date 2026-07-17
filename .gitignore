@@ -12,6 +12,9 @@ dist/
 *.sqlite
 !.env.example
 
+# Backend Secrets Folder
+backend/Cms.Api/Secrets/
+
 # Frontend TypeScript build output
 frontend/*.tsbuildinfo
 frontend/vite.config.js

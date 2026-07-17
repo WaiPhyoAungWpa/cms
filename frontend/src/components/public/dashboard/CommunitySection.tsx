@@ -1,11 +1,11 @@
-import { PublicDashboard } from "../../../types/publicDashboard";
+import type { PublicDashboardResponse } from "../../../types/publicDashboard";
 import CommunityStats from "./CommunityStats";
 import CommunityChart from "./CommunityChart";
 
 import "../../../styles/components/public/CommunitySection.css";
 
 interface Props {
-    dashboard: PublicDashboard;
+    dashboard: PublicDashboardResponse;
 }
 
 export default function CommunitySection({
@@ -35,7 +35,7 @@ export default function CommunitySection({
             <div className="community-footer">
                 <p>
                     <strong>Last Updated:</strong>{" "}
-                    {dashboard.lastUpdated}
+                    {new Date(dashboard.lastUpdated).toLocaleString()}
                 </p>
 
                 <p>

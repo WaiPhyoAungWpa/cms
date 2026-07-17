@@ -10,7 +10,7 @@ import PublicContentPagination from "../components/public/PublicContentPaginatio
 import PageState from "../components/common/PageState";
 import CommunitySection from "../components/public/dashboard/CommunitySection";
 import { getPublicDashboard } from "../services/publicDashboardService";
-import { PublicDashboard } from "../types/publicDashboard";
+import { PublicDashboardResponse  } from "../types/publicDashboard";
 import "../styles/pages/PublicHomePage.css";
 
 export default function PublicHomePage() {
@@ -22,7 +22,7 @@ export default function PublicHomePage() {
 
   const [page, setPage] = useState(1);
 
-  const [dashboard, setDashboard] = useState<PublicDashboard | null>(null);
+  const [dashboard, setDashboard] = useState<PublicDashboardResponse | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -90,22 +90,13 @@ export default function PublicHomePage() {
     );
   }
 
-  if (!data) {
-    return (
-      <PageState
-        title="No content available"
-        message="There is no published content available at the moment."
-        actionLabel="Try Again"
-        onAction={() => window.location.reload()}
-      />
-    );
-  }
-
-  if (!dashboard) {
+  if (!data || !dashboard) {
       return (
           <PageState
-              title="Loading dashboard"
-              message="Please wait while dashboard data is being retrieved."
+              title="Unable to load page"
+              message="Required data could not be retrieved."
+              actionLabel="Try Again"
+              onAction={() => window.location.reload()}
           />
       );
   }

@@ -1,8 +1,8 @@
-import { CommunityStats as CommunityStatsType } from "../../../types/publicDashboard";
+import type { CommunityStats } from "../../../types/publicDashboard";
 import CommunityStatCard from "./CommunityStatCard";
 
 interface Props {
-    stats: CommunityStatsType;
+    stats: CommunityStats;
 }
 
 export default function CommunityStats({

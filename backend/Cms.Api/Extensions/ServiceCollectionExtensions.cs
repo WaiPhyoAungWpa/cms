@@ -92,6 +92,13 @@ public static class ServiceCollectionExtensions
                 "Jwt:TokenLifetimeHours must be between 1 and 24.")
             .ValidateOnStart();
 
+        services.AddOptions<GoogleAnalyticsSettings>()
+            .Bind(configuration.GetRequiredSection(GoogleAnalyticsSettings.SectionName))
+            .Validate(
+                settings => !string.IsNullOrWhiteSpace(settings.PropertyId),
+                "GoogleAnalytics:PropertyId is required.")
+            .ValidateOnStart();
+
         // Infrastructure
         services.AddHttpContextAccessor();
         services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
@@ -101,6 +108,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IContentRepository, ContentRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
+        services.AddScoped<IPublicDashboardRepository, PublicDashboardRepository>();
 
         // Services
         services.AddScoped<ICurrentAdminService, CurrentAdminService>();
@@ -111,6 +119,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentService, ContentService>();
         services.AddScoped<IImageService, ImageService>();
         services.AddScoped<IPublicContentService, PublicContentService>();
+
+        services.AddScoped<IGoogleAnalyticsService, GoogleAnalyticsService>();
+        services.AddScoped<IPublicDashboardService, PublicDashboardService>();
 
         // Authentication & Authorization
         var jwtKey = configuration["Jwt:Key"]

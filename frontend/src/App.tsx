@@ -14,10 +14,12 @@ import EditContentPage from "./pages/EditContentPage";
 import PublicHomePage from "./pages/PublicHomePage";
 import PublicContentDetailPage from "./pages/PublicContentDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AnalyticsTracker from "./components/AnalyticsTracker";
 
 export default function App() {
     return (
         <BrowserRouter>
+            <AnalyticsTracker />
             <Routes>
                 <Route
                     path="/login"

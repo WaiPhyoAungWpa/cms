@@ -10,7 +10,7 @@ export interface CommunityStats {
     categories: number;
 }
 
-export interface PublicDashboard {
+export interface PublicDashboardResponse {
     stats: CommunityStats;
     monthlyViews: MonthlyView[];
 

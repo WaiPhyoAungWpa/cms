@@ -8,5 +8,5 @@ export async function getPublicDashboard(): Promise<PublicDashboardResponse> {
         throw new Error("Failed to retrieve public dashboard.");
     }
 
-    return await response.json();
+    return response.json();
 }
