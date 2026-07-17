@@ -19,6 +19,8 @@ public sealed class CmsApiFactory : WebApplicationFactory<Program>
 
         builder.ConfigureAppConfiguration((_, configurationBuilder) =>
         {
+            Console.WriteLine(">>> CmsApiFactory.ConfigureAppConfiguration");
+
             configurationBuilder.AddInMemoryCollection(
                 new Dictionary<string, string?>
                 {
@@ -42,7 +44,9 @@ public sealed class CmsApiFactory : WebApplicationFactory<Program>
                     ["ImageUpload:AllowedExtensions:3"] = ".webp",
                     ["ImageUpload:AllowedContentTypes:0"] = "image/jpeg",
                     ["ImageUpload:AllowedContentTypes:1"] = "image/png",
-                    ["ImageUpload:AllowedContentTypes:2"] = "image/webp"
+                    ["ImageUpload:AllowedContentTypes:2"] = "image/webp",
+
+                    ["GoogleAnalytics:PropertyId"] = "123456789"
                 });
         });
 
@@ -52,6 +56,8 @@ public sealed class CmsApiFactory : WebApplicationFactory<Program>
             services.AddScoped<IAuthService, TestAuthService>();
             services.RemoveAll<IPublicContentService>();
             services.AddScoped<IPublicContentService, TestPublicContentService>();
+            services.RemoveAll<IGoogleAnalyticsService>();
+            services.AddScoped<IGoogleAnalyticsService, TestGoogleAnalyticsService>();
         });
     }
 }

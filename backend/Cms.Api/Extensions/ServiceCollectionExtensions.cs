@@ -93,7 +93,7 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
 
         services.AddOptions<GoogleAnalyticsSettings>()
-            .Bind(configuration.GetRequiredSection(GoogleAnalyticsSettings.SectionName))
+            .Bind(configuration.GetSection(GoogleAnalyticsSettings.SectionName))
             .Validate(
                 settings => !string.IsNullOrWhiteSpace(settings.PropertyId),
                 "GoogleAnalytics:PropertyId is required.")
