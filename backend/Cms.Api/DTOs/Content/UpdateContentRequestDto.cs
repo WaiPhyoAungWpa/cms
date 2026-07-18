@@ -14,5 +14,11 @@ public class UpdateContentRequestDto
 
     public int CoverImageId { get; set; }
 
+    public string? HyperlinkName { get; set; } 
+
+    public string? HyperlinkUrl { get; set; } 
+
+    public List<int> RelatedContentIds { get; set; } = [];
+
     public List<UpdateSectionRequestDto> Sections { get; set; } = [];
 }

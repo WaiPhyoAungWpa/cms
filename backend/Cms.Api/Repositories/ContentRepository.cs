@@ -79,6 +79,12 @@ public class ContentRepository : IContentRepository
             .AsNoTracking()
             .Include(c => c.Category)
             .Include(c => c.CoverImage)
+            .Include(c => c.RelatedContents)
+                .ThenInclude(r => r.RelatedContent)
+                    .ThenInclude(c => c.Category)
+            .Include(c => c.RelatedContents)
+                .ThenInclude(r => r.RelatedContent)
+                    .ThenInclude(c => c.CoverImage)
             .Include(c => c.Sections.OrderBy(s => s.Id))
                 .ThenInclude(s => s.SectionImage)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -88,6 +94,7 @@ public class ContentRepository : IContentRepository
     {
         return await _context.Contents
             .Include(c => c.Sections)
+            .Include(c => c.RelatedContents)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
@@ -125,6 +132,39 @@ public class ContentRepository : IContentRepository
             counts?.SoftDeletedCount ?? 0,
             recentContents
         );
+    }
+
+    public async Task<List<int>> GetValidRelatedContentIdsAsync(
+        IEnumerable<int> ids)
+    {
+        return await _context.Contents
+            .Where(c =>
+                ids.Contains(c.Id) &&
+                c.Status == ContentStatus.Published &&
+                c.VisibilityStatus == VisibilityStatus.Public)
+            .Select(c => c.Id)
+            .ToListAsync();
+    }
+
+    public async Task<List<Content>> GetRelatedContentOptionsAsync(
+        int? excludeId)
+    {
+        var query = _context.Contents
+            .AsNoTracking()
+            .Include(c => c.Category)
+            .Include(c => c.CoverImage)
+            .Where(c =>
+                c.Status == ContentStatus.Published &&
+                c.VisibilityStatus == VisibilityStatus.Public);
+
+        if (excludeId.HasValue)
+        {
+            query = query.Where(c => c.Id != excludeId.Value);
+        }
+
+        return await query
+            .OrderBy(c => c.Title)
+            .ToListAsync();
     }
 
     // Public content

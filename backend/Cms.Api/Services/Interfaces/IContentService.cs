@@ -70,4 +70,8 @@ public interface IContentService
     /// </summary>
     Task<DashboardSummaryResponseDto> GetDashboardSummaryAsync();
 
+    /// <summary>
+    /// Retrieves the related content options.
+    /// </summary>
+    Task<List<RelatedContentOptionResponseDto>> GetRelatedContentOptionsAsync(int? excludeId);
 }

@@ -26,6 +26,10 @@ public interface IContentRepository
         List<Content> RecentContents
     )> GetDashboardSummaryAsync();
 
+    Task<List<int>> GetValidRelatedContentIdsAsync(IEnumerable<int> ids);
+
+    Task<List<Content>> GetRelatedContentOptionsAsync(int? excludeId);
+
     // Public content
     Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(
         PublicContentQueryRequestDto request);

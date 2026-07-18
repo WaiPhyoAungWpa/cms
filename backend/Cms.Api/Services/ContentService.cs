@@ -20,7 +20,9 @@ public class ContentService : IContentService
     private readonly record struct SectionValidationData(
         string Title,
         string Description,
-        int SectionImageId);
+        int SectionImageId,
+        string? HyperlinkName,
+        string? HyperlinkUrl);
 
     // Constructor
     public ContentService(
@@ -43,11 +45,16 @@ public class ContentService : IContentService
             request.Title,
             request.Description,
             request.CoverImageId,
+            request.HyperlinkName,
+            request.HyperlinkUrl,
+            request.RelatedContentIds,
             request.Sections.Select(s =>
                 new SectionValidationData(
                     s.Title,
                     s.Description,
-                    s.SectionImageId))
+                    s.SectionImageId,
+                    s.HyperlinkName,
+                    s.HyperlinkUrl))
         );
     }
 
@@ -60,11 +67,16 @@ public class ContentService : IContentService
             request.Title,
             request.Description,
             request.CoverImageId,
+            request.HyperlinkName,
+            request.HyperlinkUrl,
+            request.RelatedContentIds,
             request.Sections.Select(s =>
                 new SectionValidationData(
                     s.Title,
                     s.Description,
-                    s.SectionImageId))
+                    s.SectionImageId,
+                    s.HyperlinkName,
+                    s.HyperlinkUrl))
         );
     }
 
@@ -73,6 +85,9 @@ public class ContentService : IContentService
         string title,
         string description,
         int coverImageId,
+        string? hyperlinkName,
+        string? hyperlinkUrl,
+        IEnumerable<int> relatedContentIds,
         IEnumerable<SectionValidationData> sections)
     {
         if (!CategoryIds.IsValid(categoryId))
@@ -87,6 +102,14 @@ public class ContentService : IContentService
         if (coverImageId <= 0)
             throw new ArgumentException("Cover image is required.");
 
+        ValidateHyperlink(hyperlinkName, hyperlinkUrl);
+
+        if (relatedContentIds.Count() != relatedContentIds.Distinct().Count())
+        {
+            throw new ArgumentException(
+                "Duplicate related content is not allowed.");
+        }
+
         foreach (var section in sections)
         {
             if (string.IsNullOrWhiteSpace(section.Title))
@@ -97,6 +120,8 @@ public class ContentService : IContentService
 
             if (section.SectionImageId <= 0)
                 throw new ArgumentException("Section image is required.");
+
+            ValidateHyperlink(section.HyperlinkName, section.HyperlinkUrl);
         }
     }
 
@@ -125,6 +150,58 @@ public class ContentService : IContentService
         }
     }
 
+    private static void ValidateHyperlink(
+        string? hyperlinkName,
+        string? hyperlinkUrl)
+    {
+        var hasName = !string.IsNullOrWhiteSpace(hyperlinkName);
+        var hasUrl = !string.IsNullOrWhiteSpace(hyperlinkUrl);
+
+        if (hasName != hasUrl)
+        {
+            throw new ArgumentException(
+                "Hyperlink name and URL must both be provided.");
+        }
+
+        if (hasUrl &&
+            !Uri.TryCreate(
+                hyperlinkUrl,
+                UriKind.Absolute,
+                out var uri))
+        {
+            throw new ArgumentException(
+                "Invalid hyperlink URL.");
+        }
+    }
+
+    private async Task ValidateRelatedContentSelectionAsync(
+        IEnumerable<int> relatedContentIds)
+    {
+        var ids = relatedContentIds
+            .Distinct()
+            .ToList();
+
+        if (!ids.Any())
+        {
+            return;
+        }
+
+        if (ids.Any(id => id <= 0))
+        {
+            throw new ArgumentException(
+                "Invalid related content.");
+        }
+
+        var validIds = await _contentRepository
+            .GetValidRelatedContentIdsAsync(ids);
+
+        if (validIds.Count != ids.Count)
+        {
+            throw new ArgumentException(
+                "One or more selected related contents must be published and public.");
+        }
+    }
+
     // Mapping Helpers
     private static ContentResponseDto MapToResponse(Content content)
     {
@@ -150,6 +227,18 @@ public class ContentService : IContentService
             VisibilityStatus = content.VisibilityStatus,
             CoverImageId = content.CoverImageId,
             CoverImageUrl = content.CoverImage.FilePath,
+            HyperlinkName = content.HyperlinkName,
+            HyperlinkUrl = content.HyperlinkUrl,
+            RelatedContents =
+                content.RelatedContents
+                    .Select(r => new RelatedContentResponseDto
+                    {
+                        Id = r.RelatedContent.Id,
+                        Title = r.RelatedContent.Title,
+                        Category = r.RelatedContent.Category.Name,
+                        CoverImageUrl = r.RelatedContent.CoverImage.FilePath
+                    })
+                    .ToList(),
             Sections = content.Sections
                 .Select(section => new SectionDetailResponseDto
                 {
@@ -157,7 +246,9 @@ public class ContentService : IContentService
                     Title = section.Title,
                     Description = section.Description,
                     SectionImageId = section.SectionImageId,
-                    ImageUrl = section.SectionImage.FilePath
+                    ImageUrl = section.SectionImage.FilePath,
+                    HyperlinkName = section.HyperlinkName,
+                    HyperlinkUrl = section.HyperlinkUrl,
                 })
                 .ToList()
         };
@@ -175,6 +266,8 @@ public class ContentService : IContentService
             Title = request.Title,
             Description = request.Description,
             CoverImageId = request.CoverImageId,
+            HyperlinkName = request.HyperlinkName,
+            HyperlinkUrl = request.HyperlinkUrl,
 
             Status = status,
             VisibilityStatus = visibilityStatus,
@@ -185,11 +278,21 @@ public class ContentService : IContentService
             CreatedByAdminId = _currentAdminService.GetAdminId(),
             UpdatedByAdminId = _currentAdminService.GetAdminId(),
 
+            RelatedContents = request.RelatedContentIds
+                .Distinct()
+                .Select(id => new ContentRelationship
+                {
+                    RelatedContentId = id
+                })
+                .ToList(),
+
             Sections = request.Sections.Select(section => new Section
             {
                 Title = section.Title,
                 Description = section.Description,
-                SectionImageId = section.SectionImageId
+                SectionImageId = section.SectionImageId,
+                HyperlinkName = section.HyperlinkName,
+                HyperlinkUrl = section.HyperlinkUrl,
             }).ToList()
         };
     }
@@ -203,8 +306,38 @@ public class ContentService : IContentService
         content.Title = request.Title;
         content.Description = request.Description;
         content.CoverImageId = request.CoverImageId;
+        content.HyperlinkName = request.HyperlinkName;
+        content.HyperlinkUrl = request.HyperlinkUrl;
         content.UpdatedAt = DateTime.UtcNow;
         content.UpdatedByAdminId = _currentAdminService.GetAdminId();
+
+        var requestedRelatedContentIds = request.RelatedContentIds
+            .Distinct()
+            .ToHashSet();
+
+        var relationshipsToRemove = content.RelatedContents
+            .Where(r => !requestedRelatedContentIds.Contains(r.RelatedContentId))
+            .ToList();
+
+        foreach (var relationship in relationshipsToRemove)
+        {
+            content.RelatedContents.Remove(relationship);
+        }
+
+        var existingRelatedContentIds = content.RelatedContents
+            .Select(r => r.RelatedContentId)
+            .ToHashSet();
+
+        foreach (var relatedContentId in requestedRelatedContentIds)
+        {
+            if (!existingRelatedContentIds.Contains(relatedContentId))
+            {
+                content.RelatedContents.Add(new ContentRelationship
+                {
+                    RelatedContentId = relatedContentId
+                });
+            }
+        }
 
         var requestedExistingSectionIds = request.Sections
             .Where(section => section.Id.HasValue)
@@ -237,6 +370,8 @@ public class ContentService : IContentService
                 existingSection.Title = sectionRequest.Title;
                 existingSection.Description = sectionRequest.Description;
                 existingSection.SectionImageId = sectionRequest.SectionImageId;
+                existingSection.HyperlinkName = sectionRequest.HyperlinkName;
+                existingSection.HyperlinkUrl = sectionRequest.HyperlinkUrl;
             }
             else
             {
@@ -244,7 +379,9 @@ public class ContentService : IContentService
                 {
                     Title = sectionRequest.Title,
                     Description = sectionRequest.Description,
-                    SectionImageId = sectionRequest.SectionImageId
+                    SectionImageId = sectionRequest.SectionImageId,
+                    HyperlinkName = sectionRequest.HyperlinkName,
+                    HyperlinkUrl = sectionRequest.HyperlinkUrl
                 });
             }
         }
@@ -259,6 +396,8 @@ public class ContentService : IContentService
             request.CategoryId,
             request.CoverImageId,
             request.Sections.Select(section => section.SectionImageId));
+
+        await ValidateRelatedContentSelectionAsync(request.RelatedContentIds);
 
         var content = BuildContent(
             request,
@@ -278,6 +417,8 @@ public class ContentService : IContentService
             request.CategoryId,
             request.CoverImageId,
             request.Sections.Select(section => section.SectionImageId));
+
+        await ValidateRelatedContentSelectionAsync(request.RelatedContentIds);
 
         var content = BuildContent(
             request,
@@ -331,6 +472,24 @@ public class ContentService : IContentService
         return MapToDetailResponse(content);
     }
 
+    public async Task<List<RelatedContentOptionResponseDto>>
+        GetRelatedContentOptionsAsync(int? excludeId)
+    {
+        var contents =
+            await _contentRepository
+                .GetRelatedContentOptionsAsync(excludeId);
+
+        return contents
+            .Select(content => new RelatedContentOptionResponseDto
+            {
+                Id = content.Id,
+                Title = content.Title,
+                Category = content.Category.Name,
+                CoverImageUrl = content.CoverImage.FilePath
+            })
+            .ToList();
+    }
+
     // Update
     private async Task<ContentResponseDto> UpdateContentAsync(
         int id,
@@ -345,6 +504,8 @@ public class ContentService : IContentService
             request.CoverImageId,
             request.Sections.Select(section => section.SectionImageId));
 
+        await ValidateRelatedContentSelectionAsync(request.RelatedContentIds);
+
         var content = await _contentRepository.GetByIdTrackedAsync(id);
 
         if (content is null)
@@ -355,6 +516,12 @@ public class ContentService : IContentService
         if (content.Status != requiredStatus)
         {
             throw new InvalidOperationException(invalidStatusMessage);
+        }
+
+        if (request.RelatedContentIds.Contains(id))
+        {
+            throw new ArgumentException(
+                "Content cannot be related to itself.");
         }
 
         ApplyUpdates(content, request);

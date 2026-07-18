@@ -10,5 +10,11 @@ public class CreateContentRequestDto
 
     public int CoverImageId { get; set; }
 
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; } 
+
+    public List<int> RelatedContentIds { get; set; } = [];
+
     public List<CreateSectionRequestDto> Sections { get; set; } = [];
 }

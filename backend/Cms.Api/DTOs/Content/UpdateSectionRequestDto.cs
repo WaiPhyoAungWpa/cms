@@ -9,4 +9,8 @@ public class UpdateSectionRequestDto
     public string Description { get; set; } = string.Empty;
 
     public int SectionImageId { get; set; }
+
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; } 
 }

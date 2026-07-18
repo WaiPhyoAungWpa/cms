@@ -70,6 +70,21 @@ public class ContentController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieves related content options.
+    /// </summary>
+    [HttpGet("related-options")]
+    public async Task<ActionResult<List<RelatedContentOptionResponseDto>>>
+        GetRelatedContentOptions(
+            [FromQuery] int? excludeId)
+    {
+        var result =
+            await _contentService
+                .GetRelatedContentOptionsAsync(excludeId);
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Updates an existing draft.
     /// </summary>
     [HttpPut("{id:int}/draft")]

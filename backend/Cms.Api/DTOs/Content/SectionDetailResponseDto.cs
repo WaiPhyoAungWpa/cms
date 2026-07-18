@@ -11,4 +11,8 @@ public class SectionDetailResponseDto
     public int SectionImageId { get; set; }
 
     public string ImageUrl { get; set; } = string.Empty;
+
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; }
 }

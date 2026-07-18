@@ -20,7 +20,13 @@ public class ContentDetailResponseDto
 
     public int CoverImageId { get; set; }
 
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; } 
+
     public string CoverImageUrl { get; set; } = string.Empty;
+
+    public List<RelatedContentResponseDto> RelatedContents { get; set; } = [];
 
     public List<SectionDetailResponseDto> Sections { get; set; } = [];
 }
