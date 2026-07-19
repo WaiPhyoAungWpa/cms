@@ -17,6 +17,8 @@ public class ContentService : IContentService
     private readonly IContentRepository _contentRepository;
     private readonly ICurrentAdminService _currentAdminService;
     private readonly IImageRepository _imageRepository;
+    private readonly IImageStorageService _imageStorageService;
+    private readonly ILogger<ContentService> _logger;
 
     private readonly record struct SectionValidationData(
         string Title,
@@ -29,11 +31,15 @@ public class ContentService : IContentService
     public ContentService(
         IContentRepository contentRepository,
         IImageRepository imageRepository,
-        ICurrentAdminService currentAdminService)
+        ICurrentAdminService currentAdminService,
+        IImageStorageService imageStorageService,
+        ILogger<ContentService> logger)
     {
         _contentRepository = contentRepository;
         _imageRepository = imageRepository;
         _currentAdminService = currentAdminService;
+        _imageStorageService = imageStorageService;
+        _logger = logger;
     }
 
     // Validation Helpers
@@ -387,6 +393,84 @@ public class ContentService : IContentService
         }
     }
 
+    private static List<Image> GetImagesToDelete(
+        Content content,
+        UpdateContentRequestDto request)
+    {
+        var imagesToDelete = new List<Image>();
+
+        // Cover image replaced
+        if (content.CoverImageId != request.CoverImageId &&
+            content.CoverImage is not null && content.CoverImage.Type == ImageType.Custom)
+        {
+            imagesToDelete.Add(content.CoverImage);
+        }
+
+        // Existing sections by ID
+        var requestedSections = request.Sections
+            .Where(section => section.Id.HasValue)
+            .ToDictionary(section => section.Id!.Value);
+
+        foreach (var section in content.Sections)
+        {
+            // Section removed
+            if (!requestedSections.TryGetValue(section.Id, out var requestSection))
+            {
+                if (section.SectionImage is not null && section.SectionImage.Type == ImageType.Custom)
+                {
+                    imagesToDelete.Add(section.SectionImage);
+                }
+
+                continue;
+            }
+
+            // Section image replaced
+            if (section.SectionImageId != requestSection.SectionImageId &&
+                section.SectionImage is not null && section.SectionImage.Type == ImageType.Custom)
+            {
+                imagesToDelete.Add(section.SectionImage);
+            }
+        }
+
+        return imagesToDelete
+            .DistinctBy(image => image.Id)
+            .ToList();
+    }
+
+    private async Task DeleteImagesAsync(
+        IEnumerable<Image> images)
+    {
+        var deletedImages = new List<Image>();
+
+        foreach (var image in images)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(image.StoragePublicId))
+                {
+                    await _imageStorageService.DeleteAsync(
+                        image.StoragePublicId);
+                }
+
+                deletedImages.Add(image);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to delete image {ImageId}.",
+                    image.Id);
+            }
+        }
+
+        foreach (var image in deletedImages)
+        {
+            await _imageRepository.DeleteAsync(image);
+        }
+
+        await _imageRepository.SaveChangesAsync();
+    }
+
     // Public methods
     // Create
     public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)
@@ -540,11 +624,17 @@ public class ContentService : IContentService
                 "Content cannot be related to itself.");
         }
 
+        var imagesToDelete = GetImagesToDelete(
+            content,
+            request);
+
         ApplyUpdates(content, request);
 
         content.Status = targetStatus;
 
         await _contentRepository.SaveChangesAsync();
+
+        await DeleteImagesAsync(imagesToDelete);
 
         return MapToResponse(content);
     }

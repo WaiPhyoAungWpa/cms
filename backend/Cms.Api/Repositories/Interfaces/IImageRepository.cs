@@ -12,4 +12,6 @@ public interface IImageRepository
     Task<List<Image>> GetDefaultImagesByCategoryAsync(int categoryId);
 
     Task<List<Image>> GetByIdsAsync(IEnumerable<int> imageIds);
+
+    Task DeleteAsync(Image image);
 }

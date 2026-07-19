@@ -48,4 +48,10 @@ public class ImageRepository : IImageRepository
             .Where(image => ids.Contains(image.Id))
             .ToListAsync();
     }
+
+    public Task DeleteAsync(Image image)
+    {
+        _context.Images.Remove(image);
+        return Task.CompletedTask;
+    }
 }

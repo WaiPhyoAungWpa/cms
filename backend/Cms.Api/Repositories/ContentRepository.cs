@@ -94,7 +94,9 @@ public class ContentRepository : IContentRepository
     public async Task<Content?> GetByIdTrackedAsync(int id)
     {
         return await _context.Contents
+            .Include(c => c.CoverImage)
             .Include(c => c.Sections)
+                .ThenInclude(s => s.SectionImage)
             .Include(c => c.RelatedContents)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
