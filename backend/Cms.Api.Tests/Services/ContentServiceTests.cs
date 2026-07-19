@@ -5,6 +5,7 @@ using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services;
 using Cms.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Cms.Api.Tests.Services;
@@ -14,11 +15,12 @@ namespace Cms.Api.Tests.Services;
 /// </summary>
 public class ContentServiceTests
 {
+    private readonly ContentService _service;
     private readonly Mock<IContentRepository> _contentRepository = new();
     private readonly Mock<IImageRepository> _imageRepository = new();
     private readonly Mock<ICurrentAdminService> _currentAdminService = new();
-
-    private readonly ContentService _service;
+    private readonly Mock<IImageStorageService> _imageStorageServiceMock = new();
+    private readonly Mock<ILogger<ContentService>> _loggerMock = new();
 
     public ContentServiceTests()
     {
@@ -29,7 +31,9 @@ public class ContentServiceTests
         _service = new ContentService(
             _contentRepository.Object,
             _imageRepository.Object,
-            _currentAdminService.Object);
+            _currentAdminService.Object,
+            _imageStorageServiceMock.Object,
+            _loggerMock.Object);
     }
 
     // Create
