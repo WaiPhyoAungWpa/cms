@@ -164,13 +164,12 @@ public class ContentService : IContentService
         }
 
         if (hasUrl &&
-            !Uri.TryCreate(
-                hyperlinkUrl,
-                UriKind.Absolute,
-                out var uri))
+            (!Uri.TryCreate(hyperlinkUrl, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp &&
+            uri.Scheme != Uri.UriSchemeHttps)))
         {
             throw new ArgumentException(
-                "Invalid hyperlink URL.");
+                "Hyperlink URL must be a valid HTTP or HTTPS URL.");
         }
     }
 
@@ -472,15 +471,20 @@ public class ContentService : IContentService
         return MapToDetailResponse(content);
     }
 
-    public async Task<List<RelatedContentOptionResponseDto>>
-        GetRelatedContentOptionsAsync(int? excludeId)
+    public async Task<PagedResponseDto<RelatedContentResponseDto>>
+        GetRelatedContentOptionsAsync(
+            RelatedContentQueryRequestDto request)
     {
-        var contents =
-            await _contentRepository
-                .GetRelatedContentOptionsAsync(excludeId);
+        PaginationValidator.Validate(
+            request.Page,
+            request.PageSize);
 
-        return contents
-            .Select(content => new RelatedContentOptionResponseDto
+        var result =
+            await _contentRepository
+                .GetRelatedContentOptionsAsync(request);
+
+        var items = result.Items
+            .Select(content => new RelatedContentResponseDto
             {
                 Id = content.Id,
                 Title = content.Title,
@@ -488,6 +492,17 @@ public class ContentService : IContentService
                 CoverImageUrl = content.CoverImage.FilePath
             })
             .ToList();
+
+        return new PagedResponseDto<RelatedContentResponseDto>
+        {
+            Items = items,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalCount = result.TotalCount,
+            TotalPages = (int)Math.Ceiling(
+                result.TotalCount /
+                (double)request.PageSize)
+        };
     }
 
     // Update

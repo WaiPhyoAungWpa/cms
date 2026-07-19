@@ -49,11 +49,45 @@ export default function useCreateContentSections() {
           title: "",
           description: "",
           sectionImageId: 0,
+          hyperlinkName: "",
+          hyperlinkUrl: "",
           imageMode: "default",
           customImageUrl: "",
           imageFile: null,
-        },
+        }
       ]);
+    };
+
+    const updateSectionHyperlinkName = (
+      index: number,
+      value: string
+    ) => {
+      setSections((previousSections) =>
+        previousSections.map((section, sectionIndex) =>
+          sectionIndex === index
+            ? {
+                ...section,
+                hyperlinkName: value,
+              }
+            : section
+        )
+      );
+    };
+
+    const updateSectionHyperlinkUrl = (
+      index: number,
+      value: string
+    ) => {
+      setSections((previousSections) =>
+        previousSections.map((section, sectionIndex) =>
+          sectionIndex === index
+            ? {
+                ...section,
+                hyperlinkUrl: value,
+              }
+            : section
+        )
+      );
     };
 
     const updateSectionTitle = (
@@ -179,5 +213,7 @@ export default function useCreateContentSections() {
       updateSectionImageMode,
       removeSection,
       resetSectionImages,
+      updateSectionHyperlinkName,
+      updateSectionHyperlinkUrl,
     };
 }

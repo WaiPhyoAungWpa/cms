@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../config/api";
 import { PagedResponse } from "../types/pagination";
-import { CreateContentRequest, ContentListItem, ContentDetail, UpdateContentRequest } from "../types/content";
+import { CreateContentRequest, ContentListItem, ContentDetail, UpdateContentRequest, RelatedContentResponse } from "../types/content";
 
 async function getErrorMessage(
   response: Response,
@@ -108,6 +108,44 @@ export async function getContents(
 
   if (!response.ok) {
     throw new Error("Failed to retrieve contents.");
+  }
+
+  return response.json();
+}
+
+export async function getRelatedContentOptions(
+  token: string,
+  page: number,
+  pageSize: number,
+  search?: string,
+  excludeId?: number
+): Promise<PagedResponse<RelatedContentResponse>> {
+  const query = new URLSearchParams();
+
+  query.append("page", page.toString());
+  query.append("pageSize", pageSize.toString());
+
+  if (search?.trim()) {
+    query.append("search", search);
+  }
+
+  if (excludeId !== undefined) {
+    query.append("excludeId", excludeId.toString());
+  }
+
+  const response = await fetch(
+    `${API_URL}/related-options?${query.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to retrieve related content options."
+    );
   }
 
   return response.json();

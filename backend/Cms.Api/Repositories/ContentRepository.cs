@@ -146,10 +146,11 @@ public class ContentRepository : IContentRepository
             .ToListAsync();
     }
 
-    public async Task<List<Content>> GetRelatedContentOptionsAsync(
-        int? excludeId)
+    public async Task<(List<Content> Items, int TotalCount)>
+        GetRelatedContentOptionsAsync(
+            RelatedContentQueryRequestDto request)
     {
-        var query = _context.Contents
+        IQueryable<Content> query = _context.Contents
             .AsNoTracking()
             .Include(c => c.Category)
             .Include(c => c.CoverImage)
@@ -157,14 +158,32 @@ public class ContentRepository : IContentRepository
                 c.Status == ContentStatus.Published &&
                 c.VisibilityStatus == VisibilityStatus.Public);
 
-        if (excludeId.HasValue)
+        if (request.ExcludeId.HasValue)
         {
-            query = query.Where(c => c.Id != excludeId.Value);
+            query = query.Where(c =>
+                c.Id != request.ExcludeId.Value);
         }
 
-        return await query
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(c =>
+                EF.Functions.ILike(
+                    c.Title,
+                    $"%{request.Search}%") ||
+                EF.Functions.ILike(
+                    c.Description,
+                    $"%{request.Search}%"));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
             .OrderBy(c => c.Title)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync();
+
+        return (items, totalCount);
     }
 
     // Public content

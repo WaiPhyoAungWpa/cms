@@ -73,13 +73,12 @@ public class ContentController : ControllerBase
     /// Retrieves related content options.
     /// </summary>
     [HttpGet("related-options")]
-    public async Task<ActionResult<List<RelatedContentOptionResponseDto>>>
+    public async Task<ActionResult<PagedResponseDto<RelatedContentResponseDto>>>
         GetRelatedContentOptions(
-            [FromQuery] int? excludeId)
+            [FromQuery] RelatedContentQueryRequestDto request)
     {
         var result =
-            await _contentService
-                .GetRelatedContentOptionsAsync(excludeId);
+            await _contentService.GetRelatedContentOptionsAsync(request);
 
         return Ok(result);
     }

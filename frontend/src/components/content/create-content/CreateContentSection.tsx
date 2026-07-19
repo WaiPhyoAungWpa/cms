@@ -1,12 +1,15 @@
 import { DefaultImage } from "../../../types/image";
 import { getImageUrl } from "../../../utils/image";
 import "../../../styles/components/content/create-content/CreateContentSection.css";
+import "../../../styles/components/content/create-content/CreateContentSection.css";
 
 interface CreateContentSectionProps {
   index: number;
   title: string;
   description: string;
   sectionImageId: number;
+  hyperlinkName: string;
+  hyperlinkUrl: string;
   imageMode: "default" | "custom";
   customImageUrl: string;
   images: DefaultImage[];
@@ -14,6 +17,8 @@ interface CreateContentSectionProps {
   onDescriptionChange: (value: string) => void;
   onImageSelect: (imageId: number) => void;
   onImageModeChange: (mode: "default" | "custom") => void;
+  onHyperlinkNameChange: (value: string) => void;
+  onHyperlinkUrlChange: (value: string) => void;
   onUpload: (
     event: React.ChangeEvent<HTMLInputElement>
   ) => void;
@@ -25,6 +30,8 @@ export default function CreateContentSection({
   title,
   description,
   sectionImageId,
+  hyperlinkName,
+  hyperlinkUrl,
   imageMode,
   customImageUrl,
   images,
@@ -32,6 +39,8 @@ export default function CreateContentSection({
   onDescriptionChange,
   onImageSelect,
   onImageModeChange,
+  onHyperlinkNameChange,
+  onHyperlinkUrlChange,
   onUpload,
   onRemove,
 }: CreateContentSectionProps) {
@@ -235,6 +244,45 @@ export default function CreateContentSection({
             )}
           </div>
         )}
+      </div>
+      
+      <div className="create-section-hyperlink-field">
+        <div className="create-section-hyperlink-heading">
+            <h4>External Reference</h4>
+        </div>
+          <div className="create-content-fields">
+            <div className="create-content-field">
+              <label htmlFor={`section-${index}-hyperlink-name`}>
+                External Reference Name
+              </label>
+
+              <input
+                id={`section-${index}-hyperlink-name`}
+                type="text"
+                value={hyperlinkName}
+                placeholder="e.g. GitHub Repository"
+                onChange={(event) =>
+                  onHyperlinkNameChange(event.target.value)
+                }
+              />
+            </div>
+
+            <div className="create-content-field">
+              <label htmlFor={`section-${index}-hyperlink-url`}>
+                External Reference URL
+              </label>
+
+              <input
+                id={`section-${index}-hyperlink-url`}
+                type="url"
+                value={hyperlinkUrl}
+                placeholder="https://example.com"
+                onChange={(event) =>
+                  onHyperlinkUrlChange(event.target.value)
+                }
+              />
+            </div>
+          </div>
       </div>
     </article>
   );

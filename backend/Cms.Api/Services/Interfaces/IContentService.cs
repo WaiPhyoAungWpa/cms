@@ -73,5 +73,7 @@ public interface IContentService
     /// <summary>
     /// Retrieves the related content options.
     /// </summary>
-    Task<List<RelatedContentOptionResponseDto>> GetRelatedContentOptionsAsync(int? excludeId);
+    Task<PagedResponseDto<RelatedContentResponseDto>>
+        GetRelatedContentOptionsAsync(
+            RelatedContentQueryRequestDto request);
 }

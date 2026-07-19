@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveDraft, publishContent } from "../services/contentService";
+import { saveDraft, publishContent, getRelatedContentOptions } from "../services/contentService";
 import { getDefaultImages, uploadImage } from "../services/imageService";
 import { DefaultImage } from "../types/image";
-import { CreateContentRequest, ContentDetail } from "../types/content";
+import { CreateContentRequest, ContentDetail, RelatedContentResponse } from "../types/content";
 import CreateContentBasicFields from "../components/content/create-content/CreateContentBasicFields";
 import CreateCoverImageField from "../components/content/create-content/CreateCoverImageField";
 import CreateContentSection from "../components/content/create-content/CreateContentSection";
 import CreateContentActions from "../components/content/create-content/CreateContentActions";
+import RelatedContentSelector from "../components/content/create-content/RelatedContentSelector";
 import ContentPreview from "../components/content/content-preview/ContentPreview";
 import useCreateContentForm from "../hooks/content/create-content/useCreateContentForm";
 import useCreateContentSections from "../hooks/content/create-content/useCreateContentSections";
@@ -25,9 +26,47 @@ export default function CreateContentPage() {
       setTitle,
       description,
       setDescription,
+      relatedContentIds,
+      setRelatedContentIds,
+      hyperlinkName,
+      setHyperlinkName,
+      hyperlinkUrl,
+      setHyperlinkUrl,
     } = useCreateContentForm();
 
     const [images, setImages] = useState<DefaultImage[]>([]);
+
+    const [relatedOptions, setRelatedOptions] = useState<RelatedContentResponse[]>([]);
+    const [relatedSearch, setRelatedSearch] = useState("");
+    const [relatedPage, setRelatedPage] = useState(1);
+    const [relatedTotalPages, setRelatedTotalPages] = useState(1);
+    const relatedPageSize = 6;
+
+    useEffect(() => {
+      async function loadRelatedOptions() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          return;
+        }
+
+        try {
+          const result = await getRelatedContentOptions(
+            token,
+            relatedPage,
+            relatedPageSize,
+            relatedSearch
+          );
+
+          setRelatedOptions(result.items);
+          setRelatedTotalPages(result.totalPages);
+        } catch {
+          alert("Unable to load related content.");
+        }
+      }
+
+      loadRelatedOptions();
+    }, [relatedPage, relatedSearch]);
 
     const {
       sections,
@@ -39,6 +78,8 @@ export default function CreateContentPage() {
       updateSectionImageMode,
       removeSection,
       resetSectionImages,
+      updateSectionHyperlinkName,
+      updateSectionHyperlinkUrl,
     } = useCreateContentSections();
 
     const {
@@ -117,15 +158,20 @@ export default function CreateContentPage() {
                 title: section.title,
                 description: section.description,
                 sectionImageId: finalImageId,
+                hyperlinkName: section.hyperlinkName,
+                hyperlinkUrl: section.hyperlinkUrl,
             });
         }
 
         return {
-          categoryId,
-          title,
-          description,
-          coverImageId: finalCoverImageId,
-          sections: requestSections,
+            categoryId,
+            title,
+            description,
+            coverImageId: finalCoverImageId,
+            relatedContentIds,
+            hyperlinkName,
+            hyperlinkUrl,
+            sections: requestSections,
         };
     };
 
@@ -136,6 +182,8 @@ export default function CreateContentPage() {
             description,
             coverImageId,
             coverImageFile,
+            hyperlinkName,
+            hyperlinkUrl,
             sections,
         });
 
@@ -235,6 +283,11 @@ export default function CreateContentPage() {
             coverImageId,
             customCoverImageUrl
           ),
+          relatedContents: relatedOptions.filter((content) =>
+            relatedContentIds.includes(content.id)
+          ),
+          hyperlinkName,
+          hyperlinkUrl,
           sections: sections.map((section, index) => ({
             id: index,
             title: section.title,
@@ -244,6 +297,8 @@ export default function CreateContentPage() {
               section.sectionImageId,
               section.customImageUrl
             ),
+            hyperlinkName: section.hyperlinkName,
+            hyperlinkUrl: section.hyperlinkUrl
           })),
         };
 
@@ -326,12 +381,16 @@ export default function CreateContentPage() {
               </div>
 
               <CreateContentBasicFields
-                categoryId={categoryId}
-                title={title}
-                description={description}
-                onCategoryChange={handleCategoryChange}
-                onTitleChange={setTitle}
-                onDescriptionChange={setDescription}
+                  categoryId={categoryId}
+                  title={title}
+                  description={description}
+                  hyperlinkName={hyperlinkName}
+                  hyperlinkUrl={hyperlinkUrl}
+                  onCategoryChange={handleCategoryChange}
+                  onTitleChange={setTitle}
+                  onDescriptionChange={setDescription}
+                  onHyperlinkNameChange={setHyperlinkName}
+                  onHyperlinkUrlChange={setHyperlinkUrl}
               />
             </section>
 
@@ -357,9 +416,37 @@ export default function CreateContentPage() {
             </section>
 
             <section className="create-content-card">
+              <div className="create-content-card-header">
+                  <span className="create-content-step">03</span>
+
+                  <div>
+                      <h2>Related Content</h2>
+                      <p>
+                          Search and select published content
+                          related to this article.
+                      </p>
+                  </div>
+              </div>
+
+              <RelatedContentSelector
+                  relatedOptions={relatedOptions}
+                  relatedSearch={relatedSearch}
+                  relatedPage={relatedPage}
+                  totalRelatedPages={relatedTotalPages}
+                  relatedContentIds={relatedContentIds}
+                  onRelatedSearchChange={(value) => {
+                      setRelatedSearch(value);
+                      setRelatedPage(1);
+                  }}
+                  onRelatedPageChange={setRelatedPage}
+                  onRelatedContentChange={setRelatedContentIds}
+              />
+            </section>
+
+            <section className="create-content-card">
               <div className="create-content-card-header create-content-sections-header">
                 <div className="create-content-card-title">
-                  <span className="create-content-step">03</span>
+                  <span className="create-content-step">04</span>
 
                   <div>
                     <h2>Content Sections</h2>
@@ -380,6 +467,8 @@ export default function CreateContentPage() {
                     title={section.title}
                     description={section.description}
                     sectionImageId={section.sectionImageId}
+                    hyperlinkName={section.hyperlinkName}
+                    hyperlinkUrl={section.hyperlinkUrl}
                     imageMode={section.imageMode}
                     customImageUrl={section.customImageUrl}
                     images={images}
@@ -392,6 +481,12 @@ export default function CreateContentPage() {
                     }
                     onImageModeChange={(imageMode) =>
                       updateSectionImageMode(index, imageMode)
+                    }
+                    onHyperlinkNameChange={(value) =>
+                      updateSectionHyperlinkName(index, value)
+                    }
+                    onHyperlinkUrlChange={(value) =>
+                      updateSectionHyperlinkUrl(index, value)
                     }
                     onUpload={(event) => handleSectionUpload(index, event)}
                     onRemove={() => removeSection(index)}

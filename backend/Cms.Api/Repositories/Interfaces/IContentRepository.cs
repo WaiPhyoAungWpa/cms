@@ -28,7 +28,9 @@ public interface IContentRepository
 
     Task<List<int>> GetValidRelatedContentIdsAsync(IEnumerable<int> ids);
 
-    Task<List<Content>> GetRelatedContentOptionsAsync(int? excludeId);
+    Task<(List<Content> Items, int TotalCount)>
+        GetRelatedContentOptionsAsync(
+            RelatedContentQueryRequestDto request);
 
     // Public content
     Task<(List<Content> Items, int TotalCount)> GetAllPublicAsync(

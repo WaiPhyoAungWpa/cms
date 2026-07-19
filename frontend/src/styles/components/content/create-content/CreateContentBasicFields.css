@@ -49,3 +49,8 @@
 .create-content-field textarea::placeholder {
   color: #9ca3af;
 }
+
+.create-content-field small {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
