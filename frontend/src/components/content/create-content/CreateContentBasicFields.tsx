@@ -77,36 +77,43 @@ export default function CreateContentBasicFields({
         />
       </div>
 
-      <div className="create-content-field">
-        <label htmlFor="create-content-hyperlink-name">
-          External Reference Name
-        </label>
+      <div className="create-content-hyperlink-field">
+        <div className="create-content-hyperlink-heading">
+            <h4>External Reference</h4>
+        </div>
+        <div className="create-content-fields">
+          <div className="create-content-field">
+            <label htmlFor="create-content-hyperlink-name">
+              External Reference Name
+            </label>
 
-        <input
-          id="create-content-hyperlink-name"
-          type="text"
-          value={hyperlinkName}
-          placeholder="e.g. GitHub Repository"
-          onChange={(event) =>
-            onHyperlinkNameChange(event.target.value)
-          }
-        />
-      </div>
+            <input
+              id="create-content-hyperlink-name"
+              type="text"
+              value={hyperlinkName}
+              placeholder="e.g. GitHub Repository"
+              onChange={(event) =>
+                onHyperlinkNameChange(event.target.value)
+              }
+            />
+          </div>
 
-      <div className="create-content-field">
-        <label htmlFor="create-content-hyperlink-url">
-          External Reference URL
-        </label>
+          <div className="create-content-field">
+            <label htmlFor="create-content-hyperlink-url">
+              External Reference URL
+            </label>
 
-        <input
-          id="create-content-hyperlink-url"
-          type="url"
-          value={hyperlinkUrl}
-          placeholder="https://example.com"
-          onChange={(event) =>
-            onHyperlinkUrlChange(event.target.value)
-          }
-        />
+            <input
+              id="create-content-hyperlink-url"
+              type="url"
+              value={hyperlinkUrl}
+              placeholder="https://example.com"
+              onChange={(event) =>
+                onHyperlinkUrlChange(event.target.value)
+              }
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

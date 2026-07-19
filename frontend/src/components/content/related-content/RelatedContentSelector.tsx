@@ -1,4 +1,4 @@
-import "../../../styles/components/content/create-content/RelatedContentSelector.css";
+import "../../../styles/components/content/related-content/RelatedContentSelector.css";
 import { RelatedContentResponse } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
 

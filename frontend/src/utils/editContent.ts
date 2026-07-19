@@ -9,6 +9,8 @@ export function mapToEditSections(
     title: section.title,
     description: section.description,
     sectionImageId: section.sectionImageId,
+    hyperlinkName: section.hyperlinkName,
+    hyperlinkUrl: section.hyperlinkUrl,
     imageFile: null,
     imageMode: "default",
     customImageUrl: section.imageUrl,

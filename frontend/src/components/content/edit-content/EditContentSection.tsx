@@ -10,6 +10,16 @@ interface EditContentSectionProps {
   index: number;
   images: DefaultImage[];
 
+  onHyperlinkNameChange: (
+      index: number,
+      value: string
+  ) => void;
+
+  onHyperlinkUrlChange: (
+      index: number,
+      value: string
+  ) => void;
+
   onTitleChange: (index: number, value: string) => void;
   onDescriptionChange: (index: number, value: string) => void;
   onImageChange: (index: number, imageId: number) => void;
@@ -36,6 +46,8 @@ export default function EditContentSection({
   onImageUpload,
   onRestoreOriginalImage,
   onRemove,
+  onHyperlinkNameChange,
+  onHyperlinkUrlChange,
 }: EditContentSectionProps) {
   const selectedSectionImage = images.find(
     (image) => image.id === section.sectionImageId
@@ -99,6 +111,43 @@ export default function EditContentSection({
             }
             placeholder="Enter section description"
           />
+        </div>
+
+        <div className="edit-section-field">
+            <h4>External Reference</h4>
+            <label>
+                External Reference Name
+            </label>
+
+            <input
+                type="text"
+                value={section.hyperlinkName}
+                placeholder="e.g. GitHub Repository"
+                onChange={(event) =>
+                    onHyperlinkNameChange(
+                        index,
+                        event.target.value
+                    )
+                }
+            />
+        </div>
+
+        <div className="edit-section-field">
+            <label>
+                External Reference URL
+            </label>
+
+            <input
+                type="url"
+                value={section.hyperlinkUrl}
+                placeholder="https://example.com"
+                onChange={(event) =>
+                    onHyperlinkUrlChange(
+                        index,
+                        event.target.value
+                    )
+                }
+            />
         </div>
       </div>
 

@@ -54,3 +54,17 @@
   color: #6b7280;
   font-size: 0.8rem;
 }
+
+.create-content-hyperlink-field {
+  border-top: 1px;
+}
+
+.create-content-hyperlink-heading {
+  margin-bottom: 16px;
+}
+
+.create-content-hyperlink-heading h4 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.95rem;
+}

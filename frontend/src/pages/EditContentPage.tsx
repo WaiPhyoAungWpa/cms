@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getContent, publishDraft, updateDraft, updatePublished, } from "../services/contentService";
+import { getContent, publishDraft, updateDraft, updatePublished, getRelatedContentOptions } from "../services/contentService";
 import { getDefaultImages, uploadImage } from "../services/imageService";
-import { ContentDetail, UpdateContentRequest } from "../types/content";
+import { ContentDetail, UpdateContentRequest, RelatedContentResponse } from "../types/content";
 import { DefaultImage } from "../types/image";
 import EditContentSection from "../components/content/edit-content/EditContentSection";
 import EditCoverImageField from "../components/content/edit-content/EditCoverImageField";
 import EditContentBasicFields from "../components/content/edit-content/EditContentBasicFields";
 import EditContentActions from "../components/content/edit-content/EditContentActions";
+import RelatedContentSelector from "../components/content/related-content/RelatedContentSelector";
 import ContentPreview from "../components/content/content-preview/ContentPreview";
 import PageState from "../components/common/PageState";
 import { validateContentForm } from "../utils/contentValidation";
@@ -29,7 +30,13 @@ export default function EditContentPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [images, setImages] = useState<DefaultImage[]>([]);
-    
+    const [relatedContentIds, setRelatedContentIds] = useState<number[]>([]);
+    const [relatedOptions, setRelatedOptions] = useState<RelatedContentResponse[]>([]);
+    const [relatedSearch, setRelatedSearch] = useState("");
+    const [relatedPage, setRelatedPage] = useState(1);
+    const [relatedTotalPages, setRelatedTotalPages] = useState(1);
+    const relatedPageSize = 6;
+        
     const {
         initializeForm,
         categoryId,
@@ -40,6 +47,10 @@ export default function EditContentPage() {
         setTitle,
         description,
         setDescription,
+        hyperlinkName,
+        setHyperlinkName,
+        hyperlinkUrl,
+        setHyperlinkUrl,
     } = useEditContentForm();
 
     const {
@@ -55,6 +66,8 @@ export default function EditContentPage() {
         removeSection,  
         synchronizeSectionImageModes,
         resetSectionImages,
+        updateSectionHyperlinkName,
+        updateSectionHyperlinkUrl,
     } = useEditContentSections();
     
     const {
@@ -92,7 +105,9 @@ export default function EditContentPage() {
                 data.categoryId,
                 data.visibilityStatus,
                 data.title,
-                data.description
+                data.description,
+                data.hyperlinkName,
+                data.hyperlinkUrl
             );
 
             initializeCoverImage(
@@ -101,6 +116,15 @@ export default function EditContentPage() {
             );
 
             initializeSections(data.sections);
+
+            setRelatedContentIds(
+                data.relatedContents.map(
+                    (content) => content.id
+                )
+            );
+
+            setRelatedSearch("");
+            setRelatedPage(1);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -151,6 +175,33 @@ export default function EditContentPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categoryId, content]);
 
+    useEffect(() => {
+        async function loadRelatedOptions() {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                return;
+            }
+
+            try {
+                const result =
+                    await getRelatedContentOptions(
+                        token,
+                        relatedPage,
+                        relatedPageSize,
+                        relatedSearch
+                    );
+
+                setRelatedOptions(result.items);
+                setRelatedTotalPages(result.totalPages);
+            } catch {
+                alert("Unable to load related content.");
+            }
+        }
+
+        loadRelatedOptions();
+    }, [relatedPage, relatedSearch]);
+
     const validateForm = (): boolean => {
         const validationError = validateContentForm({
             categoryId,
@@ -158,6 +209,8 @@ export default function EditContentPage() {
             description,
             coverImageId,
             coverImageFile,
+            hyperlinkName,
+            hyperlinkUrl,
             sections,
         });
 
@@ -197,6 +250,20 @@ export default function EditContentPage() {
             return;
         }
 
+        const previewRelatedContents = [
+            ...content.relatedContents.filter((item) =>
+                relatedContentIds.includes(item.id)
+            ),
+
+            ...relatedOptions.filter(
+                (item) =>
+                    relatedContentIds.includes(item.id) &&
+                    !content.relatedContents.some(
+                        (existing) => existing.id === item.id
+                    )
+            ),
+        ];
+
         const categoryNames: Record<number, string> = {
             1: "Experience",
             2: "Learning",
@@ -218,6 +285,9 @@ export default function EditContentPage() {
                 content.coverImageId,
                 originalCoverImageUrl
             ),
+            relatedContents: previewRelatedContents,
+            hyperlinkName,
+            hyperlinkUrl,
             sections: sections.map((section, index) => ({
                 id: section.id ?? index,
                 title: section.title,
@@ -229,6 +299,8 @@ export default function EditContentPage() {
                     section.originalImageId,
                     section.originalImageUrl
                 ),
+                hyperlinkName: section.hyperlinkName,
+                hyperlinkUrl: section.hyperlinkUrl,
             })),
         };
 
@@ -270,6 +342,8 @@ export default function EditContentPage() {
                 title: section.title,
                 description: section.description,
                 sectionImageId,
+                hyperlinkName: section.hyperlinkName,
+                hyperlinkUrl: section.hyperlinkUrl,
             });
         }
 
@@ -279,6 +353,9 @@ export default function EditContentPage() {
             title,
             description,
             coverImageId: finalCoverImageId,
+            relatedContentIds,
+            hyperlinkName,
+            hyperlinkUrl,
             sections: finalSections,
         };
     };
@@ -441,6 +518,10 @@ export default function EditContentPage() {
                         onVisibilityStatusChange={setVisibilityStatus}
                         onTitleChange={setTitle}
                         onDescriptionChange={setDescription}
+                        hyperlinkName={hyperlinkName}
+                        hyperlinkUrl={hyperlinkUrl}
+                        onHyperlinkNameChange={setHyperlinkName}
+                        onHyperlinkUrlChange={setHyperlinkUrl}
                     />
 
                     <EditCoverImageField
@@ -455,6 +536,33 @@ export default function EditContentPage() {
                         onUpload={handleCoverUpload}
                         onRestoreOriginal={restoreOriginalCoverImage}
                     />
+
+                    <section className="edit-content-related">
+                        <div className="edit-content-related-header">
+                            <h2>Related Content</h2>
+
+                            <p>
+                                Search and select published content
+                                related to this article.
+                            </p>
+                        </div>
+
+                        <RelatedContentSelector
+                            relatedOptions={relatedOptions}
+                            relatedSearch={relatedSearch}
+                            relatedPage={relatedPage}
+                            totalRelatedPages={relatedTotalPages}
+                            relatedContentIds={relatedContentIds}
+                            onRelatedSearchChange={(value) => {
+                                setRelatedSearch(value);
+                                setRelatedPage(1);
+                            }}
+                            onRelatedPageChange={setRelatedPage}
+                            onRelatedContentChange={
+                                setRelatedContentIds
+                            }
+                        />
+                    </section>
 
                     <section className="edit-content-sections">
                         <div className="edit-content-sections-header">
@@ -481,6 +589,12 @@ export default function EditContentPage() {
                                     section={section}
                                     index={index}
                                     images={images}
+                                    onHyperlinkNameChange={
+                                        updateSectionHyperlinkName
+                                    }
+                                    onHyperlinkUrlChange={
+                                        updateSectionHyperlinkUrl
+                                    }
                                     onTitleChange={updateSectionTitle}
                                     onDescriptionChange={updateSectionDescription}
                                     onImageChange={updateSectionImage}

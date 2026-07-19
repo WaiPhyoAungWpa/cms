@@ -8,7 +8,7 @@ import CreateContentBasicFields from "../components/content/create-content/Creat
 import CreateCoverImageField from "../components/content/create-content/CreateCoverImageField";
 import CreateContentSection from "../components/content/create-content/CreateContentSection";
 import CreateContentActions from "../components/content/create-content/CreateContentActions";
-import RelatedContentSelector from "../components/content/create-content/RelatedContentSelector";
+import RelatedContentSelector from "../components/content/related-content/RelatedContentSelector";
 import ContentPreview from "../components/content/content-preview/ContentPreview";
 import useCreateContentForm from "../hooks/content/create-content/useCreateContentForm";
 import useCreateContentSections from "../hooks/content/create-content/useCreateContentSections";

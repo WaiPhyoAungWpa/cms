@@ -117,6 +117,38 @@ export function useEditContentSections() {
         );
     };
 
+    const updateSectionHyperlinkName = (
+        index: number,
+        value: string
+    ) => {
+        setSections(previousSections =>
+            previousSections.map((section, sectionIndex) =>
+                sectionIndex === index
+                    ? {
+                        ...section,
+                        hyperlinkName: value,
+                    }
+                    : section
+            )
+        );
+    };
+
+    const updateSectionHyperlinkUrl = (
+        index: number,
+        value: string
+    ) => {
+        setSections(previousSections =>
+            previousSections.map((section, sectionIndex) =>
+                sectionIndex === index
+                    ? {
+                        ...section,
+                        hyperlinkUrl: value,
+                    }
+                    : section
+            )
+        );
+    };
+
     const addSection = () => {
         setSections((previousSections) => [
             ...previousSections,
@@ -125,6 +157,8 @@ export function useEditContentSections() {
                 title: "",
                 description: "",
                 sectionImageId: 0,
+                hyperlinkName: "",
+                hyperlinkUrl: "",
                 imageMode: "default",
                 customImageUrl: "",
                 imageFile: null,
@@ -201,5 +235,7 @@ export function useEditContentSections() {
         removeSection,  
         synchronizeSectionImageModes,
         resetSectionImages,
+        updateSectionHyperlinkName,
+        updateSectionHyperlinkUrl,
     };
 }

@@ -7,6 +7,10 @@ interface EditContentBasicFieldsProps {
   visibilityStatus: string;
   title: string;
   description: string;
+  hyperlinkName: string;
+  hyperlinkUrl: string;
+  onHyperlinkNameChange: (value: string) => void;
+  onHyperlinkUrlChange: (value: string) => void;
 
   onCategoryChange: (
     event: ChangeEvent<HTMLSelectElement>
@@ -21,6 +25,10 @@ export default function EditContentBasicFields({
   visibilityStatus,
   title,
   description,
+  hyperlinkName,
+  hyperlinkUrl,
+  onHyperlinkNameChange,
+  onHyperlinkUrlChange,
   onCategoryChange,
   onVisibilityStatusChange,
   onTitleChange,
@@ -97,6 +105,36 @@ export default function EditContentBasicFields({
             placeholder="Enter content description"
             rows={6}
           />
+        </div>
+
+        <div className="edit-basic-field edit-basic-field-full">
+            <h3>External Reference</h3>
+        </div>
+
+        <div className="edit-basic-field">
+            <label>External Reference Name</label>
+
+            <input
+                type="text"
+                value={hyperlinkName}
+                onChange={(e) =>
+                    onHyperlinkNameChange(e.target.value)
+                }
+                placeholder="e.g. GitHub Repository"
+            />
+        </div>
+
+        <div className="edit-basic-field">
+            <label>External Reference URL</label>
+
+            <input
+                type="url"
+                value={hyperlinkUrl}
+                onChange={(e) =>
+                    onHyperlinkUrlChange(e.target.value)
+                }
+                placeholder="https://example.com"
+            />
         </div>
       </div>
     </section>

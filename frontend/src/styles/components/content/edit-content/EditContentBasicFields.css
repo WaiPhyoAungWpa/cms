@@ -5,6 +5,18 @@
     background: #ffffff;
 }
 
+.edit-basic-field h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.edit-basic-field-full:has(h3) {
+    margin-top: 8px;
+    margin-bottom: -6px;
+}
+
 .edit-basic-fields-header {
     margin-bottom: 24px;
 }
