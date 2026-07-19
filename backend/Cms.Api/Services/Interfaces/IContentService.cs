@@ -1,6 +1,7 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.Common;
 using Cms.Api.DTOs.Dashboard;
+using Cms.Api.DTOs.RelatedContent;
 
 namespace Cms.Api.Services.Interfaces;
 

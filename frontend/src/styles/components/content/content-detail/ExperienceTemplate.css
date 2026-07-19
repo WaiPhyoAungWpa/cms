@@ -57,6 +57,36 @@
   line-height: 1.8;
 }
 
+.experience-link-heading {
+  margin: 0 0 8px;
+
+  color: #334155;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.experience-link,
+.experience-section-link {
+  margin-top: 20px;
+}
+
+.experience-link a,
+.experience-section-link a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.experience-link a:hover,
+.experience-section-link a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 .experience-sections {
   display: flex;
   flex-direction: column;

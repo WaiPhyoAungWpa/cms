@@ -9,4 +9,8 @@ public class PublicContentSectionResponseDto
     public string Description { get; set; } = string.Empty;
 
     public string ImageUrl { get; set; } = string.Empty;
+
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; }
 }

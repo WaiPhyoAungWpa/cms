@@ -93,6 +93,36 @@
   overflow-wrap: anywhere;
 }
 
+.lifestyle-link-heading {
+  margin: 0 0 8px;
+
+  color: #334155;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lifestyle-link,
+.lifestyle-section-link {
+  margin-top: 20px;
+}
+
+.lifestyle-link a,
+.lifestyle-section-link a {
+  color: #c2410c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.lifestyle-link a:hover,
+.lifestyle-section-link a:hover {
+  color: #9a3412;
+  text-decoration: underline;
+}
+
 .lifestyle-sections {
   display: flex;
   flex-direction: column;

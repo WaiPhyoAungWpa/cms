@@ -1,5 +1,6 @@
 import { ContentTemplateData  } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
+import RelatedContentList from "../related-content/RelatedContentList";
 
 import "../../../styles/components/content/content-detail/LifestyleTemplate.css";
 
@@ -26,6 +27,22 @@ export default function LifestyleTemplate({ content }: Props) {
           <h1 className="lifestyle-title">{content.title}</h1>
 
           <p className="lifestyle-description">{content.description}</p>
+
+          {content.hyperlinkUrl && (
+            <div className="lifestyle-link">
+            <h3 className="lifestyle-link-heading">
+              External Reference
+            </h3>
+
+              <a
+                href={content.hyperlinkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {content.hyperlinkName || content.hyperlinkUrl}
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
@@ -43,6 +60,22 @@ export default function LifestyleTemplate({ content }: Props) {
               <p className="lifestyle-section-description">
                 {section.description}
               </p>
+
+              {section.hyperlinkUrl && (
+                <div className="lifestyle-section-link">
+                  <h3 className="lifestyle-link-heading">
+                    External Reference
+                  </h3>
+
+                  <a
+                    href={section.hyperlinkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {section.hyperlinkName || section.hyperlinkUrl}
+                  </a>
+                </div>
+              )}
             </div>
 
             <img
@@ -53,6 +86,8 @@ export default function LifestyleTemplate({ content }: Props) {
           </section>
         ))}
       </div>
+
+      <RelatedContentList relatedContents={content.relatedContents} />
     </div>
   );
 }

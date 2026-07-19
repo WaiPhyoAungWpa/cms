@@ -1,5 +1,6 @@
 import { ContentTemplateData  } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
+import RelatedContentList from "../related-content/RelatedContentList";
 
 import "../../../styles/components/content/content-detail/ExperienceTemplate.css";
 
@@ -23,6 +24,22 @@ export default function ExperienceTemplate({ content }: Props) {
         <h1 className="experience-title">{content.title}</h1>
 
         <p className="experience-description">{content.description}</p>
+
+        {content.hyperlinkUrl && (
+          <div className="experience-link">
+            <h3 className="experience-link-heading">
+              External Reference
+            </h3>
+            
+            <a
+              href={content.hyperlinkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {content.hyperlinkName || content.hyperlinkUrl}
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="experience-sections">
@@ -40,10 +57,28 @@ export default function ExperienceTemplate({ content }: Props) {
               <p className="experience-section-description">
                 {section.description}
               </p>
+
+              {section.hyperlinkUrl && (
+                <div className="experience-section-link">
+                  <h3 className="experience-link-heading">
+                    External Reference
+                  </h3>
+
+                  <a
+                    href={section.hyperlinkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {section.hyperlinkName || section.hyperlinkUrl}
+                  </a>
+                </div>
+              )}
             </div>
           </section>
         ))}
       </div>
+
+      <RelatedContentList relatedContents={content.relatedContents} />
     </div>
   );
 }

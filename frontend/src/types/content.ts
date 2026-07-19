@@ -117,6 +117,8 @@ export interface PublicContentSection {
   title: string;
   description: string;
   imageUrl: string;
+  hyperlinkName: string;
+  hyperlinkUrl: string;
 }
 
 export interface PublicContentDetail {
@@ -125,6 +127,9 @@ export interface PublicContentDetail {
   title: string;
   description: string;
   coverImageUrl: string;
+  relatedContents: RelatedContentResponse[];
+  hyperlinkName: string;
+  hyperlinkUrl: string;
   sections: PublicContentSection[];
 }
 

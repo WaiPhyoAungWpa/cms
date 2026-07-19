@@ -1,3 +1,5 @@
+using Cms.Api.DTOs.RelatedContent;
+
 namespace Cms.Api.DTOs.PublicContent;
 
 public class PublicContentDetailResponseDto
@@ -11,6 +13,12 @@ public class PublicContentDetailResponseDto
     public string Description { get; set; } = string.Empty;
 
     public string CoverImageUrl { get; set; } = string.Empty;
+
+    public string? HyperlinkName { get; set; }
+
+    public string? HyperlinkUrl { get; set; } 
+
+    public List<RelatedContentResponseDto> RelatedContents { get; set; } = [];
 
     public List<PublicContentSectionResponseDto> Sections { get; set; } = [];
 }

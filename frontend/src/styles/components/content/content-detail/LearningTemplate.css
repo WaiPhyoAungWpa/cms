@@ -95,6 +95,40 @@
   text-align: center;
 }
 
+.learning-link-heading {
+  margin: 0 0 8px;
+
+  color: #334155;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.learning-link,
+.learning-section-link {
+  margin-top: 20px;
+}
+
+.learning-link {
+  text-align: center;
+}
+
+.learning-link a,
+.learning-section-link a {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.learning-link a:hover,
+.learning-section-link a:hover {
+  color: #166534;
+  text-decoration: underline;
+}
+
 .learning-sections {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,4 @@
-namespace Cms.Api.DTOs.Content;
+namespace Cms.Api.DTOs.RelatedContent;
 
 public class RelatedContentQueryRequestDto
 {

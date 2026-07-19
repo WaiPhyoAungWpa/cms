@@ -1,6 +1,7 @@
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.Common;
 using Cms.Api.DTOs.Dashboard;
+using Cms.Api.DTOs.RelatedContent;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;

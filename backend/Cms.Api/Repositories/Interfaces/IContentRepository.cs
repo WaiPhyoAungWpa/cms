@@ -1,5 +1,6 @@
 using Cms.Api.Entities;
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.RelatedContent;
 using Cms.Api.DTOs.PublicContent;
 
 namespace Cms.Api.Repositories.Interfaces;

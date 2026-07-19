@@ -1,4 +1,5 @@
 using Cms.Api.Entities.Enums;
+using Cms.Api.DTOs.RelatedContent;
 
 namespace Cms.Api.DTOs.Content;
 

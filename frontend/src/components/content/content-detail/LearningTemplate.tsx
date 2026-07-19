@@ -1,5 +1,6 @@
 import { ContentTemplateData  } from "../../../types/content";
 import { getImageUrl } from "../../../utils/image";
+import RelatedContentList from "../related-content/RelatedContentList";
 
 import "../../../styles/components/content/content-detail/LearningTemplate.css";
 
@@ -27,6 +28,22 @@ export default function LearningTemplate({ content }: Props) {
 
       <div className="learning-intro">
         <p className="learning-description">{content.description}</p>
+
+        {content.hyperlinkUrl && (
+          <div className="learning-link">
+            <h3 className="learning-link-heading">
+              External Reference
+            </h3>
+
+            <a
+              href={content.hyperlinkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {content.hyperlinkName || content.hyperlinkUrl}
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="learning-sections">
@@ -43,9 +60,27 @@ export default function LearningTemplate({ content }: Props) {
             <p className="learning-section-description">
               {section.description}
             </p>
+
+            {section.hyperlinkUrl && (
+              <div className="learning-section-link">
+                <h3 className="learning-link-heading">
+                  External Reference
+                </h3>
+                
+                <a
+                  href={section.hyperlinkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {section.hyperlinkName || section.hyperlinkUrl}
+                </a>
+              </div>
+            )}
           </section>
         ))}
       </div>
+
+      <RelatedContentList relatedContents={content.relatedContents} />
     </div>
   );
 }

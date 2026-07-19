@@ -1,4 +1,5 @@
 using Cms.Api.DTOs.Common;
+using Cms.Api.DTOs.RelatedContent;
 using Cms.Api.DTOs.PublicContent;
 using Cms.Api.Repositories.Interfaces;
 using Cms.Api.Services.Interfaces;
@@ -89,13 +90,27 @@ public class PublicContentService : IPublicContentService
             Title = content.Title,
             Description = content.Description,
             CoverImageUrl = content.CoverImage.FilePath,
+            HyperlinkName = content.HyperlinkName,
+            HyperlinkUrl = content.HyperlinkUrl,
             Sections = content.Sections
                 .Select(section => new PublicContentSectionResponseDto
                 {
                     Id = section.Id,
                     Title = section.Title,
                     Description = section.Description,
-                    ImageUrl = section.SectionImage.FilePath
+                    ImageUrl = section.SectionImage.FilePath,
+                    HyperlinkName = section.HyperlinkName,
+                    HyperlinkUrl = section.HyperlinkUrl
+                })
+                .ToList(),
+
+            RelatedContents = content.RelatedContents
+                .Select(relationship => new RelatedContentResponseDto
+                {
+                    Id = relationship.RelatedContent.Id,
+                    Category = relationship.RelatedContent.Category.Name,
+                    Title = relationship.RelatedContent.Title,
+                    CoverImageUrl = relationship.RelatedContent.CoverImage.FilePath
                 })
                 .ToList()
         };

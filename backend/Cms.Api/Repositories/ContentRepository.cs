@@ -3,6 +3,7 @@ using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.PublicContent;
+using Cms.Api.DTOs.RelatedContent;
 using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -268,6 +269,12 @@ public class ContentRepository : IContentRepository
             .AsNoTracking()
             .Include(c => c.Category)
             .Include(c => c.CoverImage)
+            .Include(c => c.RelatedContents)
+                .ThenInclude(r => r.RelatedContent)
+                    .ThenInclude(c => c.Category)
+            .Include(c => c.RelatedContents)
+                .ThenInclude(r => r.RelatedContent)
+                    .ThenInclude(c => c.CoverImage)
             .Include(c => c.Sections.OrderBy(s => s.Id))
                 .ThenInclude(s => s.SectionImage)
             .FirstOrDefaultAsync(c =>
