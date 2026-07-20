@@ -12,6 +12,9 @@ dist/
 *.sqlite
 !.env.example
 
+# .NET test results
+TestResults/
+
 # Backend Secrets Folder
 backend/Cms.Api/Secrets/
 
