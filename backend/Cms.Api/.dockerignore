@@ -1,0 +1,9 @@
+.env
+.env.*
+
+Secrets/
+
+bin/
+obj/
+
+node_modules

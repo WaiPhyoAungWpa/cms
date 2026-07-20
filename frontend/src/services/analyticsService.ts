@@ -5,9 +5,11 @@ const measurementId =
 
 export function initializeAnalytics() {
     if (!measurementId) {
-        console.warn(
-            "Google Analytics Measurement ID is missing."
-        );
+        if (import.meta.env.DEV) {
+            console.warn(
+                "Google Analytics Measurement ID is missing."
+            );
+        }
         return;
     }
 
