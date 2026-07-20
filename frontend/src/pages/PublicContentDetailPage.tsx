@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import ContentTemplateRenderer from "../components/content/content-detail/ContentTemplateRenderer";
 import PublicContentDetailHeader from "../components/public/PublicContentDetailHeader";
 import PublicHeader from "../components/public/PublicHeader";
+import PublicFooter from "../components/public/PublicFooter";
 import PageState from "../components/common/PageState";
 import { getPublicContentById } from "../services/publicContentService";
 import type { PublicContentDetail } from "../types/content";
@@ -73,6 +74,7 @@ export default function PublicContentDetailPage() {
             <PublicContentDetailHeader title={content.title} />
             <ContentTemplateRenderer content={content} />
         </main>
+        <PublicFooter />
         </>
     );
 }

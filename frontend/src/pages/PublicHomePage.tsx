@@ -7,6 +7,7 @@ import LatestContent from "../components/public/LatestContent";
 import PublicContentGrid from "../components/public/PublicContentGrid";
 import PublicContentFilters from "../components/public/PublicContentFilters";
 import PublicContentPagination from "../components/public/PublicContentPagination";
+import PublicFooter from "../components/public/PublicFooter";
 import PageState from "../components/common/PageState";
 import CommunitySection from "../components/public/dashboard/CommunitySection";
 import { getPublicDashboard } from "../services/publicDashboardService";
@@ -142,6 +143,7 @@ export default function PublicHomePage() {
         </section>
       </main>
 
+      <PublicFooter />
     </div>
   );
 }
