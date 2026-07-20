@@ -16,8 +16,9 @@ public class PublicDashboardRepository : IPublicDashboardRepository
 
     public async Task<int> GetPublishedContentCountAsync()
     {
-        return await _context.Contents.CountAsync(
-            content => content.Status == ContentStatus.Published);
+        return await _context.Contents.CountAsync(content =>
+            content.Status == ContentStatus.Published &&
+            content.VisibilityStatus == VisibilityStatus.Public);
     }
 
     public async Task<int> GetCategoryCountAsync()
