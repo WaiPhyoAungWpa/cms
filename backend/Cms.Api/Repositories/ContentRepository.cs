@@ -4,6 +4,7 @@ using Cms.Api.Entities.Enums;
 using Cms.Api.DTOs.Content;
 using Cms.Api.DTOs.PublicContent;
 using Cms.Api.DTOs.RelatedContent;
+using Cms.Api.DTOs.Dashboard;
 using Cms.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -106,7 +107,8 @@ public class ContentRepository : IContentRepository
         int PublishedCount,
         int DraftCount,
         int SoftDeletedCount,
-        List<Content> RecentContents
+        List<Content> RecentContents,
+        List<DashboardCategoryDistributionResponseDto> CategoryDistribution
     )> GetDashboardSummaryAsync()
     {
         var query = _context.Contents.AsNoTracking();
@@ -128,12 +130,24 @@ public class ContentRepository : IContentRepository
             .Take(DashboardRecentContentLimit)
             .ToListAsync();
 
+        var categoryDistribution = await query
+            .Include(content => content.Category)
+            .Where(content => content.Status != ContentStatus.SoftDeleted)
+            .GroupBy(content => content.Category.Name)
+            .Select(group => new DashboardCategoryDistributionResponseDto
+            {
+                Category = group.Key,
+                Count = group.Count()
+            })
+            .ToListAsync();
+
         return (
             counts?.TotalCount ?? 0,
             counts?.PublishedCount ?? 0,
             counts?.DraftCount ?? 0,
             counts?.SoftDeletedCount ?? 0,
-            recentContents
+            recentContents,
+            categoryDistribution
         );
     }
 

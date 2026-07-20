@@ -1,4 +1,6 @@
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.Dashboard;
+using Cms.Api.DTOs.GoogleAnalytics;
 using Cms.Api.Entities;
 using Cms.Api.Entities.Enums;
 using Cms.Api.Repositories.Interfaces;
@@ -20,6 +22,7 @@ public class ContentServiceTests
     private readonly Mock<IImageRepository> _imageRepository = new();
     private readonly Mock<ICurrentAdminService> _currentAdminService = new();
     private readonly Mock<IImageStorageService> _imageStorageServiceMock = new();
+    private readonly Mock<IGoogleAnalyticsService> _googleAnalyticsService = new();
     private readonly Mock<ILogger<ContentService>> _loggerMock = new();
 
     public ContentServiceTests()
@@ -33,6 +36,7 @@ public class ContentServiceTests
             _imageRepository.Object,
             _currentAdminService.Object,
             _imageStorageServiceMock.Object,
+            _googleAnalyticsService.Object,
             _loggerMock.Object);
     }
 
@@ -1362,6 +1366,20 @@ public class ContentServiceTests
             }
         };
 
+        var categoryDistribution = new List<DashboardCategoryDistributionResponseDto>
+        {
+            new()
+            {
+                Category = "Experience",
+                Count = 5
+            },
+            new()
+            {
+                Category = "Learning",
+                Count = 3
+            }
+        };
+
         _contentRepository
             .Setup(x => x.GetDashboardSummaryAsync())
             .ReturnsAsync((
@@ -1369,8 +1387,41 @@ public class ContentServiceTests
                 PublishedCount: 5,
                 DraftCount: 3,
                 SoftDeletedCount: 2,
-                RecentContents: recentContents
+                RecentContents: recentContents,
+                CategoryDistribution: categoryDistribution
             ));
+
+        _googleAnalyticsService
+            .Setup(x => x.GetAnalyticsSummaryAsync())
+            .ReturnsAsync(new AnalyticsSummaryDto
+            {
+                TotalReaders = 100,
+                TotalViews = 500,
+                MonthlyViews = new List<MonthlyViewDto>
+                {
+                    new()
+                    {
+                        Month = "July",
+                        Views = 200
+                    }
+                },
+                PopularContents = new List<PopularContentDto>
+                {
+                    new()
+                    {
+                        PagePath = "/content/1",
+                        Views = 50
+                    }
+                },
+                TrafficSources = new List<TrafficSourceDto>
+                {
+                    new()
+                    {
+                        Source = "Organic Search",
+                        Sessions = 80
+                    }
+                }
+            });
 
         // Act
         var result = await _service.GetDashboardSummaryAsync();
@@ -1399,8 +1450,32 @@ public class ContentServiceTests
         Assert.Equal(ContentStatus.Draft, second.Status);
         Assert.Equal(new DateTime(2026, 7, 12), second.UpdatedAt);
 
+        Assert.Equal(100, result.TotalReaders);
+        Assert.Equal(500, result.TotalViews);
+
+        Assert.Single(result.MonthlyViews);
+        Assert.Equal("July", result.MonthlyViews[0].Month);
+        Assert.Equal(200, result.MonthlyViews[0].Views);
+
+        Assert.Single(result.PopularContents);
+        Assert.Equal("/content/1", result.PopularContents[0].Title);
+        Assert.Equal("/content/1", result.PopularContents[0].PagePath);
+        Assert.Equal(50, result.PopularContents[0].Views);
+
+        Assert.Single(result.TrafficSources);
+        Assert.Equal("Organic Search", result.TrafficSources[0].Source);
+        Assert.Equal(80, result.TrafficSources[0].Sessions);
+
+        Assert.Equal(2, result.CategoryDistribution.Count);
+        Assert.Equal("Experience", result.CategoryDistribution[0].Category);
+        Assert.Equal(5, result.CategoryDistribution[0].Count);
+
         _contentRepository.Verify(
             x => x.GetDashboardSummaryAsync(),
+            Times.Once);
+
+        _googleAnalyticsService.Verify(
+            x => x.GetAnalyticsSummaryAsync(),
             Times.Once);
     }
 
@@ -1415,8 +1490,20 @@ public class ContentServiceTests
                 PublishedCount: 0,
                 DraftCount: 0,
                 SoftDeletedCount: 0,
-                RecentContents: new List<Content>()
+                RecentContents: new List<Content>(),
+                CategoryDistribution: new List<DashboardCategoryDistributionResponseDto>()
             ));
+
+        _googleAnalyticsService
+            .Setup(x => x.GetAnalyticsSummaryAsync())
+            .ReturnsAsync(new AnalyticsSummaryDto
+            {
+                TotalReaders = 0,
+                TotalViews = 0,
+                MonthlyViews = [],
+                PopularContents = [],
+                TrafficSources = []
+            });
 
         // Act
         var result = await _service.GetDashboardSummaryAsync();
@@ -1429,8 +1516,21 @@ public class ContentServiceTests
 
         Assert.Empty(result.RecentContents);
 
+        Assert.Empty(result.CategoryDistribution);
+
+        Assert.Equal(0, result.TotalReaders);
+        Assert.Equal(0, result.TotalViews);
+
+        Assert.Empty(result.MonthlyViews);
+        Assert.Empty(result.PopularContents);
+        Assert.Empty(result.TrafficSources);
+
         _contentRepository.Verify(
             x => x.GetDashboardSummaryAsync(),
+            Times.Once);
+
+        _googleAnalyticsService.Verify(
+            x => x.GetAnalyticsSummaryAsync(),
             Times.Once);
     }
 }

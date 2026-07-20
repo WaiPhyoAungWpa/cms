@@ -7,4 +7,8 @@ public class AnalyticsSummaryDto
     public int TotalViews { get; set; }
 
     public List<MonthlyViewDto> MonthlyViews { get; set; } = [];
+
+    public List<PopularContentDto> PopularContents { get; set; } = [];
+
+    public List<TrafficSourceDto> TrafficSources { get; set; } = [];
 }

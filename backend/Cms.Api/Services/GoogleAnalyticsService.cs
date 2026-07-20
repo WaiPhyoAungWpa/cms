@@ -14,6 +14,159 @@ public class GoogleAnalyticsService : IGoogleAnalyticsService
     private readonly ILogger<GoogleAnalyticsService> _logger;
     private readonly BetaAnalyticsDataClient _client;
 
+    private async Task<List<PopularContentDto>> GetPopularContentsAsync()
+    {
+        try
+        {
+            var request = new RunReportRequest
+            {
+                Property = $"properties/{_settings.PropertyId}",
+                Dimensions =
+                {
+                    new Dimension
+                    {
+                        Name = "pagePath"
+                    }
+                },
+                Metrics =
+                {
+                    new Metric
+                    {
+                        Name = "screenPageViews"
+                    }
+                },
+                DateRanges =
+                {
+                    new DateRange
+                    {
+                        StartDate = "30daysAgo",
+                        EndDate = "today"
+                    }
+                },
+                OrderBys =
+                {
+                    new OrderBy
+                    {
+                        Metric = new OrderBy.Types.MetricOrderBy
+                        {
+                            MetricName = "screenPageViews"
+                        },
+                        Desc = true
+                    }
+                },
+                Limit = 10
+            };
+
+            var response = await _client.RunReportAsync(request);
+
+            var popularContents = new List<PopularContentDto>();
+
+            foreach (var row in response.Rows)
+            {
+                if (!int.TryParse(row.MetricValues[0].Value, out var views))
+                {
+                    views = 0;
+                }
+
+                popularContents.Add(new PopularContentDto
+                {
+                    PagePath = row.DimensionValues[0].Value,
+                    Views = views
+                });
+            }
+
+            _logger.LogInformation(
+                "Retrieved {Count} popular content record(s).",
+                popularContents.Count);
+
+            return popularContents;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to retrieve popular content from Google Analytics.");
+
+            throw;
+        }
+    }
+
+    private async Task<List<TrafficSourceDto>> GetTrafficSourcesAsync()
+    {
+        try
+        {
+            var request = new RunReportRequest
+            {
+                Property = $"properties/{_settings.PropertyId}",
+                Dimensions =
+                {
+                    new Dimension
+                    {
+                        Name = "sessionDefaultChannelGroup"
+                    }
+                },
+                Metrics =
+                {
+                    new Metric
+                    {
+                        Name = "sessions"
+                    }
+                },
+                DateRanges =
+                {
+                    new DateRange
+                    {
+                        StartDate = "30daysAgo",
+                        EndDate = "today"
+                    }
+                },
+                OrderBys =
+                {
+                    new OrderBy
+                    {
+                        Metric = new OrderBy.Types.MetricOrderBy
+                        {
+                            MetricName = "sessions"
+                        },
+                        Desc = true
+                    }
+                }
+            };
+
+            var response = await _client.RunReportAsync(request);
+
+            var trafficSources = new List<TrafficSourceDto>();
+
+            foreach (var row in response.Rows)
+            {
+                if (!int.TryParse(row.MetricValues[0].Value, out var sessions))
+                {
+                    sessions = 0;
+                }
+
+                trafficSources.Add(new TrafficSourceDto
+                {
+                    Source = row.DimensionValues[0].Value,
+                    Sessions = sessions
+                });
+            }
+
+            _logger.LogInformation(
+                "Retrieved {Count} traffic source record(s).",
+                trafficSources.Count);
+
+            return trafficSources;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to retrieve traffic sources from Google Analytics.");
+
+            throw;
+        }
+    }
+
     public GoogleAnalyticsService(
         IOptions<GoogleAnalyticsSettings> options,
         ILogger<GoogleAnalyticsService> logger)
@@ -48,7 +201,9 @@ public class GoogleAnalyticsService : IGoogleAnalyticsService
             {
                 TotalReaders = await GetTotalReadersAsync(),
                 TotalViews = await GetTotalViewsAsync(),
-                MonthlyViews = await GetMonthlyViewsAsync()
+                MonthlyViews = await GetMonthlyViewsAsync(),
+                PopularContents = await GetPopularContentsAsync(),
+                TrafficSources = await GetTrafficSourcesAsync()
             };
         }
         catch (Exception ex)

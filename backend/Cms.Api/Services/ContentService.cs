@@ -18,6 +18,8 @@ public class ContentService : IContentService
     private readonly ICurrentAdminService _currentAdminService;
     private readonly IImageRepository _imageRepository;
     private readonly IImageStorageService _imageStorageService;
+
+    private readonly IGoogleAnalyticsService _googleAnalyticsService;
     private readonly ILogger<ContentService> _logger;
 
     private readonly record struct SectionValidationData(
@@ -33,12 +35,14 @@ public class ContentService : IContentService
         IImageRepository imageRepository,
         ICurrentAdminService currentAdminService,
         IImageStorageService imageStorageService,
+        IGoogleAnalyticsService googleAnalyticsService,
         ILogger<ContentService> logger)
     {
         _contentRepository = contentRepository;
         _imageRepository = imageRepository;
         _currentAdminService = currentAdminService;
         _imageStorageService = imageStorageService;
+        _googleAnalyticsService = googleAnalyticsService;
         _logger = logger;
     }
 
@@ -741,13 +745,16 @@ public class ContentService : IContentService
     public async Task<DashboardSummaryResponseDto> GetDashboardSummaryAsync()
     {
         var result = await _contentRepository.GetDashboardSummaryAsync();
+        var analytics = await _googleAnalyticsService.GetAnalyticsSummaryAsync();
 
         return new DashboardSummaryResponseDto
         {
+            // CMS Database
             TotalCount = result.TotalCount,
             PublishedCount = result.PublishedCount,
             DraftCount = result.DraftCount,
             SoftDeletedCount = result.SoftDeletedCount,
+
             RecentContents = result.RecentContents
                 .Select(content => new DashboardRecentContentResponseDto
                 {
@@ -757,7 +764,42 @@ public class ContentService : IContentService
                     Status = content.Status,
                     UpdatedAt = content.UpdatedAt
                 })
-                .ToList()
+                .ToList(),
+
+            CategoryDistribution = result.CategoryDistribution,
+
+            // Google Analytics
+            TotalReaders = analytics.TotalReaders,
+            TotalViews = analytics.TotalViews,
+
+            MonthlyViews = analytics.MonthlyViews
+                .Select(month => new DashboardMonthlyViewResponseDto
+                {
+                    Month = month.Month,
+                    Views = month.Views
+                })
+                .ToList(),
+
+            PopularContents = analytics.PopularContents
+                .Select(content => new DashboardPopularContentResponseDto
+                {
+                    // Temporary until titles are mapped from the CMS
+                    Title = content.PagePath,
+                    PagePath = content.PagePath,
+                    Views = content.Views
+                })
+                .ToList(),
+
+            TrafficSources = analytics.TrafficSources
+                .Select(source => new DashboardTrafficSourceResponseDto
+                {
+                    Source = source.Source,
+                    Sessions = source.Sessions
+                })
+                .ToList(),
+
+            LastUpdated = DateTime.UtcNow,
+            DataSource = "Google Analytics + CMS Database"
         };
     }
 

@@ -1,5 +1,6 @@
 using Cms.Api.Entities;
 using Cms.Api.DTOs.Content;
+using Cms.Api.DTOs.Dashboard;
 using Cms.Api.DTOs.RelatedContent;
 using Cms.Api.DTOs.PublicContent;
 
@@ -24,7 +25,8 @@ public interface IContentRepository
         int PublishedCount,
         int DraftCount,
         int SoftDeletedCount,
-        List<Content> RecentContents
+        List<Content> RecentContents,
+        List<DashboardCategoryDistributionResponseDto> CategoryDistribution
     )> GetDashboardSummaryAsync();
 
     Task<List<int>> GetValidRelatedContentIdsAsync(IEnumerable<int> ids);
