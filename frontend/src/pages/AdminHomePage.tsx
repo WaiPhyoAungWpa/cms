@@ -3,6 +3,10 @@ import { getDashboardSummary } from "../services/dashboardService";
 import { DashboardSummary } from "../types/dashboard";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardStats from "../components/dashboard/DashboardStats";
+import AnalyticsOverview from "../components/dashboard/AnalyticsOverview";
+import CategoryDistributionChart from "../components/dashboard/CategoryDistributionChart";
+import PopularContentTable from "../components/dashboard/PopularContentTable";
+import TrafficSourcesChart from "../components/dashboard/TrafficSourcesChart";
 import RecentContent from "../components/dashboard/RecentContent";
 import PageState from "../components/common/PageState";
 import "../styles/pages/AdminHomePage.css";
@@ -74,10 +78,32 @@ export default function AdminHomePage() {
             <DashboardHeader />
 
             <DashboardStats
-            totalCount={dashboard.totalCount}
-            publishedCount={dashboard.publishedCount}
-            draftCount={dashboard.draftCount}
-            softDeletedCount={dashboard.softDeletedCount}
+                totalCount={dashboard.totalCount}
+                publishedCount={dashboard.publishedCount}
+                draftCount={dashboard.draftCount}
+                softDeletedCount={dashboard.softDeletedCount}
+            />
+
+            <AnalyticsOverview
+                totalReaders={dashboard.totalReaders}
+                totalViews={dashboard.totalViews}
+                monthlyViews={dashboard.monthlyViews}
+                lastUpdated={dashboard.lastUpdated}
+                dataSource={dashboard.dataSource}
+            />
+
+            <div className="dashboard-grid">
+                <CategoryDistributionChart
+                    data={dashboard.categoryDistribution}
+                />
+
+                <PopularContentTable
+                    contents={dashboard.popularContents}
+                />
+            </div>
+
+            <TrafficSourcesChart
+                data={dashboard.trafficSources}
             />
 
             <RecentContent contents={dashboard.recentContents} />

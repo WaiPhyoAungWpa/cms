@@ -1391,6 +1391,13 @@ public class ContentServiceTests
                 CategoryDistribution: categoryDistribution
             ));
 
+        _contentRepository
+            .Setup(x => x.GetTitlesByIdsAsync(It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new Dictionary<int, string>
+            {
+                { 1, "First Content" }
+            });
+
         _googleAnalyticsService
             .Setup(x => x.GetAnalyticsSummaryAsync())
             .ReturnsAsync(new AnalyticsSummaryDto
@@ -1458,7 +1465,7 @@ public class ContentServiceTests
         Assert.Equal(200, result.MonthlyViews[0].Views);
 
         Assert.Single(result.PopularContents);
-        Assert.Equal("/content/1", result.PopularContents[0].Title);
+        Assert.Equal("Edit: First Content", result.PopularContents[0].Title);
         Assert.Equal("/content/1", result.PopularContents[0].PagePath);
         Assert.Equal(50, result.PopularContents[0].Views);
 
@@ -1493,6 +1500,10 @@ public class ContentServiceTests
                 RecentContents: new List<Content>(),
                 CategoryDistribution: new List<DashboardCategoryDistributionResponseDto>()
             ));
+
+        _contentRepository
+            .Setup(x => x.GetTitlesByIdsAsync(It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new Dictionary<int, string>());
 
         _googleAnalyticsService
             .Setup(x => x.GetAnalyticsSummaryAsync())

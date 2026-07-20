@@ -475,6 +475,68 @@ public class ContentService : IContentService
         await _imageRepository.SaveChangesAsync();
     }
 
+    private static string? GetStaticPageTitle(string pagePath)
+    {
+        return pagePath switch
+        {
+            "/" => "Home",
+            "/login" => "Login",
+            "/admin" => "Admin Dashboard",
+            "/content" => "Manage Content",
+            "/content/create" => "Create Content",
+            _ => null
+        };
+    }
+
+    private static int? ExtractContentId(string pagePath)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(
+            pagePath,
+            @"^/(?:content|public/content)/(\d+)(?:/edit)?$");
+
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        return int.Parse(match.Groups[1].Value);
+    }
+
+    private static string GetDisplayTitle(
+        string pagePath,
+        IReadOnlyDictionary<int, string>? titles)
+    {
+        if (titles is null)
+        {
+            return pagePath;
+        }
+        var staticTitle = GetStaticPageTitle(pagePath);
+
+        if (staticTitle is not null)
+        {
+            return staticTitle;
+        }
+
+        var contentId = ExtractContentId(pagePath);
+
+        if (contentId is null)
+        {
+            return pagePath;
+        }
+
+        if (!titles.TryGetValue(contentId.Value, out var title))
+        {
+            return pagePath;
+        }
+
+        if (pagePath.StartsWith("/public/content/"))
+        {
+            return $"Public: {title}";
+        }
+
+        return $"Edit: {title}";
+    }
+
     // Public methods
     // Create
     public async Task<ContentResponseDto> PublishAsync(CreateContentRequestDto request)
@@ -747,6 +809,15 @@ public class ContentService : IContentService
         var result = await _contentRepository.GetDashboardSummaryAsync();
         var analytics = await _googleAnalyticsService.GetAnalyticsSummaryAsync();
 
+        var contentIds = analytics.PopularContents
+            .Select(content => ExtractContentId(content.PagePath))
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        var titles = await _contentRepository.GetTitlesByIdsAsync(contentIds);
+
         return new DashboardSummaryResponseDto
         {
             // CMS Database
@@ -783,9 +854,12 @@ public class ContentService : IContentService
             PopularContents = analytics.PopularContents
                 .Select(content => new DashboardPopularContentResponseDto
                 {
-                    // Temporary until titles are mapped from the CMS
-                    Title = content.PagePath,
+                    Title = GetDisplayTitle(
+                        content.PagePath,
+                        titles),
+
                     PagePath = content.PagePath,
+
                     Views = content.Views
                 })
                 .ToList(),

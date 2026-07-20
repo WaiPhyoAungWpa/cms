@@ -29,6 +29,8 @@ public interface IContentRepository
         List<DashboardCategoryDistributionResponseDto> CategoryDistribution
     )> GetDashboardSummaryAsync();
 
+    Task<Dictionary<int, string>> GetTitlesByIdsAsync(IEnumerable<int> ids);
+
     Task<List<int>> GetValidRelatedContentIdsAsync(IEnumerable<int> ids);
 
     Task<(List<Content> Items, int TotalCount)>

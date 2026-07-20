@@ -1,0 +1,15 @@
+.traffic-sources {
+    margin-bottom: 48px;
+    padding: 24px 28px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.traffic-sources h2 {
+    margin: 0 0 20px;
+}
+
+.traffic-sources-chart {
+    margin-top: 12px;
+}

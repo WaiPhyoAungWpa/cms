@@ -1,0 +1,16 @@
+.analytics-stat-card {
+    padding: 24px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.analytics-stat-value {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.analytics-stat-label {
+    margin-top: 8px;
+    color: #666;
+}

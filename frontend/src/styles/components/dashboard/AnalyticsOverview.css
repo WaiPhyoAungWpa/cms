@@ -1,0 +1,19 @@
+.analytics-overview {
+    margin-bottom: 48px;
+}
+
+.analytics-overview h2 {
+    margin: 0 0 20px;
+}
+
+.analytics-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.analytics-footer p {
+    margin: 6px 0;
+    color: #666;
+    font-size: 0.95rem;
+}

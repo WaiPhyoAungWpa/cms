@@ -151,6 +151,17 @@ public class ContentRepository : IContentRepository
         );
     }
 
+    public async Task<Dictionary<int, string>> GetTitlesByIdsAsync(
+        IEnumerable<int> ids)
+    {
+        return await _context.Contents
+            .AsNoTracking()
+            .Where(c => ids.Contains(c.Id))
+            .ToDictionaryAsync(
+                c => c.Id,
+                c => c.Title);
+    }
+
     public async Task<List<int>> GetValidRelatedContentIdsAsync(
         IEnumerable<int> ids)
     {

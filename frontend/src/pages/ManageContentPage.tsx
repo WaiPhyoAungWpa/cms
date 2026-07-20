@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useManageContent } from "../hooks/content/useManageContent";
 import ManageContentFilters from "../components/content/manage-content/ManageContentFilters";
 import ManageContentTable from "../components/content/manage-content/ManageContentTable";
@@ -35,6 +36,8 @@ export default function ManageContentPage() {
     handleRestore,
   } = useManageContent();
 
+  const navigate = useNavigate();
+
   if (loading) {
     return (
       <PageState
@@ -57,50 +60,60 @@ export default function ManageContentPage() {
 
   return (
     <div className="manage-content-page">
-      <header className="manage-content-header">
-        <div>
-          <h1>Manage Content</h1>
-          <p>View, edit, delete, and restore your content.</p>
-        </div>
-      </header>
 
-      <ManageContentFilters
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
-        setSearch={setSearch}
-        categoryId={categoryId}
-        setCategoryId={setCategoryId}
-        status={status}
-        setStatus={setStatus}
-        visibilityStatus={visibilityStatus}
-        setVisibilityStatus={setVisibilityStatus}
-        setPage={setPage}
-      />
+      <div className="manage-content-container">
+          <header className="manage-content-header">
+            <button
+                className="back-button"
+                onClick={() => navigate("/admin")}
+              >
+                <span aria-hidden="true">←</span>
+                <span>Admin Dashboard</span>
+            </button>
+            <div>
+              <h1>Manage Content</h1>
+              <p>View, edit, delete, and restore your content.</p>
+            </div>
+          </header>
 
-      <ManageContentTable
-        contents={contents}
-        deletingId={deletingId}
-        handleDelete={handleDelete}
-        handleOpenRestore={handleOpenRestore}
-      />
+          <ManageContentFilters
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+            setSearch={setSearch}
+            categoryId={categoryId}
+            setCategoryId={setCategoryId}
+            status={status}
+            setStatus={setStatus}
+            visibilityStatus={visibilityStatus}
+            setVisibilityStatus={setVisibilityStatus}
+            setPage={setPage}
+          />
 
-      {restoringContent && (
-        <RestoreContentModal
-          restoringContent={restoringContent}
-          setRestoringContent={setRestoringContent}
-          restoreVisibilityStatus={restoreVisibilityStatus}
-          setRestoreVisibilityStatus={setRestoreVisibilityStatus}
-          isRestoring={isRestoring}
-          handleRestore={handleRestore}
-        />
-      )}
+          <ManageContentTable
+            contents={contents}
+            deletingId={deletingId}
+            handleDelete={handleDelete}
+            handleOpenRestore={handleOpenRestore}
+          />
 
-      <ManageContentPagination
-        page={page}
-        totalPages={totalPages}
-        totalCount={totalCount}
-        setPage={setPage}
-      />
+          {restoringContent && (
+            <RestoreContentModal
+              restoringContent={restoringContent}
+              setRestoringContent={setRestoringContent}
+              restoreVisibilityStatus={restoreVisibilityStatus}
+              setRestoreVisibilityStatus={setRestoreVisibilityStatus}
+              isRestoring={isRestoring}
+              handleRestore={handleRestore}
+            />
+          )}
+
+          <ManageContentPagination
+            page={page}
+            totalPages={totalPages}
+            totalCount={totalCount}
+            setPage={setPage}
+          />
+      </div>
     </div>
   );
 }
