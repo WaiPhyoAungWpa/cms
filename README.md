@@ -5,16 +5,17 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-A full-stack personal Content Management System (CMS) built as a portfolio project. It enables an administrator to create, manage, and publish portfolio-style content while providing a responsive public-facing website for visitors.
+A full-stack personal Content Management System (CMS) built as a long-term portfolio and learning platform. It enables an administrator to create, manage, and publish portfolio-style content while providing a responsive public-facing website for visitors to explore experiences, learning resources, and lifestyle articles.
 
 ## Live Demo
 
-- Frontend: https://cms-frontend-5mn3.onrender.com/
+- Public Website: https://cms-frontend-5mn3.onrender.com/
 
 ## Table of contents
 
 - [Features](#features)
 - [Tech stack](#tech-stack)
+- [AI-assisted development](#ai-assisted-development)
 - [System architecture](#system-architecture)
 - [Project structure](#project-structure)
 - [Screenshots](#screenshots)
@@ -23,6 +24,7 @@ A full-stack personal Content Management System (CMS) built as a portfolio proje
 - [Docker](#docker)
 - [Deployment](#deployment-render--postgresql)
 - [API documentation](#api-documentation)
+- [Documentation](#documentation)
 - [Future improvements](#future-improvements)
 - [License](#license)
 
@@ -45,6 +47,9 @@ A full-stack personal Content Management System (CMS) built as a portfolio proje
 - Publish
 - Soft delete
 - Restore
+- Analytics dashboard
+- Related content management
+- External references
 
 ### Infrastructure
 
@@ -63,6 +68,43 @@ A full-stack personal Content Management System (CMS) built as a portfolio proje
 | Services | Cloudinary, Google Analytics Data API |
 | Security | JWT bearer authentication, ASP.NET Core rate limiting |
 | Delivery | Docker Compose, GitHub Actions |
+
+## AI-assisted development
+
+This project was developed with the assistance of ChatGPT and Codex (GPT-5.6) during the OpenAI Build Week Challenge. AI was used throughout the project as a planning, implementation, and code review partner. Rather than accepting generated code blindly, I integrated it into the project, verified how it fit the existing architecture, tested the functionality, and refined it through iterative development.
+
+### ChatGPT
+
+ChatGPT was used to:
+
+- Plan the overall system architecture and project roadmap.
+- Break the project into milestones and implementation tasks.
+- Discuss database design, software engineering documents, and user workflows.
+- Explain implementation strategies and deployment concepts.
+- Generate implementation code after discussing different approaches and implementation trade-offs.
+- Explain how generated code fit into the existing project structure.
+
+### Codex (GPT-5.6)
+
+Codex was used to:
+
+- Help bootstrap parts of the project structure.
+- Inspect the repository after major feature implementations without modifying files.
+- Identify bugs, code quality issues, and refactoring opportunities.
+- Review implementation quality and identify opportunities for refactoring and improvement.
+
+### Development workflow
+
+The project followed an iterative AI-assisted workflow:
+
+1. Plan the feature with ChatGPT.
+2. Implement features with assistance from ChatGPT and Codex.
+3. Ask Codex to inspect the repository after major milestones.
+4. Discuss Codex's recommendations with ChatGPT.
+5. Integrate the implementation into the project.
+6. Test, validate, and refine the feature before moving on.
+
+While ChatGPT and Codex generated implementation ideas and code, I integrated the changes into the project, verified that they fit the existing architecture, tested the functionality, and iterated until the feature worked as intended.
 
 ## System architecture
 
@@ -225,9 +267,12 @@ Additional project documentation is available in the `docs` directory, including
 
 ## Future improvements
 
-- Add production-ready frontend serving instead of the current Vite development container.
-- Publish OpenAPI documentation outside the Development environment for controlled production access.
-- Add end-to-end tests and deployment-specific infrastructure configuration.
+- Improve the content editor with richer authoring capabilities.
+- Continue expanding analytics and content discovery features.
+- Add end-to-end testing.
+- Improve deployment automation.
+- Replace the Vite development container with a production-ready frontend server.
+- Continue evolving the platform as a long-term personal knowledge base.
 
 ## License
 
